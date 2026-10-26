@@ -1,0 +1,361 @@
+---
+import Img from './ui/Img.astro';
+import { story } from '../data/wedding';
+import { photos } from '../data/photos';
+---
+
+<section class="story on-forest" id="povestea" data-story aria-labelledby="story-title">
+  <div class="story__veil" data-story-veil aria-hidden="true"></div>
+
+  <div class="story__pin" data-story-pin>
+    <div class="story__sticky">
+      <div class="story__track" data-story-track>
+        <header class="story__head">
+          <p class="kicker" data-reveal>{story.kicker}</p>
+          <h2 class="h2 story__title" id="story-title" data-reveal style="--d:100">{story.title}</h2>
+          <p class="story__hint" aria-hidden="true">
+            <svg viewBox="0 0 40 12" fill="none" stroke="currentColor" stroke-width="1.2"
+              ><path d="M0 6h38m-5-5 5 5-5 5"></path></svg
+            >
+          </p>
+        </header>
+
+        <svg class="story__hthread" viewBox="0 0 1000 40" preserveAspectRatio="none" aria-hidden="true">
+          <path
+            class="thread"
+            pathLength="1"
+            data-hthread
+            d="M0 20 C 60 4 120 36 180 20 S 300 4 360 20 S 480 36 540 20 S 660 4 720 20 S 840 36 900 20 S 980 10 1000 20"
+          ></path>
+        </svg>
+
+        <ol class="story__list" role="list">
+          <svg class="story__vthread" viewBox="0 0 20 1000" preserveAspectRatio="none" aria-hidden="true">
+            <path class="thread" pathLength="1" data-vthread d="M10 0 L10 1000"></path>
+          </svg>
+          {
+            story.moments.map((m, i) => {
+              const p = photos[m.photo];
+              return (
+                <li class:list={['moment', i % 2 ? 'moment--b' : 'moment--a']} data-moment>
+                  <span class="moment__dot" aria-hidden="true" />
+                  <figure class="moment__fig arch">
+                    <div class="moment__par" data-par>
+                      <Img
+                        src={p.src}
+                        alt={p.alt}
+                        widths={[480, 720, 960]}
+                        sizes="(min-width: 1024px) 28vw, (min-width: 768px) 45vw, 80vw"
+                        lqip={p.lqip}
+                        class="moment__pic"
+                        imgClass="moment__img"
+                      />
+                    </div>
+                  </figure>
+                  <div class="moment__body" data-reveal>
+                    <p class="moment__year">{m.year}</p>
+                    <h3 class="moment__title">{m.title}</h3>
+                    <p class="moment__text">{m.text}</p>
+                  </div>
+                </li>
+              );
+            })
+          }
+        </ol>
+      </div>
+    </div>
+  </div>
+
+  <figure class="pano" data-pano aria-labelledby="pano-title">
+    <div class="pano__clip" data-pano-clip>
+      <div class="pano__media" data-pano-media>
+        <Img
+          src={photos.inel.src}
+          alt={photos.inel.alt}
+          widths={[800, 1280, 2048]}
+          sizes="100vw"
+          lqip={photos.inel.lqip}
+          class="pano__pic"
+          imgClass="pano__img"
+        />
+      </div>
+    </div>
+    <figcaption class="pano__cap container">
+      <p class="kicker" data-reveal>{story.finale.kicker}</p>
+      <p class="pano__title" id="pano-title" data-reveal style="--d:120">
+        Am spus <em>DA</em>
+      </p>
+      <p class="pano__text" data-reveal style="--d:220">{story.finale.text}</p>
+    </figcaption>
+  </figure>
+</section>
+
+<style>
+  .story {
+    position: relative;
+    isolation: isolate;
+    padding-block: clamp(4rem, 10vw, 7rem) 0;
+  }
+  .story__veil {
+    position: absolute;
+    inset: 0 0 auto;
+    height: 100svh;
+    z-index: -1;
+    background: var(--ivory);
+    opacity: 0;
+    pointer-events: none;
+  }
+  .story__track {
+    position: relative;
+    width: min(100% - 2 * var(--gutter), var(--maxw));
+    margin-inline: auto;
+  }
+  .story__head {
+    margin-bottom: clamp(3.5rem, 9vw, 6rem);
+  }
+  .story__title {
+    max-width: 12em;
+  }
+  .story__hint,
+  .story__hthread {
+    display: none;
+  }
+
+  /* ── Vertical (mobil / fără animații) ───────────────────────────── */
+  .story__list {
+    position: relative;
+    display: grid;
+    gap: clamp(4.5rem, 12vw, 7rem);
+    padding: 0 0 0 2.75rem;
+    margin: 0;
+  }
+  .story__vthread {
+    position: absolute;
+    left: 0;
+    top: 0.5rem;
+    width: 20px;
+    height: calc(100% - 1rem);
+    overflow: visible;
+  }
+  .moment {
+    position: relative;
+    display: grid;
+    gap: 1.75rem;
+  }
+  .moment__dot {
+    position: absolute;
+    left: calc(-2.75rem + 10px - 7px);
+    top: 0;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    border: 1px solid var(--amber);
+    background: var(--forest);
+    transition:
+      background-color 0.6s var(--ease-out),
+      box-shadow 0.6s var(--ease-out);
+  }
+  :global(.moment.is-on) .moment__dot,
+  :global(html:not(.js)) .moment__dot {
+    background: var(--amber);
+    box-shadow: 0 0 0 6px rgb(200 146 74 / 0.18);
+  }
+  .moment__fig {
+    position: relative;
+    aspect-ratio: 4 / 5;
+    width: min(100%, 26rem);
+    background: rgb(244 237 225 / 0.06);
+  }
+  .moment__par {
+    position: absolute;
+    inset: -8% 0;
+  }
+  .moment__par :global(.moment__pic),
+  .moment__par :global(.moment__img) {
+    width: 100%;
+    height: 100%;
+  }
+  .moment__par :global(.moment__img) {
+    object-fit: cover;
+    background-size: cover;
+    background-position: center;
+  }
+  .moment__year {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: clamp(3rem, 7vw, 4.5rem);
+    line-height: 0.9;
+    color: var(--amber);
+    font-feature-settings: 'lnum' 1;
+  }
+  .moment__title {
+    margin-top: 0.6rem;
+    font-size: var(--fs-h3);
+    line-height: 1.1;
+  }
+  .moment__text {
+    margin-top: 0.9rem;
+    max-width: 30rem;
+    color: var(--on-dark-soft);
+  }
+  @media (min-width: 768px) {
+    .moment {
+      grid-template-columns: minmax(0, 0.9fr) minmax(0, 1fr);
+      align-items: end;
+      gap: 3rem;
+    }
+    .moment--b .moment__fig {
+      order: 2;
+    }
+  }
+
+  /* ── Orizontal (desktop + animații) ─────────────────────────────── */
+  @media (min-width: 1024px) {
+    :global(.motion-ok) .story {
+      padding-top: 0;
+    }
+    :global(.motion-ok) .story__pin {
+      height: var(--story-h, 400vh);
+    }
+    :global(.motion-ok) .story__sticky {
+      position: sticky;
+      top: 0;
+      height: 100svh;
+      overflow: hidden;
+    }
+    :global(.motion-ok) .story__track {
+      display: flex;
+      align-items: center;
+      gap: 8vw;
+      width: max-content;
+      height: 100%;
+      margin: 0;
+      padding: 0 12vw 0 max(var(--gutter), calc((100vw - var(--maxw)) / 2));
+      will-change: transform;
+    }
+    :global(.motion-ok) .story__head {
+      flex: none;
+      width: 34vw;
+      margin: 0;
+    }
+    :global(.motion-ok) .story__hint {
+      display: block;
+      margin-top: 2.5rem;
+      width: 3.5rem;
+      color: var(--amber);
+      animation: nudge 2.4s var(--ease-in-out) infinite;
+    }
+    @keyframes nudge {
+      50% {
+        transform: translateX(10px);
+      }
+    }
+    :global(.motion-ok) .story__hthread {
+      display: block;
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 9vh;
+      width: 100%;
+      height: 40px;
+      overflow: visible;
+    }
+    :global(.motion-ok) .story__vthread {
+      display: none;
+    }
+    :global(.motion-ok) .story__list {
+      display: flex;
+      align-items: center;
+      gap: 9vw;
+      padding: 0;
+    }
+    :global(.motion-ok) .moment {
+      display: flex;
+      align-items: flex-end;
+      gap: 3vw;
+      width: auto;
+    }
+    :global(.motion-ok) .moment--b {
+      flex-direction: row-reverse;
+      transform: translateY(-5vh);
+    }
+    :global(.motion-ok) .moment--b .moment__fig {
+      order: 0;
+    }
+    :global(.motion-ok) .moment__fig {
+      flex: none;
+      width: auto;
+      height: 60svh;
+      max-height: 40rem;
+    }
+    :global(.motion-ok) .moment__body {
+      width: 22vw;
+      max-width: 22rem;
+      padding-bottom: 2rem;
+    }
+    :global(.motion-ok) .moment__dot {
+      display: none;
+    }
+    :global(.motion-ok) .moment__par {
+      inset: 0 -8%;
+    }
+  }
+
+  /* ── Panoramic „Am spus DA" ─────────────────────────────────────── */
+  .pano {
+    position: relative;
+    margin: clamp(6rem, 14vw, 10rem) 0 0;
+    color: var(--ivory);
+  }
+  .pano__clip {
+    position: relative;
+    overflow: hidden;
+    aspect-ratio: 4 / 5;
+  }
+  .pano__media {
+    position: absolute;
+    inset: 0;
+  }
+  .pano__media :global(.pano__pic),
+  .pano__media :global(.pano__img) {
+    width: 100%;
+    height: 100%;
+  }
+  .pano__media :global(.pano__img) {
+    object-fit: cover;
+    object-position: 52% 50%;
+    background-size: cover;
+  }
+  .pano__clip::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgb(14 13 10 / 0.85), transparent 55%);
+  }
+  .pano__cap {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: clamp(2rem, 6vw, 4.5rem);
+    z-index: 2;
+  }
+  .pano__title {
+    margin-top: 0.75rem;
+    font-family: var(--serif);
+    font-size: var(--fs-display);
+    line-height: 0.95;
+  }
+  .pano__title em {
+    color: var(--amber);
+  }
+  .pano__text {
+    margin-top: 1rem;
+    max-width: 30rem;
+    color: var(--on-dark-soft);
+  }
+  @media (min-width: 768px) {
+    .pano__clip {
+      aspect-ratio: 2048 / 857;
+    }
+  }
+</style>

@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="ro">
+  <head><meta charset="utf-8" /><title>Formulare (detecție Netlify)</title><meta name="robots" content="noindex" /></head>
+  <body>
+    <!-- Fișier static folosit de Netlify pentru a detecta formularul RSVP la deploy.
+         Câmpurile trebuie să corespundă cu cele din src/components/Rsvp.astro. -->
+    <form name="rsvp" data-netlify="true" netlify-honeypot="bot-field" hidden>
+      <input type="hidden" name="form-name" value="rsvp" />
+      <input name="bot-field" />
+      <input name="nume" type="text" />
+      <input name="prezenta" type="radio" value="da" />
+      <input name="prezenta" type="radio" value="nu" />
+      <select name="persoane"><option>1</option></select>
+      <select name="meniu"><option>Standard</option></select>
+      <input name="alergii" type="text" />
+      <textarea name="mesaj"></textarea>
+    </form>
+  </body>
+</html>

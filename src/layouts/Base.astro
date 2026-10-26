@@ -1,0 +1,67 @@
+---
+import '../styles/global.css';
+import { meta, date } from '../data/wedding';
+
+interface Props {
+  title?: string;
+  description?: string;
+  noindex?: boolean;
+}
+// Implicit „noindex": invitația e pentru invitați, nu pentru Google (previzualizările WhatsApp/Facebook funcționează în continuare).
+const { title = meta.title, description = meta.description, noindex = true } = Astro.props;
+const site = Astro.site ?? new URL(Astro.url.origin);
+const canonical = new URL(Astro.url.pathname, site).href;
+const ogImage = new URL('/og-image.jpg', site).href;
+---
+
+<!doctype html>
+<html lang="ro">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    {noindex && <meta name="robots" content="noindex, nofollow" />}
+    <meta name="theme-color" content={meta.themeColor} />
+    <meta name="color-scheme" content="dark light" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="ro_RO" />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:title" content={meta.ogTitle} />
+    <meta property="og:description" content={meta.ogDescription} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Diana și Dragoș" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={meta.ogTitle} />
+    <meta name="twitter:description" content={meta.ogDescription} />
+    <meta name="twitter:image" content={ogImage} />
+    <meta name="event-date" content={date.start} />
+
+    <link rel="preload" href="/fonts/cormorant-500i.woff2" as="font" type="font/woff2" crossorigin />
+
+    <script is:inline>
+      // Stările ascunse inițial (reveal, split) se aplică doar sub .js.
+      // Dacă scriptul principal nu pornește în 4s, revenim la conținut static.
+      (function (d) {
+        var h = d.documentElement;
+        h.classList.add('js');
+        if (!matchMedia('(prefers-reduced-motion: reduce)').matches) h.classList.add('motion-ok');
+        setTimeout(function () {
+          if (!window.__ddReady) h.classList.remove('js', 'motion-ok');
+        }, 4000);
+      })(document);
+    </script>
+  </head>
+  <body>
+    <a class="skip-link" href="#continut">Sari la conținut</a>
+    <slot />
+    <script>
+      import '../scripts/main';
+    </script>
+  </body>
+</html>

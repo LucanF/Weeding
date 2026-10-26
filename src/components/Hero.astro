@@ -1,0 +1,288 @@
+---
+import Img from './ui/Img.astro';
+import { couple, date, hero } from '../data/wedding';
+import { photos, crops } from '../data/photos';
+---
+
+<section class="hero" id="acasa" data-hero aria-labelledby="hero-title">
+  <div class="hero__sticky">
+    <div class="hero__frame" data-hero-frame>
+      <div class="hero__media" data-hero-media>
+        <Img
+          src={photos.arcada.src}
+          mobile={crops.heroMobile}
+          alt=""
+          widths={[1280, 1920, 2048]}
+          sizes="100vw"
+          mobileWidths={[540, 720, 902]}
+          mobileSizes="100vw"
+          priority
+          class="hero__pic"
+          imgClass="hero__img"
+          imgAttrs={{ 'data-hero-img': '' }}
+        />
+      </div>
+      <div class="hero__shade" data-hero-shade></div>
+    </div>
+
+    <span class="hero__ring" data-hero-ring aria-hidden="true"></span>
+
+    <div class="hero__content">
+      <p class="kicker hero__eyebrow" data-hero-fade>{hero.eyebrow}</p>
+      <h1 class="hero__title" id="hero-title" data-hero-title>
+        <span class="sr-only">{couple.bride} și {couple.groom}</span>
+        <span class="hero__visual" aria-hidden="true">
+          <span class="hero__name hero__name--a" data-split>{couple.bride}</span>
+          <span class="hero__amp amp" data-hero-amp>&amp;</span>
+          <span class="hero__name hero__name--b" data-split>{couple.groom}</span>
+        </span>
+      </h1>
+      <p class="hero__date" data-hero-fade>
+        <time datetime={date.start.slice(0, 10)}>{date.long}</time>
+      </p>
+    </div>
+
+    <p class="hero__caption" data-hero-caption aria-hidden="true">
+      <span class="hero__caption-date">{date.short}</span>
+    </p>
+
+    <a class="hero__scroll" href="#invitatie" data-hero-fade>
+      <span>{hero.scrollHint}</span>
+      <i aria-hidden="true"></i>
+    </a>
+  </div>
+</section>
+
+<style>
+  .hero {
+    position: relative;
+    height: 100svh;
+    min-height: 34rem;
+    background: var(--night);
+    color: var(--ivory);
+  }
+  :global(.motion-ok) .hero {
+    height: 230svh;
+  }
+  .hero__sticky {
+    position: sticky;
+    top: 0;
+    height: 100svh;
+    min-height: 34rem;
+    overflow: hidden;
+    display: grid;
+  }
+  .hero__frame {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    background: var(--night);
+  }
+  .hero__media {
+    position: absolute;
+    inset: 0;
+    transform-origin: 50% 45%;
+  }
+  .hero__media :global(.hero__pic),
+  .hero__media :global(.hero__img) {
+    width: 100%;
+    height: 100%;
+  }
+  .hero__media :global(.hero__img) {
+    object-fit: cover;
+    object-position: 50% 30%;
+    background-color: var(--night);
+  }
+  @media (min-width: 768px) {
+    .hero__media :global(.hero__img) {
+      object-position: 30% 50%;
+    }
+  }
+  .hero__shade {
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(to top, rgb(14 13 10 / 0.95) 0%, rgb(14 13 10 / 0.55) 30%, transparent 58%),
+      linear-gradient(to bottom, rgb(14 13 10 / 0.55), transparent 22%);
+  }
+  @media (min-width: 768px) {
+    .hero__shade {
+      background:
+        linear-gradient(to left, rgb(14 13 10 / 0.7), transparent 55%),
+        linear-gradient(to top, rgb(14 13 10 / 0.6), transparent 30%),
+        linear-gradient(to bottom, rgb(14 13 10 / 0.5), transparent 18%);
+    }
+  }
+
+  .hero__content {
+    position: relative;
+    z-index: 4;
+    align-self: end;
+    padding: 0 var(--gutter) calc(7.5rem + env(safe-area-inset-bottom));
+    text-align: center;
+    display: grid;
+    justify-items: center;
+    gap: 1.1rem;
+  }
+  .hero__eyebrow {
+    color: var(--amber-soft);
+  }
+  .hero__eyebrow::after {
+    content: '';
+    width: 2.25rem;
+    height: 1px;
+    background: currentColor;
+    opacity: 0.7;
+  }
+  .hero__title {
+    font-size: var(--fs-hero);
+    font-style: italic;
+    line-height: 0.86;
+    letter-spacing: -0.02em;
+    transform-origin: 50% 50%;
+  }
+  .hero__visual {
+    display: grid;
+    justify-items: center;
+  }
+  .hero__name {
+    display: block;
+    padding-inline: 0.06em;
+  }
+  .hero__amp {
+    display: block;
+    font-size: 0.95em;
+    line-height: 0.75;
+    margin-block: -0.06em -0.02em;
+  }
+  .hero__date {
+    margin-top: 0.75rem;
+    font-family: var(--sans);
+    font-size: 0.8125rem;
+    font-weight: 500;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: var(--on-dark-soft);
+  }
+
+  @media (min-width: 768px) {
+    .hero__content {
+      align-self: center;
+      justify-self: end;
+      width: min(50vw, 44rem);
+      margin-right: clamp(1rem, 5vw, 6rem);
+      padding: 4rem 0 0;
+      text-align: left;
+      justify-items: start;
+    }
+    .hero__eyebrow::after {
+      display: none;
+    }
+    .hero__visual {
+      justify-items: start;
+    }
+    .hero__amp {
+      margin-left: 0.6em;
+      margin-block: -0.12em -0.08em;
+    }
+    .hero__name--b {
+      margin-left: 0.45em;
+    }
+  }
+
+  .hero__ring {
+    position: absolute;
+    z-index: 3;
+    inset: calc(16% - 10px) calc(12% - 10px) calc(16% - 10px);
+    border: 1px solid rgb(200 146 74 / 0.65);
+    border-bottom: 0;
+    border-radius: var(--arch);
+    opacity: 0;
+    pointer-events: none;
+  }
+  @media (min-width: 768px) {
+    .hero__ring {
+      inset: calc(13% - 14px) calc(35% - 14px) calc(11% - 14px);
+    }
+  }
+
+  .hero__caption {
+    position: absolute;
+    z-index: 4;
+    left: 0;
+    right: 0;
+    bottom: max(4.5%, env(safe-area-inset-bottom));
+    text-align: center;
+    opacity: 0;
+    font-family: var(--serif);
+    font-size: clamp(1.1rem, 2.2vw, 1.5rem);
+    letter-spacing: 0.3em;
+    color: var(--amber-soft);
+  }
+  @media (min-width: 768px) {
+    .hero__caption {
+      bottom: 3.5%;
+    }
+  }
+
+  .hero__scroll {
+    position: absolute;
+    z-index: 4;
+    left: 50%;
+    bottom: calc(1.25rem + env(safe-area-inset-bottom));
+    translate: -50% 0;
+    display: grid;
+    justify-items: center;
+    gap: 0.6rem;
+    min-width: 44px;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.6875rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: var(--on-dark-soft);
+  }
+  .hero__scroll i {
+    position: relative;
+    width: 1px;
+    height: 2.75rem;
+    background: rgb(244 237 225 / 0.2);
+    overflow: hidden;
+  }
+  .hero__scroll i::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--amber);
+    transform: translateY(-100%);
+    animation: scroll-line 2.2s var(--ease-in-out) infinite;
+  }
+  @keyframes scroll-line {
+    0% {
+      transform: translateY(-100%);
+    }
+    55% {
+      transform: translateY(0);
+    }
+    100% {
+      transform: translateY(100%);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .hero__scroll i::after {
+      animation: none;
+      transform: none;
+    }
+  }
+
+  /* Măștile SplitText: puțin spațiu pentru diacritice (ș) și înclinarea italicului. */
+  :global(.hero__name > div) {
+    padding: 0.08em 0.1em 0.2em;
+    margin: -0.08em -0.1em -0.2em;
+  }
+
+  /* Intro (doar cu JS): numele sunt ascunse până la SplitText. */
+  :global(.js.motion-ok) .hero__visual:not(.is-ready) {
+    opacity: 0;
+  }
+</style>

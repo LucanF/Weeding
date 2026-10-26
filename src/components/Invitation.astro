@@ -1,0 +1,103 @@
+---
+import ThreadLine from './ui/ThreadLine.astro';
+import { invitation } from '../data/wedding';
+---
+
+<section class="inv on-ivory" id="invitatie" data-invite aria-labelledby="inv-title">
+  <div class="inv__veil" data-invite-veil aria-hidden="true"></div>
+  <div class="inv__inner">
+    <ThreadLine height="clamp(7rem, 22vh, 13rem)" variant="straight" knot />
+    <div class="container inv__body" id="continut">
+      <h2 class="kicker kicker--center inv__kicker" id="inv-title" data-reveal>{invitation.kicker}</h2>
+      <p class="inv__text" data-words>{invitation.text}</p>
+
+      <div class="inv__families">
+        {
+          invitation.parents.map((p, i) => (
+            <div class="inv__fam" data-reveal style={`--d:${i * 120}`}>
+              <p class="inv__label">{p.label}</p>
+              <p class="inv__names">{p.names}</p>
+            </div>
+          ))
+        }
+        <div class="inv__fam inv__fam--god" data-reveal style="--d:240">
+          <p class="inv__label">{invitation.godparents.label}</p>
+          <p class="inv__names">{invitation.godparents.names}</p>
+        </div>
+      </div>
+    </div>
+    <ThreadLine variant="loop" height="clamp(8rem, 22vh, 14rem)" />
+  </div>
+</section>
+
+<style>
+  .inv {
+    position: relative;
+    isolation: isolate;
+    padding-bottom: 0;
+  }
+  .inv__veil {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: var(--night);
+    opacity: 0;
+    pointer-events: none;
+  }
+  .inv__body {
+    display: grid;
+    justify-items: center;
+    text-align: center;
+    padding-block: clamp(3rem, 8vh, 5rem) clamp(3rem, 8vh, 5rem);
+  }
+  .inv__text {
+    margin-top: clamp(2rem, 5vw, 3rem);
+    max-width: 21em;
+    font-family: var(--serif);
+    font-size: clamp(1.85rem, 4.4vw, 3.5rem);
+    line-height: 1.18;
+    letter-spacing: -0.005em;
+    color: var(--forest);
+    text-wrap: balance;
+  }
+  .inv__text :global(.word) {
+    will-change: auto;
+  }
+  .inv__families {
+    display: grid;
+    gap: 2rem;
+    margin-top: clamp(3.5rem, 8vw, 6rem);
+    width: 100%;
+    max-width: 56rem;
+  }
+  .inv__label {
+    font-size: var(--fs-kicker);
+    font-weight: 600;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--moss);
+  }
+  .inv__names {
+    margin-top: 0.5rem;
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: clamp(1.5rem, 2.6vw, 2rem);
+    line-height: 1.15;
+    color: var(--night);
+  }
+  .inv__fam--god {
+    padding-top: 2rem;
+    border-top: 1px solid rgb(31 42 30 / 0.15);
+  }
+  @media (min-width: 768px) {
+    .inv__families {
+      grid-template-columns: 1fr 1fr;
+      column-gap: 4rem;
+    }
+    .inv__fam--god {
+      grid-column: 1 / -1;
+      justify-self: center;
+      padding-inline: 4rem;
+    }
+  }
+</style>

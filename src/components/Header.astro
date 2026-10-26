@@ -1,0 +1,239 @@
+---
+import { couple, nav } from '../data/wedding';
+---
+
+<header class="hdr" data-header>
+  <div class="hdr__bar">
+    <a class="hdr__logo" href="#acasa" data-logo aria-label={`${couple.bride} și ${couple.groom} – începutul paginii`}>
+      <span class="hdr__name">{couple.bride}</span>
+      <span class="amp" aria-hidden="true">&amp;</span>
+      <span class="hdr__name">{couple.groom}</span>
+    </a>
+
+    <nav class="hdr__nav" aria-label="Secțiuni">
+      <ul role="list">
+        {nav.map((l) => <li><a href={l.href}>{l.label}</a></li>)}
+      </ul>
+    </nav>
+
+    <div class="hdr__actions">
+      <a class="btn btn--sm hdr__cta" href="#rsvp">Confirmă</a>
+      <button class="hdr__menu" type="button" aria-expanded="false" aria-controls="meniu" data-menu-toggle>
+        <span class="sr-only">Deschide meniul</span>
+        <span class="hdr__burger" aria-hidden="true"><i></i><i></i></span>
+      </button>
+    </div>
+  </div>
+
+  <div class="mnav" id="meniu" data-menu hidden>
+    <nav aria-label="Meniu">
+      <ul role="list">
+        {
+          nav.map((l, i) => (
+            <li style={`--i:${i}`}>
+              <a href={l.href}>{l.label}</a>
+            </li>
+          ))
+        }
+        <li style={`--i:${nav.length}`}><a href="#rsvp">Confirmă prezența</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<style>
+  .hdr {
+    position: fixed;
+    inset: 0 0 auto;
+    z-index: 50;
+    pointer-events: none;
+    padding-top: env(safe-area-inset-top);
+  }
+  .hdr__bar {
+    pointer-events: auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    height: var(--header-h);
+    padding-inline: var(--gutter);
+    color: var(--ivory);
+    position: relative;
+  }
+  .hdr__bar::before {
+    content: '';
+    position: absolute;
+    inset: calc(-1 * env(safe-area-inset-top)) 0 0;
+    z-index: -1;
+    background: linear-gradient(to bottom, rgb(14 13 10 / 0.94), rgb(14 13 10 / 0.86));
+    border-bottom: 1px solid rgb(200 146 74 / 0.18);
+    opacity: 0;
+    transition: opacity 0.5s var(--ease-out);
+  }
+  :global(.hdr.is-solid) .hdr__bar::before {
+    opacity: 1;
+  }
+  .hdr__logo {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.3em;
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 1.35rem;
+    line-height: 1;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: opacity 0.45s var(--ease-out), transform 0.45s var(--ease-out);
+    min-height: 44px;
+    align-items: center;
+    justify-self: start;
+  }
+  .hdr__logo .amp {
+    font-size: 1.3em;
+    line-height: 1;
+    transform: translateY(0.08em);
+  }
+  /* Logo-ul apare abia după hero (doar cu JS). */
+  :global(.js .hdr.is-hero) .hdr__logo {
+    opacity: 0;
+    transform: translateY(-6px);
+    pointer-events: none;
+  }
+  .hdr__nav {
+    display: none;
+  }
+  .hdr__nav ul {
+    display: flex;
+    gap: clamp(1.25rem, 2.4vw, 2.25rem);
+    padding: 0;
+  }
+  .hdr__nav a {
+    position: relative;
+    display: inline-block;
+    padding-block: 0.6rem;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: var(--on-dark-soft);
+    transition: color 0.3s;
+  }
+  .hdr__nav a::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0.35rem;
+    height: 1px;
+    background: var(--amber);
+    transform: scaleX(0);
+    transform-origin: right;
+    transition: transform 0.45s var(--ease-out);
+  }
+  .hdr__nav a:hover,
+  .hdr__nav a[aria-current='true'] {
+    color: var(--ivory);
+  }
+  .hdr__nav a:hover::after,
+  .hdr__nav a[aria-current='true']::after {
+    transform: scaleX(1);
+    transform-origin: left;
+  }
+  .hdr__actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .hdr__menu {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border: 1px solid rgb(244 237 225 / 0.28);
+    border-radius: 22px 22px 8px 8px;
+    background: rgb(14 13 10 / 0.35);
+    color: var(--ivory);
+  }
+  .hdr__burger {
+    display: grid;
+    gap: 6px;
+    width: 18px;
+  }
+  .hdr__burger i {
+    display: block;
+    height: 1.5px;
+    background: currentColor;
+    border-radius: 2px;
+    transition: transform 0.4s var(--ease-out);
+  }
+  .hdr__menu[aria-expanded='true'] i:first-child {
+    transform: translateY(3.75px) rotate(45deg);
+  }
+  .hdr__menu[aria-expanded='true'] i:last-child {
+    transform: translateY(-3.75px) rotate(-45deg);
+  }
+
+  .mnav {
+    pointer-events: auto;
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    display: grid;
+    align-content: center;
+    padding: calc(var(--header-h) + env(safe-area-inset-top)) var(--gutter) 2rem;
+    background:
+      radial-gradient(80% 60% at 50% 100%, rgb(200 146 74 / 0.12), transparent 70%),
+      var(--night);
+  }
+  .mnav[hidden] {
+    display: none;
+  }
+  .mnav ul {
+    display: grid;
+    gap: 0.35rem;
+    padding: 0;
+  }
+  .mnav a {
+    display: block;
+    padding-block: 0.4rem;
+    font-family: var(--serif);
+    font-size: clamp(2.25rem, 10vw, 3.25rem);
+    line-height: 1.1;
+    text-decoration: none;
+    color: var(--ivory);
+    animation: mnav-in 0.6s var(--ease-out) both;
+    animation-delay: calc(var(--i) * 60ms + 60ms);
+  }
+  .mnav li:last-child a {
+    font-style: italic;
+    color: var(--amber);
+  }
+  @keyframes mnav-in {
+    from {
+      opacity: 0;
+      transform: translateY(1rem);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .mnav a {
+      animation: none;
+    }
+  }
+
+  @media (min-width: 960px) {
+    .hdr__nav {
+      display: block;
+    }
+    .hdr__menu {
+      display: none;
+    }
+    .hdr__bar {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+    }
+    .hdr__actions {
+      justify-content: flex-end;
+    }
+  }
+</style>

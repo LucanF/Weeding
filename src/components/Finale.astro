@@ -1,0 +1,146 @@
+---
+import Img from './ui/Img.astro';
+import { finale, couple, date } from '../data/wedding';
+import { photos, crops } from '../data/photos';
+---
+
+<section class="fin" id="final" aria-labelledby="fin-title" data-finale>
+  <div class="fin__sticky">
+    <div class="fin__frame" data-fin-frame>
+      <div class="fin__media" data-fin-media>
+        <Img
+          src={photos.arcada.src}
+          mobile={crops.finalMobile}
+          alt={photos.arcada.alt}
+          widths={[960, 1440, 2048]}
+          sizes="100vw"
+          mobileWidths={[480, 720, 956]}
+          lqip={photos.arcada.lqip}
+          class="fin__pic"
+          imgClass="fin__img"
+        />
+      </div>
+      <div class="fin__shade"></div>
+    </div>
+
+    <div class="fin__content">
+      <div class="fin__mono" data-fin-mono aria-hidden="true">
+        <svg class="fin__ring" viewBox="0 0 200 240">
+          <path class="thread" pathLength="1" data-fin-ring d="M100 240 L20 240 L20 100 A80 80 0 0 1 180 100 L180 240 L100 240"></path>
+        </svg>
+        <span class="fin__letters">
+          <span>{couple.monogram[0]}</span><span class="fin__amp">&amp;</span><span>{couple.monogram[1]}</span>
+        </span>
+      </div>
+      <h2 class="fin__title" id="fin-title" data-fin-text>{finale.title}</h2>
+      <p class="fin__text" data-fin-text>{finale.text}</p>
+      <p class="fin__date" data-fin-text>{date.short}</p>
+    </div>
+  </div>
+</section>
+
+<style>
+  .fin {
+    position: relative;
+    background: var(--night);
+    color: var(--ivory);
+  }
+  :global(.motion-ok) .fin {
+    height: 200svh;
+  }
+  .fin__sticky {
+    position: relative;
+    height: 100svh;
+    min-height: 36rem;
+    overflow: hidden;
+    display: grid;
+    place-items: center;
+  }
+  :global(.motion-ok) .fin__sticky {
+    position: sticky;
+    top: 0;
+  }
+  .fin__frame {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+  }
+  .fin__media {
+    position: absolute;
+    inset: 0;
+  }
+  .fin__media :global(.fin__pic),
+  .fin__media :global(.fin__img) {
+    width: 100%;
+    height: 100%;
+  }
+  .fin__media :global(.fin__img) {
+    object-fit: cover;
+    object-position: 36% 60%;
+    background-size: cover;
+  }
+  .fin__shade {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(70% 60% at 50% 55%, rgb(14 13 10 / 0.35), rgb(14 13 10 / 0.75)),
+      linear-gradient(to bottom, var(--night), transparent 25%);
+  }
+  .fin__content {
+    position: relative;
+    z-index: 2;
+    display: grid;
+    justify-items: center;
+    text-align: center;
+    padding: 0 var(--gutter);
+  }
+  .fin__mono {
+    position: relative;
+    width: clamp(9rem, 22vw, 12rem);
+    aspect-ratio: 200 / 240;
+    display: grid;
+    place-items: center;
+    margin-bottom: 1.5rem;
+  }
+  .fin__ring {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+  }
+  .fin__ring .thread {
+    stroke-width: 1.5;
+  }
+  .fin__letters {
+    display: flex;
+    align-items: baseline;
+    padding-top: 18%;
+    font-family: var(--script);
+    font-size: clamp(3.25rem, 8vw, 4.5rem);
+    line-height: 1;
+    color: var(--ivory);
+  }
+  .fin__amp {
+    margin-inline: -0.08em;
+    color: var(--amber);
+    font-size: 0.8em;
+  }
+  .fin__title {
+    font-size: var(--fs-display);
+    font-style: italic;
+    line-height: 0.95;
+  }
+  .fin__text {
+    margin-top: 1.25rem;
+    max-width: 26rem;
+    color: var(--on-dark-soft);
+  }
+  .fin__date {
+    margin-top: 1.75rem;
+    font-family: var(--serif);
+    font-size: 1.35rem;
+    letter-spacing: 0.3em;
+    color: var(--amber-soft);
+  }
+</style>

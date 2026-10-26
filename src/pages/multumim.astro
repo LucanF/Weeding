@@ -1,0 +1,30 @@
+---
+// Pagina la care ajunge formularul RSVP când JavaScript e dezactivat (Netlify Forms).
+import Base from '../layouts/Base.astro';
+import { rsvp, couple } from '../data/wedding';
+---
+
+<Base title={`${rsvp.successTitle} – ${couple.bride} & ${couple.groom}`} noindex>
+  <main class="ty">
+    <p class="kicker kicker--center">{rsvp.kicker}</p>
+    <h1 class="ty__title">{rsvp.successTitle}</h1>
+    <p class="lead">Am primit răspunsul dumneavoastră. Vă mulțumim!</p>
+    <a class="btn" href="/">Înapoi la invitație</a>
+  </main>
+</Base>
+
+<style>
+  .ty {
+    min-height: 100svh;
+    display: grid;
+    place-content: center;
+    justify-items: center;
+    gap: 1.5rem;
+    padding: 2rem var(--gutter);
+    text-align: center;
+  }
+  .ty__title {
+    font-size: var(--fs-display);
+    font-style: italic;
+  }
+</style>

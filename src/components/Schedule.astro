@@ -1,0 +1,184 @@
+---
+import Icon from './ui/Icon.astro';
+import { schedule } from '../data/wedding';
+---
+
+<section class="sch on-ivory section" id="program" aria-labelledby="sch-title" data-schedule>
+  <div class="container sch__grid">
+    <div class="sch__aside">
+      <div class="sch__sticky">
+        <p class="kicker" data-reveal>{schedule.kicker}</p>
+        <h2 class="h2" id="sch-title" data-reveal style="--d:80">{schedule.title}</h2>
+        <p class="sch__clock" aria-hidden="true" data-sch-clock>{schedule.items[0].time}</p>
+      </div>
+    </div>
+
+    <ol class="sch__list" role="list">
+      <svg class="sch__line" viewBox="0 0 20 1000" preserveAspectRatio="none" aria-hidden="true">
+        <path class="thread" pathLength="1" data-draw d="M10 0 L10 1000"></path>
+      </svg>
+      {
+        schedule.items.map((it, i) => (
+          <li class="sch__item" data-sch-item data-time={it.time} data-reveal style={`--d:${(i % 2) * 80}`}>
+            <span class="sch__icon">
+              <Icon name={it.icon} />
+            </span>
+            <div class="sch__body">
+              <p class="sch__time">
+                <time datetime={it.time}>{it.time}</time>
+              </p>
+              <h3 class="sch__title">{it.title}</h3>
+              <p class="sch__text">{it.text}</p>
+            </div>
+          </li>
+        ))
+      }
+    </ol>
+  </div>
+</section>
+
+<style>
+  .sch {
+    background: var(--ivory-2);
+  }
+  .sch__grid {
+    display: grid;
+    gap: clamp(3rem, 7vw, 5rem);
+  }
+  .sch__clock {
+    display: none;
+  }
+  .sch__list {
+    position: relative;
+    display: grid;
+    gap: clamp(2.25rem, 5vw, 3rem);
+    padding: 0;
+  }
+  .sch__line {
+    position: absolute;
+    left: 22px;
+    top: 24px;
+    width: 20px;
+    margin-left: -10px;
+    height: calc(100% - 48px);
+    overflow: visible;
+  }
+  .sch__item {
+    position: relative;
+    display: grid;
+    grid-template-columns: 44px 1fr;
+    gap: 1.25rem;
+    align-items: start;
+  }
+  .sch__icon {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 52px;
+    border-radius: 22px 22px 8px 8px;
+    background: var(--ivory);
+    border: 1px solid rgb(31 42 30 / 0.16);
+    color: var(--forest);
+    transition:
+      background-color 0.5s var(--ease-out),
+      color 0.5s var(--ease-out);
+  }
+  .sch__icon :global(svg) {
+    width: 22px;
+    height: 22px;
+  }
+  :global(.sch__item.is-active) .sch__icon {
+    background: var(--forest);
+    color: var(--amber-soft);
+  }
+  .sch__time {
+    font-family: var(--serif);
+    font-size: 1.6rem;
+    line-height: 1;
+    color: var(--terracotta);
+    font-feature-settings: 'lnum' 1, 'tnum' 1;
+    /* terracotta e folosit doar la dimensiune mare (contrast AA pentru text mare) */
+  }
+  .sch__title {
+    margin-top: 0.35rem;
+    font-size: clamp(1.45rem, 2.6vw, 1.9rem);
+    line-height: 1.15;
+    color: var(--night);
+  }
+  .sch__text {
+    margin-top: 0.3rem;
+    color: var(--ink-soft);
+  }
+
+  @media (min-width: 960px) {
+    .sch__grid {
+      grid-template-columns: 1fr 1fr;
+      align-items: start;
+    }
+    .sch__aside {
+      align-self: stretch;
+    }
+    .sch__sticky {
+      position: sticky;
+      top: calc(var(--header-h) + 3rem);
+    }
+    .sch__clock {
+      display: block;
+      margin-top: 2rem;
+      font-family: var(--serif);
+      font-size: clamp(6rem, 12vw, 10.5rem);
+      line-height: 1;
+      color: var(--forest);
+      font-feature-settings: 'lnum' 1, 'tnum' 1;
+      letter-spacing: -0.02em;
+    }
+    .sch__clock :global(.dg) {
+      display: inline-block;
+      overflow: hidden;
+      height: 1em;
+      vertical-align: top;
+    }
+    .sch__clock :global(.dg span) {
+      display: block;
+      height: 1em;
+      line-height: 1;
+    }
+    .sch__clock :global(.dg.is-rolling span) {
+      animation: sch-roll 0.6s var(--ease-out) both;
+    }
+    @keyframes sch-roll {
+      to {
+        transform: translateY(-100%);
+      }
+    }
+    .sch__list {
+      padding-top: 1rem;
+      gap: 4.5rem;
+    }
+    .sch__item {
+      grid-template-columns: 52px 1fr;
+      gap: 2rem;
+    }
+    .sch__icon {
+      width: 52px;
+      height: 62px;
+      border-radius: 26px 26px 10px 10px;
+    }
+    .sch__line {
+      left: 26px;
+    }
+    /* Pe desktop ora mare e în ceasul sticky; în listă rămâne o etichetă discretă. */
+    .sch__time {
+      font-family: var(--sans);
+      font-size: 0.8125rem;
+      font-weight: 600;
+      letter-spacing: 0.22em;
+      color: var(--moss);
+    }
+    .sch__title {
+      margin-top: 0.4rem;
+    }
+  }
+</style>
