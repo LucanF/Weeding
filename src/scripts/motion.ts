@@ -176,15 +176,20 @@ function invitation() {
 function threads() {
   $$<SVGPathElement>('[data-draw]').forEach((p) => {
     const svg = p.ownerSVGElement ?? p;
-    gsap.fromTo(
-      p,
-      { strokeDasharray: 1, strokeDashoffset: 1 },
-      {
-        strokeDashoffset: 0,
-        ease: 'none',
-        scrollTrigger: { trigger: svg, start: 'top 88%', end: 'bottom 55%', scrub: SCRUB_SOFT },
-      },
-    );
+    // Interval generos (de la intrarea în viewport până spre centru) + fade-in blând la început,
+    // ca să nu existe apariție bruscă (capătul rotunjit al unui dash de ~0 se vedea ca un punct).
+    // CAUZA „snappy": GSAP rotunjește strokeDashoffset (unitless 1→0) la întreg, deci firul sărea
+    // de la 1 la 0 la jumătatea scroll-ului. Animăm un proxy numeric și scriem stilul direct.
+    const draw = { v: 1 };
+    p.style.strokeDasharray = '1';
+    p.style.strokeDashoffset = '1';
+    gsap
+      .timeline({
+        defaults: { ease: 'none' },
+        scrollTrigger: { trigger: svg, start: 'top 92%', end: 'bottom 40%', scrub: SCRUB_SOFT },
+      })
+      .to(draw, { v: 0, duration: 1, onUpdate: () => (p.style.strokeDashoffset = draw.v.toFixed(4)) }, 0)
+      .fromTo(p, { opacity: 0 }, { opacity: 1, duration: 0.12, ease: 'sine.out' }, 0);
   });
 }
 

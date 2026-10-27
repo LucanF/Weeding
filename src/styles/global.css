@@ -455,6 +455,10 @@ p {
   stroke-linecap: round;
   vector-effect: non-scaling-stroke;
 }
+/* SVG-uri animate prin stroke-dashoffset: nu devin ancore de scroll în WebKit. */
+svg:has(> .thread) {
+  overflow-anchor: none;
+}
 
 /* ──────────────────────────────────────────────────────────────────────────
    Reveal simplu (IntersectionObserver + CSS). Ascuns DOAR sub .js
