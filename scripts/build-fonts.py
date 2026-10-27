@@ -74,7 +74,7 @@ for name, src in FONTS.items():
     add_romanian_comma_letters(font)
     opts = subset.Options()
     opts.flavor = 'woff2'
-    opts.layout_features = ['kern', 'liga', 'clig', 'calt', 'ccmp', 'locl', 'mark', 'mkmk']
+    opts.layout_features = ['kern', 'liga', 'clig', 'calt', 'ccmp', 'locl', 'mark', 'mkmk', 'lnum', 'tnum', 'pnum']
     opts.name_IDs = ['*']
     opts.notdef_outline = True
     sub = subset.Subsetter(opts)

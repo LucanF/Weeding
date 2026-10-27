@@ -95,6 +95,7 @@
   --serif: 'Great Vibes', 'Snell Roundhand', 'Apple Chancery', cursive;
   --sans: 'Alex Brush', 'Snell Roundhand', 'Apple Chancery', cursive;
   --num: 'Cormorant', 'Cormorant Garamond', Georgia, serif;
+  /* cifre „aliniate” (ca „29 MAI 2027” de pe invitație), nu cele cu codiță */
   --script: 'Pinyon', 'Snell Roundhand', 'Apple Chancery', cursive;
 
   --fs-hero: clamp(4rem, 17vw, 11.5rem);
@@ -130,6 +131,7 @@
 }
 html {
   background: var(--night);
+  font-variant-numeric: lining-nums;
   /* Fonturile de mână au o singură greutate/stil: fără bold sau italic „fals" generate de browser. */
   font-synthesis: none;
   -webkit-text-size-adjust: 100%;
