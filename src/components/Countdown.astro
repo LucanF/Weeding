@@ -69,7 +69,8 @@ const units = ['days', 'hours', 'minutes', 'seconds'] as const;
 <style>
   .cd {
     padding-top: clamp(3rem, 8vw, 6rem);
-    padding-bottom: 0;
+    /* loc pentru arcul cu care urcă „Povestea"; firul auriu se termină exact în vârful arcului */
+    padding-bottom: var(--seam);
   }
   .cd__inner {
     display: grid;

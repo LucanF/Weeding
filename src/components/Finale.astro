@@ -145,7 +145,8 @@ import { photos, crops } from '../data/photos';
     line-height: 0.95;
   }
   .fin__text {
-    margin-top: 1.25rem;
+    /* titlul are line-height strâns: loc pentru descendente (ș, g) */
+    margin-top: clamp(1.4rem, 2.6vw, 2.25rem);
     max-width: 26rem;
     color: var(--on-dark-soft);
   }

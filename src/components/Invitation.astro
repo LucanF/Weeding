@@ -4,7 +4,6 @@ import { invitation } from '../data/wedding';
 ---
 
 <section class="inv on-ivory" id="invitatie" data-invite aria-labelledby="inv-title">
-  <div class="inv__veil" data-invite-veil aria-hidden="true"></div>
   <div class="inv__inner">
     <ThreadLine height="clamp(7rem, 22vh, 13rem)" variant="straight" knot />
     <div class="container inv__body" id="continut">
@@ -31,18 +30,15 @@ import { invitation } from '../data/wedding';
 </section>
 
 <style>
+  /* Secțiunea urcă peste poza din hero cu marginea de sus arcuită (motivul arcadei),
+     în loc de un crossfade night → ivory care trecea prin gri. */
   .inv {
     position: relative;
+    z-index: 5;
     isolation: isolate;
     padding-bottom: 0;
-  }
-  .inv__veil {
-    position: absolute;
-    inset: 0;
-    z-index: -1;
-    background: var(--night);
-    opacity: 0;
-    pointer-events: none;
+    margin-top: calc(-1 * var(--seam));
+    border-radius: 50% 50% 0 0 / var(--seam) var(--seam) 0 0;
   }
   .inv__body {
     display: grid;

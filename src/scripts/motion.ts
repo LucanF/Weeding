@@ -90,12 +90,15 @@ function heroScroll() {
   const left = $('[data-env-l]');
   const right = $('[data-env-r]');
   const bottom = $('[data-env-b]');
-  const seal = $('[data-env-seal]');
-  if (!hero || !media || !title || !top || !left || !right || !bottom || !seal) return;
+  const sealL = $('[data-seal-l]');
+  const sealR = $('[data-seal-r]');
+  const sealShadow = $('[data-seal-shadow]');
+  if (!hero || !media || !title || !top || !left || !right || !bottom || !sealL || !sealR || !sealShadow) return;
+  const g = { force3D: true };
 
   let wasDone = false;
   const tl = gsap.timeline({
-    defaults: { ease: 'none', force3D: true },
+    defaults: { ease: 'none' },
     scrollTrigger: {
       trigger: hero,
       start: 'top top',
@@ -111,33 +114,28 @@ function heroScroll() {
     },
   });
 
-  tl.to('[data-hero-fade]', { opacity: 0, y: -16, duration: 0.14, stagger: 0.02, ease: 'power1.in' }, 0)
-    .to(title, { opacity: 0, y: -28, scale: 0.97, duration: 0.18, ease: 'power1.in' }, 0)
-    // sigiliul se „rupe": se micșorează și dispare
-    .to(seal, { scale: 0.55, rotate: 14, opacity: 0, duration: 0.14, ease: 'power2.in' }, 0.06)
+  tl.to('[data-hero-fade]', { opacity: 0, y: -16, duration: 0.14, stagger: 0.02, ease: 'power1.in', ...g }, 0)
+    .to(title, { opacity: 0, y: -28, scale: 0.97, duration: 0.18, ease: 'power1.in', ...g }, 0)
+    // sigiliul crapă în două: jumătățile se depărtează, se rotesc și cad ușor
+    .to(sealShadow, { opacity: 0, duration: 0.06 }, 0.05)
+    .to(sealL, { xPercent: -26, yPercent: 14, rotate: -24, opacity: 0, duration: 0.16, ease: 'power2.in', ...g }, 0.05)
+    .to(sealR, { xPercent: 26, yPercent: 20, rotate: 20, opacity: 0, duration: 0.16, ease: 'power2.in', ...g }, 0.05)
     // clapa de sus se ridică spre privitor și iese pe sus
-    .fromTo(top, { rotationX: 0 }, { rotationX: 180, duration: 0.3, ease: 'power2.inOut' }, 0.12)
+    .fromTo(top, { rotationX: 0 }, { rotationX: 180, duration: 0.3, ease: 'power2.inOut', ...g }, 0.12)
     // celelalte clape ies din ecran
-    .fromTo(left, { xPercent: 0 }, { xPercent: -102, duration: 0.36, ease: 'power2.inOut' }, 0.32)
-    .fromTo(right, { xPercent: 0 }, { xPercent: 102, duration: 0.36, ease: 'power2.inOut' }, 0.32)
-    .fromTo(bottom, { yPercent: 0 }, { yPercent: 102, duration: 0.38, ease: 'power2.inOut' }, 0.34)
+    .fromTo(left, { xPercent: 0 }, { xPercent: -104, duration: 0.36, ease: 'power2.inOut', ...g }, 0.32)
+    .fromTo(right, { xPercent: 0 }, { xPercent: 104, duration: 0.36, ease: 'power2.inOut', ...g }, 0.32)
+    .fromTo(bottom, { yPercent: 0 }, { yPercent: 104, duration: 0.38, ease: 'power2.inOut', ...g }, 0.34)
     // poza „se apropie" puțin cât se deschide plicul
-    .fromTo(media, { scale: 1.12 }, { scale: 1, duration: 0.55, ease: 'power2.out' }, 0.28)
+    .fromTo(media, { scale: 1.12 }, { scale: 1, duration: 0.55, ease: 'power2.out', ...g }, 0.28)
     .fromTo('[data-hero-caption]', { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.18, ease: 'power2.out' }, 0.66)
     .to({}, { duration: 0.16 });
 }
 
-/** Invitația: night → ivory (crossfade de strat), apoi textul se luminează cuvânt cu cuvânt. */
+/** Invitația: textul se luminează cuvânt cu cuvânt (secțiunea urcă peste hero cu un arc, din CSS). */
 function invitation() {
-  const sec = $('[data-invite]');
-  const veil = $('[data-invite-veil]');
   const text = $('[data-words]');
-  if (!sec || !veil || !text) return;
-  gsap.fromTo(
-    veil,
-    { opacity: 1 },
-    { opacity: 0, ease: 'sine.inOut', scrollTrigger: { trigger: sec, start: 'top bottom', end: 'top 20%', scrub: SCRUB } },
-  );
+  if (!text) return;
   const split = SplitText.create(text, { type: 'words', aria: 'auto' });
   gsap.fromTo(
     split.words,
@@ -200,15 +198,7 @@ function threads() {
 /** Povestea: desktop = timeline orizontal (sticky + translateX); mobil = vertical. */
 function story(desktop: boolean) {
   const sec = $('[data-story]');
-  const veil = $('[data-story-veil]');
   if (!sec) return;
-  if (veil) {
-    gsap.fromTo(
-      veil,
-      { opacity: 1 },
-      { opacity: 0, ease: 'sine.inOut', scrollTrigger: { trigger: sec, start: 'top bottom', end: 'top 25%', scrub: SCRUB } },
-    );
-  }
 
   if (desktop) {
     const pin = $('[data-story-pin]');
@@ -390,8 +380,13 @@ function finale(desktop: boolean, landscape = false) {
       { scale: 1, x: 0, ease: 'power2.inOut', duration: 0.6, force3D: true },
       0,
     )
-    .from('.fin__letters', { opacity: 0, scale: 0.85, duration: 0.28, ease: 'power2.out' }, 0.38)
-    .from('[data-fin-text]', { opacity: 0, y: 30, stagger: 0.08, duration: 0.28, ease: 'power2.out' }, 0.48);
+    .fromTo('.fin__letters', { opacity: 0, scale: 0.85 }, { opacity: 1, scale: 1, duration: 0.28, ease: 'power2.out' }, 0.38)
+    .fromTo(
+      '[data-fin-text]',
+      { opacity: 0, y: 30 },
+      { opacity: 1, y: 0, stagger: 0.08, duration: 0.28, ease: 'power2.out', force3D: true },
+      0.48,
+    );
   if (ring) tl.add(drawTween(ring, 0.45), 0.33);
   tl.to({}, { duration: 0.15 });
 }

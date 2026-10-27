@@ -5,8 +5,6 @@ import { photos } from '../data/photos';
 ---
 
 <section class="story on-forest" id="povestea" data-story aria-labelledby="story-title">
-  <div class="story__veil" data-story-veil aria-hidden="true"></div>
-
   <div class="story__pin" data-story-pin>
     <div class="story__sticky">
       <div class="story__track" data-story-track>
@@ -91,17 +89,11 @@ import { photos } from '../data/photos';
 <style>
   .story {
     position: relative;
+    z-index: 1;
     isolation: isolate;
     padding-block: clamp(4rem, 10vw, 7rem) 0;
-  }
-  .story__veil {
-    position: absolute;
-    inset: 0 0 auto;
-    height: 100svh;
-    z-index: -1;
-    background: var(--ivory);
-    opacity: 0;
-    pointer-events: none;
+    margin-top: calc(-1 * var(--seam));
+    border-radius: 50% 50% 0 0 / var(--seam) var(--seam) 0 0;
   }
   .story__track {
     position: relative;
