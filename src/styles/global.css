@@ -5,20 +5,20 @@
 /* Scris de mână (Google Fonts, OFL), vezi scripts/build-fonts.py.
    Fețele „italic" pointează la același fișier: browserul nu mai înclină artificial textul. */
 @font-face {
-  font-family: 'Great Vibes';
+  font-family: 'Dawning';
   font-style: normal;
   font-weight: 400 700;
   font-display: swap;
-  size-adjust: 112%;
-  src: url('/fonts/great-vibes.woff2') format('woff2');
+  size-adjust: 115%;
+  src: url('/fonts/dawning.woff2') format('woff2');
 }
 @font-face {
-  font-family: 'Great Vibes';
+  font-family: 'Dawning';
   font-style: italic;
   font-weight: 400 700;
   font-display: swap;
-  size-adjust: 112%;
-  src: url('/fonts/great-vibes.woff2') format('woff2');
+  size-adjust: 115%;
+  src: url('/fonts/dawning.woff2') format('woff2');
 }
 @font-face {
   font-family: 'Caveat';
@@ -68,7 +68,7 @@
   --on-dark-soft: color-mix(in srgb, var(--ivory) 72%, var(--night));
 
   /* --serif = titluri și nume (caligrafic), --sans = restul textului (scris de mână lizibil). */
-  --serif: 'Great Vibes', 'Snell Roundhand', 'Apple Chancery', cursive;
+  --serif: 'Dawning', 'Snell Roundhand', 'Apple Chancery', cursive;
   --sans: 'Caveat', 'Bradley Hand', 'Segoe Print', cursive;
   --script: 'Pinyon', 'Snell Roundhand', 'Apple Chancery', cursive;
 
