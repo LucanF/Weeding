@@ -27,9 +27,8 @@ export function setRoll(el: HTMLElement, text: string, animate = true) {
       dg.innerHTML = `<span>${c}</span>`;
       return;
     }
-    dg.classList.remove('is-rolling');
+    // Span-urile sunt elemente noi → animația pornește singură, fără reflow forțat (offsetWidth).
     dg.innerHTML = `<span>${cur}</span><span>${c}</span>`;
-    void dg.offsetWidth; // repornește animația
     dg.classList.add('is-rolling');
     dg.lastElementChild?.addEventListener(
       'animationend',

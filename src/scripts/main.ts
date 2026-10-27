@@ -4,7 +4,7 @@
  * nu preferă mișcare redusă.
  */
 import { initCountdown } from './countdown';
-import { initForm, initGallery, initHeader, initReveal, initSchedule } from './ui';
+import { initForm, initGallery, initHeader, initPreload, initReveal, initSchedule } from './ui';
 
 declare global {
   interface Window {
@@ -19,6 +19,7 @@ initCountdown();
 initSchedule();
 initForm();
 initGallery();
+initPreload();
 
 const html = document.documentElement;
 if (html.classList.contains('motion-ok')) {

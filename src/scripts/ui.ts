@@ -34,6 +34,26 @@ export function initReveal() {
   $$('[data-moment]').forEach((m) => momentsIO.observe(m));
 }
 
+/* ── Pozele „lazy" se încarcă și se decodează cu ~1,5 ecrane înainte să apară ──
+   (decode() în afara thread-ului principal → fără sacadare când intră în viewport). */
+export function initPreload() {
+  const imgs = $$<HTMLImageElement>('img[loading="lazy"]');
+  if (!imgs.length || !('IntersectionObserver' in window)) return;
+  const io = new IntersectionObserver(
+    (entries) => {
+      for (const e of entries) {
+        if (!e.isIntersecting) continue;
+        const img = e.target as HTMLImageElement;
+        io.unobserve(img);
+        img.loading = 'eager';
+        img.decode?.().catch(() => {});
+      }
+    },
+    { rootMargin: '150% 0px 150% 0px' },
+  );
+  imgs.forEach((img) => io.observe(img));
+}
+
 /* ── Header: logo după hero, fundal solid, link activ, meniu mobil ─────── */
 export function initHeader() {
   const header = $('[data-header]');

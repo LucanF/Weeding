@@ -1,15 +1,24 @@
 /**
  * Animațiile cinematice (GSAP). Încărcat dinamic din main.ts.
  * Reguli: doar transform/opacity (+ un singur clip-path scrubbed activ odată
- * și stroke-dashoffset pentru firul auriu), pin-uri prin position: sticky,
+ * și stroke-dashoffset pentru firele aurii mici), pin-uri prin position: sticky,
  * gsap.matchMedia pentru desktop / mobil / mișcare redusă.
+ *
+ * Stabilitate pe iOS:
+ *  - ignoreMobileResize: bara de adresă (resize doar pe înălțime) NU declanșează refresh;
+ *    timeline-urile se reconstruiesc doar când se schimbă lățimea / orientarea (matchMedia).
+ *  - niciun ScrollTrigger.refresh() forțat în timpul scroll-ului (vezi safeRefresh).
+ *  - scroll anchoring dezactivat sub .motion-ok (global.css): în WebKit, SVG-ul înalt al
+ *    firului din „Povestea noastră" devenea ancoră și, la fiecare scrub, browserul
+ *    „corecta" scroll-ul cu ~1000px înapoi, la începutul poveștii.
  */
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { SplitText } from 'gsap/SplitText';
 
 gsap.registerPlugin(ScrollTrigger, SplitText);
-ScrollTrigger.config({ ignoreMobileResize: true });
+ScrollTrigger.config({ ignoreMobileResize: true, limitCallbacks: true });
+if (import.meta.env.DEV) Object.assign(window, { __gsap: gsap, __ST: ScrollTrigger });
 
 const $ = <T extends Element = HTMLElement>(s: string, r: ParentNode = document) => r.querySelector<T>(s);
 const $$ = <T extends Element = HTMLElement>(s: string, r: ParentNode = document) => [...r.querySelectorAll<T>(s)];
@@ -21,27 +30,54 @@ const Q = {
   reduced: '(prefers-reduced-motion: reduce)',
 };
 
+/**
+ * Netezire pentru scrub (secunde de „ajungere din urmă").
+ * Desktop: Lenis netezește deja scroll-ul, deci doar puțin în plus.
+ * Mobil: scroll nativ (evenimente discrete, asincrone pe iOS) → netezire mai mare.
+ */
+let SCRUB = 0.5;
+let SCRUB_SOFT = 0.8;
+
 type Inset = { t: number; r: number; b: number; l: number };
 const insetStr = (i: Inset, radius: number) =>
   `inset(${i.t}% ${i.r}% ${i.b}% ${i.l}% round ${radius}px ${radius}px 0px 0px)`;
 const FULL = 'inset(0% 0% 0% 0% round 0px 0px 0px 0px)';
 
+/** Refresh doar când utilizatorul nu derulează (altfel ScrollTrigger mută scroll-ul la 0 și înapoi). */
+function safeRefresh() {
+  if (!ScrollTrigger.isScrolling()) {
+    ScrollTrigger.refresh();
+    return;
+  }
+  const once = () => {
+    ScrollTrigger.removeEventListener('scrollEnd', once);
+    ScrollTrigger.refresh();
+  };
+  ScrollTrigger.addEventListener('scrollEnd', once);
+}
+
+/** Așteaptă decodarea unei imagini (fără să blocheze mai mult de `ms`). */
+const decoded = (img: HTMLImageElement | null, ms = 1200) =>
+  img?.decode
+    ? Promise.race([img.decode().catch(() => undefined), new Promise((r) => setTimeout(r, ms))])
+    : Promise.resolve();
+
 /** Animații de intrare (o singură dată, la load). */
 async function heroIntro() {
   const visual = $('.hero__visual');
-  const img = $('[data-hero-img]');
+  const img = $<HTMLImageElement>('[data-hero-img]');
   if (!visual) return;
-  // Așteptăm fontul titlului (preîncărcat) – maxim 800 ms.
-  await Promise.race([document.fonts?.ready, new Promise((r) => setTimeout(r, 800))]);
+  // Fontul titlului (preîncărcat) + poza decodată, ca intro-ul să nu sacadeze – maxim ~1 s.
+  await Promise.all([Promise.race([document.fonts?.ready, new Promise((r) => setTimeout(r, 800))]), decoded(img, 1000)]);
   const names = $$('[data-split]', visual);
   const split = SplitText.create(names, { type: 'chars,lines', mask: 'lines', aria: 'none', linesClass: 'hl' });
   visual.classList.add('is-ready');
 
   const tl = gsap.timeline({ defaults: { ease: 'expo.out' } });
-  if (img) tl.fromTo(img, { scale: 1.08 }, { scale: 1, duration: 2.6, ease: 'power2.out', clearProps: 'transform' }, 0);
-  tl.from(split.chars, { yPercent: 118, duration: 1.5, stagger: 0.05 }, 0.15)
-    .from('[data-hero-amp]', { opacity: 0, scale: 0.6, rotate: -10, duration: 1.6 }, 0.5)
-    .from('[data-hero-fade]', { opacity: 0, y: 18, duration: 1.2, stagger: 0.12 }, 0.65);
+  if (img) tl.fromTo(img, { scale: 1.08 }, { scale: 1, duration: 2.8, ease: 'power3.out', clearProps: 'transform' }, 0);
+  tl.from(split.chars, { yPercent: 118, duration: 1.6, stagger: 0.045 }, 0.15)
+    .from('[data-hero-amp]', { opacity: 0, scale: 0.6, rotate: -10, duration: 1.7 }, 0.5)
+    .from('[data-hero-fade]', { opacity: 0, y: 18, duration: 1.3, stagger: 0.12 }, 0.65);
 }
 
 /** Hero: imaginea full-bleed se strânge într-o fereastră arcuită; numele urcă în header. */
@@ -54,11 +90,14 @@ function heroScroll(desktop: boolean) {
   if (!hero || !frame || !media || !title || !logo) return;
 
   const win: Inset = desktop ? { t: 13, r: 35, b: 11, l: 35 } : { t: 16, r: 12, b: 16, l: 12 };
-  const radius = () => (innerWidth * (100 - win.l - win.r)) / 200;
+  // Lățimea se citește doar la refresh (nu la fiecare frame).
+  let vw = innerWidth;
+  const radius = () => (vw * (100 - win.l - win.r)) / 200;
 
-  // Delta titlu → logo (fără transformările curente).
+  // Delta titlu → logo (fără transformările curente). Măsurat doar la refresh.
   let delta = { x: 0, y: 0, s: 1 };
   const measure = () => {
+    vw = innerWidth;
     const prev = title.style.transform;
     title.style.transform = 'none';
     const a = title.getBoundingClientRect();
@@ -80,7 +119,7 @@ function heroScroll(desktop: boolean) {
       trigger: hero,
       start: 'top top',
       end: 'bottom bottom',
-      scrub: desktop ? true : 0.3,
+      scrub: SCRUB,
       invalidateOnRefresh: true,
       onRefreshInit: measure,
       onUpdate(self) {
@@ -97,19 +136,19 @@ function heroScroll(desktop: boolean) {
     .fromTo(
       media,
       { scale: 1, x: 0 },
-      { scale: desktop ? 1.14 : 1.04, x: () => (desktop ? innerWidth * 0.16 : 0), ease: 'power2.inOut', duration: 0.7 },
+      { scale: desktop ? 1.14 : 1.04, x: () => (desktop ? vw * 0.16 : 0), ease: 'power2.inOut', duration: 0.7 },
       0,
     )
-    .to('[data-hero-shade]', { opacity: 0.2, duration: 0.5 }, 0)
-    .to('[data-hero-fade]', { opacity: 0, y: -24, duration: 0.18, stagger: 0.03 }, 0)
+    .to('[data-hero-shade]', { opacity: 0.2, duration: 0.5, ease: 'sine.inOut' }, 0)
+    .to('[data-hero-fade]', { opacity: 0, y: -24, duration: 0.2, stagger: 0.03, ease: 'power1.in' }, 0)
     .to(title, { x: () => delta.x, y: () => delta.y, scale: () => delta.s, ease: 'power2.inOut', duration: 0.55 }, 0.06)
-    .to(title, { opacity: 0, duration: 0.08 }, desktop ? 0.56 : 0.46)
-    .fromTo('[data-hero-ring]', { opacity: 0, scale: 0.96 }, { opacity: 1, scale: 1, duration: 0.25 }, 0.55)
-    .fromTo('[data-hero-caption]', { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.2 }, 0.62)
+    .to(title, { opacity: 0, duration: 0.1, ease: 'sine.in' }, desktop ? 0.55 : 0.45)
+    .fromTo('[data-hero-ring]', { opacity: 0, scale: 0.96 }, { opacity: 1, scale: 1, duration: 0.28, ease: 'power2.out' }, 0.52)
+    .fromTo('[data-hero-caption]', { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.22, ease: 'power2.out' }, 0.6)
     .to({}, { duration: 0.18 });
 }
 
-/** Invitația: night → ivory, apoi textul se luminează cuvânt cu cuvânt. */
+/** Invitația: night → ivory (crossfade de strat), apoi textul se luminează cuvânt cu cuvânt. */
 function invitation() {
   const sec = $('[data-invite]');
   const veil = $('[data-invite-veil]');
@@ -118,7 +157,7 @@ function invitation() {
   gsap.fromTo(
     veil,
     { opacity: 1 },
-    { opacity: 0, ease: 'none', scrollTrigger: { trigger: sec, start: 'top bottom', end: 'top 20%', scrub: true } },
+    { opacity: 0, ease: 'sine.inOut', scrollTrigger: { trigger: sec, start: 'top bottom', end: 'top 20%', scrub: SCRUB } },
   );
   const split = SplitText.create(text, { type: 'words', aria: 'auto' });
   gsap.fromTo(
@@ -128,12 +167,12 @@ function invitation() {
       opacity: 1,
       stagger: 0.1,
       ease: 'none',
-      scrollTrigger: { trigger: text, start: 'top 82%', end: 'bottom 48%', scrub: true },
+      scrollTrigger: { trigger: text, start: 'top 82%', end: 'bottom 48%', scrub: SCRUB_SOFT },
     },
   );
 }
 
-/** Firul auriu: segmentele se desenează la scroll. */
+/** Firele aurii mici (segmentele dintre secțiuni) se desenează la scroll. */
 function threads() {
   $$<SVGPathElement>('[data-draw]').forEach((p) => {
     const svg = p.ownerSVGElement ?? p;
@@ -143,7 +182,7 @@ function threads() {
       {
         strokeDashoffset: 0,
         ease: 'none',
-        scrollTrigger: { trigger: svg, start: 'top 88%', end: 'bottom 55%', scrub: true },
+        scrollTrigger: { trigger: svg, start: 'top 88%', end: 'bottom 55%', scrub: SCRUB_SOFT },
       },
     );
   });
@@ -158,7 +197,7 @@ function story(desktop: boolean) {
     gsap.fromTo(
       veil,
       { opacity: 1 },
-      { opacity: 0, ease: 'none', scrollTrigger: { trigger: sec, start: 'top bottom', end: 'top 25%', scrub: true } },
+      { opacity: 0, ease: 'sine.inOut', scrollTrigger: { trigger: sec, start: 'top bottom', end: 'top 25%', scrub: SCRUB } },
     );
   }
 
@@ -167,27 +206,23 @@ function story(desktop: boolean) {
     const track = $('[data-story-track]');
     const hpath = $<SVGPathElement>('[data-hthread]');
     if (!pin || !track) return;
-    const dist = () => Math.max(0, track.scrollWidth - innerWidth);
-    const setH = () => pin.style.setProperty('--story-h', `${dist() + innerHeight}px`);
+    // Dimensiuni citite doar la refresh (refreshInit), niciodată în timpul scroll-ului.
+    let dist = 0;
+    const setH = () => {
+      dist = Math.max(0, track.scrollWidth - innerWidth);
+      pin.style.setProperty('--story-h', `${dist + innerHeight}px`);
+    };
     setH();
     ScrollTrigger.addEventListener('refreshInit', setH);
 
-    const move = gsap.to(track, {
-      x: () => -dist(),
-      ease: 'none',
-      scrollTrigger: { trigger: pin, start: 'top top', end: 'bottom bottom', scrub: true, invalidateOnRefresh: true },
+    const tl = gsap.timeline({
+      defaults: { ease: 'none' },
+      scrollTrigger: { trigger: pin, start: 'top top', end: 'bottom bottom', scrub: SCRUB, invalidateOnRefresh: true },
     });
-    if (hpath) {
-      gsap.fromTo(
-        hpath,
-        { strokeDasharray: 1, strokeDashoffset: 1 },
-        {
-          strokeDashoffset: 0,
-          ease: 'none',
-          scrollTrigger: { trigger: pin, start: 'top top', end: 'bottom bottom', scrub: true },
-        },
-      );
-    }
+    tl.to(track, { x: () => -dist, force3D: true }, 0);
+    if (hpath) tl.fromTo(hpath, { strokeDasharray: 1, strokeDashoffset: 1 }, { strokeDashoffset: 0 }, 0);
+    const move = tl;
+
     $$('[data-moment]').forEach((m) => {
       const par = $('[data-par]', m);
       if (par) {
@@ -214,16 +249,18 @@ function story(desktop: boolean) {
     };
   }
 
-  // mobil
-  const vpath = $<SVGPathElement>('[data-vthread]');
-  if (vpath) {
+  // mobil: firul vertical e un <span> scalat pe Y (compozitat), nu un SVG înalt cu dash.
+  const list = $('.story__list');
+  const vfill = $('[data-vline]');
+  if (list && vfill) {
     gsap.fromTo(
-      vpath,
-      { strokeDasharray: 1, strokeDashoffset: 1 },
+      vfill,
+      { scaleY: 0 },
       {
-        strokeDashoffset: 0,
+        scaleY: 1,
         ease: 'none',
-        scrollTrigger: { trigger: vpath.ownerSVGElement, start: 'top 60%', end: 'bottom 60%', scrub: true },
+        force3D: true,
+        scrollTrigger: { trigger: list, start: 'top 60%', end: 'bottom 60%', scrub: SCRUB_SOFT },
       },
     );
   }
@@ -234,7 +271,8 @@ function story(desktop: boolean) {
       {
         yPercent: 5,
         ease: 'none',
-        scrollTrigger: { trigger: par.parentElement, start: 'top bottom', end: 'bottom top', scrub: true },
+        force3D: true,
+        scrollTrigger: { trigger: par.parentElement, start: 'top bottom', end: 'bottom top', scrub: SCRUB_SOFT },
       },
     );
   });
@@ -246,9 +284,10 @@ function pano() {
   const clip = $('[data-pano-clip]');
   const media = $('[data-pano-media]');
   if (!fig || !clip || !media) return;
-  const st = { trigger: fig, start: 'top 85%', end: 'top 20%', scrub: true };
-  gsap.fromTo(clip, { clipPath: 'inset(0% 50% 0% 50%)' }, { clipPath: 'inset(0% 0% 0% 0%)', ease: 'power1.out', scrollTrigger: st });
-  gsap.fromTo(media, { scale: 1.3 }, { scale: 1, ease: 'power1.out', scrollTrigger: { ...st } });
+  gsap
+    .timeline({ defaults: { ease: 'power2.out' }, scrollTrigger: { trigger: fig, start: 'top 85%', end: 'top 20%', scrub: SCRUB } })
+    .fromTo(clip, { clipPath: 'inset(0% 50% 0% 50%)' }, { clipPath: 'inset(0% 0% 0% 0%)' }, 0)
+    .fromTo(media, { scale: 1.3 }, { scale: 1, force3D: true }, 0);
 }
 
 /** Parallax pentru benzi foto și RSVP. */
@@ -259,7 +298,12 @@ function parallax(desktop: boolean) {
     gsap.fromTo(
       bandMedia,
       { yPercent: -9 },
-      { yPercent: 9, ease: 'none', scrollTrigger: { trigger: band, start: 'top bottom', end: 'bottom top', scrub: true } },
+      {
+        yPercent: 9,
+        ease: 'none',
+        force3D: true,
+        scrollTrigger: { trigger: band, start: 'top bottom', end: 'bottom top', scrub: SCRUB_SOFT },
+      },
     );
   }
   const rsvp = $('[data-rsvp]');
@@ -269,26 +313,39 @@ function parallax(desktop: boolean) {
     gsap.fromTo(
       rsvpMedia,
       { yPercent: -6 },
-      { yPercent: 6, ease: 'none', scrollTrigger: { trigger: rsvp, start: 'top bottom', end: 'bottom top', scrub: true } },
+      {
+        yPercent: 6,
+        ease: 'none',
+        force3D: true,
+        scrollTrigger: { trigger: rsvp, start: 'top bottom', end: 'bottom top', scrub: SCRUB_SOFT },
+      },
     );
   }
   if (panel) {
     gsap.fromTo(
       panel,
       { y: desktop ? 160 : 90 },
-      { y: 0, ease: 'none', scrollTrigger: { trigger: panel, start: 'top bottom', end: 'top 45%', scrub: true } },
+      {
+        y: 0,
+        ease: 'power1.out',
+        scrollTrigger: { trigger: panel, start: 'top bottom', end: 'top 45%', scrub: SCRUB_SOFT },
+      },
     );
   }
   if (desktop) {
     const grid = $('[data-gal-track]');
-    $$('.gal__col').forEach((col) => {
-      const sp = Number(col.dataset.speed ?? 0);
-      gsap.fromTo(
-        col,
-        { y: -sp * 9 },
-        { y: sp * 9, ease: 'none', scrollTrigger: { trigger: grid, start: 'top bottom', end: 'bottom top', scrub: true } },
-      );
-    });
+    const cols = $$('.gal__col');
+    if (grid && cols.length) {
+      // O singură ScrollTrigger pentru toate coloanele (mai puțin lucru per frame).
+      const tl = gsap.timeline({
+        defaults: { ease: 'none', force3D: true },
+        scrollTrigger: { trigger: grid, start: 'top bottom', end: 'bottom top', scrub: SCRUB_SOFT },
+      });
+      cols.forEach((col) => {
+        const sp = Number(col.dataset.speed ?? 0);
+        tl.fromTo(col, { y: -sp * 9 }, { y: sp * 9 }, 0);
+      });
+    }
   }
 }
 
@@ -300,7 +357,8 @@ function finale(desktop: boolean) {
   const ring = $<SVGPathElement>('[data-fin-ring]');
   if (!sec || !frame || !media) return;
   const win: Inset = desktop ? { t: 14, r: 36, b: 12, l: 36 } : { t: 18, r: 16, b: 18, l: 16 };
-  const radius = () => (innerWidth * (100 - win.l - win.r)) / 200;
+  let vw = innerWidth;
+  const radius = () => (vw * (100 - win.l - win.r)) / 200;
 
   const tl = gsap.timeline({
     defaults: { ease: 'none' },
@@ -308,20 +366,21 @@ function finale(desktop: boolean) {
       trigger: sec,
       start: 'top 35%',
       end: 'bottom bottom',
-      scrub: desktop ? true : 0.3,
+      scrub: SCRUB,
       invalidateOnRefresh: true,
+      onRefreshInit: () => (vw = innerWidth),
     },
   });
   tl.fromTo(frame, { clipPath: () => insetStr(win, radius()) }, { clipPath: FULL, ease: 'power2.inOut', duration: 0.6 }, 0)
     .fromTo(
       media,
-      { scale: 1.18, x: () => (desktop ? innerWidth * 0.16 : 0) },
-      { scale: 1, x: 0, ease: 'power2.inOut', duration: 0.6 },
+      { scale: 1.18, x: () => (desktop ? vw * 0.16 : 0) },
+      { scale: 1, x: 0, ease: 'power2.inOut', duration: 0.6, force3D: true },
       0,
     )
-    .from('.fin__letters', { opacity: 0, scale: 0.85, duration: 0.25 }, 0.4)
-    .from('[data-fin-text]', { opacity: 0, y: 30, stagger: 0.08, duration: 0.25 }, 0.5);
-  if (ring) tl.fromTo(ring, { strokeDasharray: 1, strokeDashoffset: 1 }, { strokeDashoffset: 0, duration: 0.45 }, 0.35);
+    .from('.fin__letters', { opacity: 0, scale: 0.85, duration: 0.28, ease: 'power2.out' }, 0.38)
+    .from('[data-fin-text]', { opacity: 0, y: 30, stagger: 0.08, duration: 0.28, ease: 'power2.out' }, 0.48);
+  if (ring) tl.fromTo(ring, { strokeDasharray: 1, strokeDashoffset: 1 }, { strokeDashoffset: 0, duration: 0.45 }, 0.33);
   tl.to({}, { duration: 0.15 });
 }
 
@@ -329,7 +388,8 @@ function finale(desktop: boolean) {
 async function smoothScroll() {
   if (!matchMedia('(min-width: 1024px) and (pointer: fine) and (prefers-reduced-motion: no-preference)').matches) return;
   const { default: Lenis } = await import('lenis');
-  const lenis = new Lenis({ lerp: 0.11, syncTouch: false, anchors: { offset: -72 } });
+  // autoRaf: false → Lenis e condus de ticker-ul GSAP (un singur rAF pentru tot).
+  const lenis = new Lenis({ lerp: 0.1, wheelMultiplier: 0.95, syncTouch: false, autoRaf: false, anchors: { offset: -72 } });
   lenis.on('scroll', ScrollTrigger.update);
   gsap.ticker.add((t) => lenis.raf(t * 1000));
   gsap.ticker.lagSmoothing(0);
@@ -348,6 +408,8 @@ export function initMotion() {
       window.dispatchEvent(new CustomEvent('dd:hero', { detail: false }));
       return () => html.classList.add('motion-ok');
     }
+    SCRUB = desktop ? 0.5 : 0.6;
+    SCRUB_SOFT = desktop ? 0.7 : 0.9;
     heroScroll(desktop);
     invitation();
     threads();
@@ -359,6 +421,7 @@ export function initMotion() {
   });
 
   smoothScroll();
-  document.fonts?.ready.then(() => ScrollTrigger.refresh());
-  addEventListener('load', () => ScrollTrigger.refresh(), { once: true });
+  // Fonturile pot schimba măsurătorile (titlul din hero). ScrollTrigger face singur refresh la
+  // „load" (amânat dacă se derulează); noi nu mai forțăm refresh-uri în timpul scroll-ului.
+  document.fonts?.ready.then(safeRefresh);
 }

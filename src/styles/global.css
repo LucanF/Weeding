@@ -119,6 +119,12 @@ html {
   background: var(--night);
   overflow-x: clip;
 }
+/* Cu animații scrubbed, scroll anchoring-ul (Chrome, și acum WebKit/iOS Safari) poate alege ca
+   ancoră un element animat și „corectează" scroll-ul la fiecare frame → salturi înapoi.
+   Layout-ul e stabil (aspect-ratio pe toate pozele), deci ancorarea nu e necesară. */
+html.motion-ok {
+  overflow-anchor: none;
+}
 html:not(.lenis) {
   scroll-behavior: smooth;
 }

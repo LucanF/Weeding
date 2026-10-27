@@ -46,10 +46,17 @@ import { photos, crops } from '../data/photos';
     color: var(--ivory);
   }
   :global(.motion-ok) .fin {
-    height: 200svh;
+    height: 175vh;
+    height: 175svh;
+  }
+  @media (min-width: 1024px) {
+    :global(.motion-ok) .fin {
+      height: 200svh;
+    }
   }
   .fin__sticky {
     position: relative;
+    height: 100vh;
     height: 100svh;
     min-height: 36rem;
     overflow: hidden;

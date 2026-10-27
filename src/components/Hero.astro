@@ -61,12 +61,20 @@ import { photos, crops } from '../data/photos';
     background: var(--night);
     color: var(--ivory);
   }
+  /* Pin mai scurt pe mobil (mai puțin „scroll gol" cu degetul). svh = stabil cu bara de adresă. */
   :global(.motion-ok) .hero {
-    height: 230svh;
+    height: 200vh;
+    height: 200svh;
+  }
+  @media (min-width: 1024px) {
+    :global(.motion-ok) .hero {
+      height: 230svh;
+    }
   }
   .hero__sticky {
     position: sticky;
     top: 0;
+    height: 100vh;
     height: 100svh;
     min-height: 34rem;
     overflow: hidden;
