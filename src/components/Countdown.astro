@@ -110,7 +110,7 @@ const units = ['days', 'hours', 'minutes', 'seconds'] as const;
   }
   .cd__num {
     display: inline-flex;
-    font-family: var(--serif);
+    font-family: var(--sans);
     font-size: clamp(4.25rem, 12vw, 8.5rem);
     line-height: 0.9;
     font-variant-numeric: lining-nums tabular-nums;
@@ -122,7 +122,8 @@ const units = ['days', 'hours', 'minutes', 'seconds'] as const;
     display: inline-block;
     overflow: hidden;
     height: 1em;
-    padding-top: 0.04em;
+    padding: 0.04em 0.08em 0;
+    margin-inline: -0.04em;
     box-sizing: content-box;
   }
   .cd__num :global(.dg span) {
@@ -150,8 +151,6 @@ const units = ['days', 'hours', 'minutes', 'seconds'] as const;
   .cd__label {
     font-size: var(--fs-kicker);
     font-weight: 600;
-    letter-spacing: 0.3em;
-    text-transform: uppercase;
     color: var(--moss);
   }
   @media (min-width: 768px) {
@@ -162,7 +161,7 @@ const units = ['days', 'hours', 'minutes', 'seconds'] as const;
     }
     .cd__sep {
       display: block;
-      font-family: var(--serif);
+      font-family: var(--sans);
       font-size: clamp(3rem, 6vw, 5rem);
       line-height: 1.2;
       color: var(--amber);

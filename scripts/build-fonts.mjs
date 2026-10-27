@@ -20,13 +20,8 @@ for (let c = 0x20; c <= 0x7e; c++) LATIN += String.fromCharCode(c);
 for (let c = 0xa0; c <= 0xff; c++) LATIN += String.fromCharCode(c);
 LATIN += '–—‘’‚“”„…·•→←↑↓€×';
 
+// Fonturile de text (Great Vibes + Caveat) se construiesc cu scripts/build-fonts.py.
 const jobs = [
-  ['@fontsource/cormorant-garamond/files/cormorant-garamond-latin-500-normal.woff2', 'cormorant-500.woff2', LATIN],
-  ['@fontsource/cormorant-garamond/files/cormorant-garamond-latin-ext-500-normal.woff2', 'cormorant-500-ro.woff2', RO],
-  ['@fontsource/cormorant-garamond/files/cormorant-garamond-latin-500-italic.woff2', 'cormorant-500i.woff2', LATIN],
-  ['@fontsource/cormorant-garamond/files/cormorant-garamond-latin-ext-500-italic.woff2', 'cormorant-500i-ro.woff2', RO],
-  ['@fontsource-variable/manrope/files/manrope-latin-wght-normal.woff2', 'manrope.woff2', LATIN],
-  ['@fontsource-variable/manrope/files/manrope-latin-ext-wght-normal.woff2', 'manrope-ro.woff2', RO],
   ['@fontsource/pinyon-script/files/pinyon-script-latin-400-normal.woff2', 'pinyon-mono.woff2', 'D&'],
 ];
 

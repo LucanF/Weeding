@@ -18,9 +18,9 @@ export const couple = {
 
 // ── Data și ora ──────────────────────────────────────────────────────────────
 // Format ISO cu fusul orar al României (vara +03:00, iarna +02:00).
-// Countdown-ul numără până la `start` (ora începerii evenimentului).
+// Countdown-ul numără până la `start` (ora cununiei religioase).
 export const date = {
-  start: '2027-05-29T18:00:00+03:00',
+  start: '2027-05-29T15:00:00+03:00',
   end: '2027-05-30T04:00:00+03:00',
   timeZone: 'Europe/Bucharest',
   /** Afișări textuale (păstrează-le sincronizate cu `start`). */
@@ -124,7 +124,6 @@ export const story = {
 } as const;
 
 // ── 5. Detalii eveniment ─────────────────────────────────────────────────────
-// TODO: locațiile, orele, adresele și coordonatele reale (lat, lng).
 export const events = {
   kicker: 'Unde și când',
   title: 'Detaliile zilei',
@@ -134,10 +133,10 @@ export const events = {
       id: 'cununie',
       type: 'Cununia religioasă',
       time: '15:00',
-      place: 'Biserica „Sfântul Nicolae"',
-      address: 'Strada Bisericii 12, Sibiu',
-      lat: 45.7983,
-      lng: 24.1521,
+      place: 'Biserica „Sfinții Împărați Constantin și Elena"',
+      address: 'Strada Alexandru Odobescu 10, Brașov',
+      lat: 45.63799,
+      lng: 25.61635,
       note: '',
     },
     {
@@ -156,15 +155,15 @@ export const events = {
 };
 
 // ── 6. Programul zilei ───────────────────────────────────────────────────────
-// TODO: programul real. `icon` ∈ ring | church | glass | plate | music | cake | spark
+// TODO: de confirmat orele intermediare cu mirii. `icon` ∈ ring | church | glass | plate | music | cake | spark
 export const schedule = {
   kicker: 'Programul zilei',
   title: 'O zi, pas cu pas',
   items: [
     { time: '14:30', title: 'Sosirea invitaților', text: 'Ne revedem în fața bisericii.', icon: 'spark' },
     { time: '15:00', title: 'Cununia religioasă', text: 'Momentul nostru, în fața altarului.', icon: 'church' },
-    { time: '17:00', title: 'Ședința foto', text: 'Câteva cadre cu voi, în lumina de după-amiază.', icon: 'ring' },
-    { time: '18:30', title: 'Cocktail de bun venit', text: 'Pe terasă, la apus.', icon: 'glass' },
+    { time: '16:30', title: 'Ședința foto', text: 'Câteva cadre cu voi, după slujbă.', icon: 'ring' },
+    { time: '18:00', title: 'Bun venit la Diamant', text: 'Ne bucurăm de primul pahar împreună.', icon: 'glass' },
     { time: '20:00', title: 'Cina', text: 'Bucate alese și primul toast.', icon: 'plate' },
     { time: '21:30', title: 'Primul dans', text: 'Apoi ringul e al vostru.', icon: 'music' },
     { time: '00:00', title: 'Tortul', text: 'Dulce, ca toată ziua.', icon: 'cake' },

@@ -105,7 +105,7 @@ import { schedule } from '../data/wedding';
     color: var(--amber-soft);
   }
   .sch__time {
-    font-family: var(--serif);
+    font-family: var(--sans);
     font-size: 1.6rem;
     line-height: 1;
     color: var(--terracotta);
@@ -138,7 +138,7 @@ import { schedule } from '../data/wedding';
     .sch__clock {
       display: block;
       margin-top: 2rem;
-      font-family: var(--serif);
+      font-family: var(--sans);
       font-size: clamp(6rem, 12vw, 10.5rem);
       line-height: 1;
       color: var(--forest);
@@ -149,6 +149,8 @@ import { schedule } from '../data/wedding';
       display: inline-block;
       overflow: hidden;
       height: 1em;
+      padding-inline: 0.06em;
+      margin-inline: -0.03em;
       vertical-align: top;
     }
     .sch__clock :global(.dg span) {
@@ -183,9 +185,8 @@ import { schedule } from '../data/wedding';
     /* Pe desktop ora mare e în ceasul sticky; în listă rămâne o etichetă discretă. */
     .sch__time {
       font-family: var(--sans);
-      font-size: 0.8125rem;
+      font-size: 1.05rem;
       font-weight: 600;
-      letter-spacing: 0.22em;
       color: var(--moss);
     }
     .sch__title {
