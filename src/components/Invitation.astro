@@ -202,7 +202,7 @@ const venues = events.items.map((e) => ({
     color: var(--amber-soft);
   }
   .card-inv__day {
-    font-family: var(--sans);
+    font-family: var(--num);
     font-weight: 600;
     font-size: clamp(3.75rem, 14vw, 5rem);
     line-height: 1;
@@ -214,8 +214,10 @@ const venues = events.items.map((e) => ({
   }
   .card-inv__my {
     display: grid;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
     text-align: left;
-    font-family: var(--sans);
+    font-family: var(--num);
     font-weight: 600;
     font-size: clamp(1.5rem, 5vw, 1.9rem);
     line-height: 1.05;
@@ -244,6 +246,7 @@ const venues = events.items.map((e) => ({
     gap: 0.15rem;
   }
   .venue__time {
+    font-family: var(--num);
     font-weight: 600;
     font-size: 1.35rem;
     color: var(--amber-soft);

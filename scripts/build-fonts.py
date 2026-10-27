@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 """
 Fonturile „scris de mână" (Google Fonts, licență OFL) → woff2 self-hosted în public/fonts/.
-  - Dawning of a New Day: titluri și nume (fontul original nu are ș/ț: le compunem din s/t + virgulă)
-  - Caveat (variabil, 400–700): restul textului
+  - Great Vibes: nume și titluri (ca pe invitația tipărită)
+  - Alex Brush: textul de mână
+  - Cormorant Garamond (variabil): cifre, ore și data (serif, ca pe invitație)
+Dacă un font nu are ș/ț, le compunem din s/t + virgulă (add_romanian_comma_letters).
 Fiecare e redus la latin + diacriticele românești (ă â î ș ț, inclusiv variantele cu sedilă).
 Rulează:  pip install fonttools brotli  &&  python scripts/build-fonts.py
 """
@@ -17,8 +19,9 @@ ROOT = pathlib.Path(__file__).resolve().parent.parent
 OUT = ROOT / 'public' / 'fonts'
 BASE = 'https://raw.githubusercontent.com/google/fonts/main/ofl/'
 FONTS = {
-    'dawning.woff2': 'dawningofanewday/DawningofaNewDay.ttf',
-    'caveat.woff2': 'caveat/Caveat%5Bwght%5D.ttf',
+    'great-vibes.woff2': 'greatvibes/GreatVibes-Regular.ttf',
+    'alex-brush.woff2': 'alexbrush/AlexBrush-Regular.ttf',
+    'cormorant.woff2': 'cormorantgaramond/CormorantGaramond%5Bwght%5D.ttf',
 }
 TEXT = ''.join(chr(c) for c in range(0x20, 0x7F)) + ''.join(chr(c) for c in range(0xA0, 0x100))
 TEXT += 'ĂăȘșȚțŞşŢţ–—‘’‚“”„…·•→←↑↓€×'
@@ -71,7 +74,7 @@ for name, src in FONTS.items():
     add_romanian_comma_letters(font)
     opts = subset.Options()
     opts.flavor = 'woff2'
-    opts.layout_features = ['kern', 'liga', 'clig', 'calt', 'ccmp', 'locl', 'mark', 'mkmk']
+    opts.layout_features = ['kern', 'liga', 'clig', 'calt', 'ccmp', 'locl', 'mark', 'mkmk', 'lnum', 'tnum', 'pnum']
     opts.name_IDs = ['*']
     opts.notdef_outline = True
     sub = subset.Subsetter(opts)

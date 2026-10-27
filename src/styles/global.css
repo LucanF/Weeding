@@ -2,41 +2,55 @@
    Fonturi self-hosted (vezi scripts/build-fonts.mjs)
    Fiecare familie: fișier latin + supliment mic cu diacriticele românești.
    ────────────────────────────────────────────────────────────────────────── */
-/* Scris de mână (Google Fonts, OFL), vezi scripts/build-fonts.py.
+/* Fonturile invitației tipărite (Google Fonts, OFL), vezi scripts/build-fonts.py.
    Fețele „italic" pointează la același fișier: browserul nu mai înclină artificial textul. */
 @font-face {
-  font-family: 'Dawning';
+  font-family: 'Great Vibes';
   font-style: normal;
   font-weight: 400 700;
   font-display: swap;
-  size-adjust: 115%;
-  src: url('/fonts/dawning.woff2') format('woff2');
+  size-adjust: 112%;
+  src: url('/fonts/great-vibes.woff2') format('woff2');
 }
 @font-face {
-  font-family: 'Dawning';
+  font-family: 'Great Vibes';
   font-style: italic;
   font-weight: 400 700;
   font-display: swap;
-  size-adjust: 115%;
-  src: url('/fonts/dawning.woff2') format('woff2');
+  size-adjust: 112%;
+  src: url('/fonts/great-vibes.woff2') format('woff2');
 }
 @font-face {
-  font-family: 'Caveat';
+  font-family: 'Alex Brush';
   font-style: normal;
   font-weight: 400 700;
   font-display: swap;
-  /* Caveat are literele mici: o aducem la mărimea vizuală a textului de dinainte. */
-  size-adjust: 118%;
-  src: url('/fonts/caveat.woff2') format('woff2');
+  size-adjust: 122%;
+  src: url('/fonts/alex-brush.woff2') format('woff2');
 }
 @font-face {
-  font-family: 'Caveat';
+  font-family: 'Alex Brush';
   font-style: italic;
   font-weight: 400 700;
   font-display: swap;
-  /* Caveat are literele mici: o aducem la mărimea vizuală a textului de dinainte. */
-  size-adjust: 118%;
-  src: url('/fonts/caveat.woff2') format('woff2');
+  size-adjust: 122%;
+  src: url('/fonts/alex-brush.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Cormorant';
+  font-style: normal;
+  font-weight: 300 700;
+  font-display: swap;
+  size-adjust: 100%;
+  src: url('/fonts/cormorant.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Cormorant';
+  font-style: italic;
+  font-weight: 300 700;
+  font-display: swap;
+  size-adjust: 100%;
+  src: url('/fonts/cormorant.woff2') format('woff2');
 }
 @font-face {
   font-family: 'Pinyon';
@@ -77,9 +91,11 @@
   /* Fără gradient de lumină per secțiune: secțiunile se îmbină fără margini vizibile. */
   --velvet: url('/decor/velvet.webp') 0 0 / 512px 512px, var(--emerald);
 
-  /* --serif = titluri și nume (caligrafic), --sans = restul textului (scris de mână lizibil). */
-  --serif: 'Dawning', 'Snell Roundhand', 'Apple Chancery', cursive;
-  --sans: 'Caveat', 'Bradley Hand', 'Segoe Print', cursive;
+  /* --serif = nume și titluri, --sans = textul de mână, --num = cifre/ore/date (serif). */
+  --serif: 'Great Vibes', 'Snell Roundhand', 'Apple Chancery', cursive;
+  --sans: 'Alex Brush', 'Snell Roundhand', 'Apple Chancery', cursive;
+  --num: 'Cormorant', 'Cormorant Garamond', Georgia, serif;
+  /* cifre „aliniate” (ca „29 MAI 2027” de pe invitație), nu cele cu codiță */
   --script: 'Pinyon', 'Snell Roundhand', 'Apple Chancery', cursive;
 
   --fs-hero: clamp(4rem, 17vw, 11.5rem);
@@ -115,6 +131,7 @@
 }
 html {
   background: var(--night);
+  font-variant-numeric: lining-nums;
   /* Fonturile de mână au o singură greutate/stil: fără bold sau italic „fals" generate de browser. */
   font-synthesis: none;
   -webkit-text-size-adjust: 100%;
@@ -152,8 +169,7 @@ body {
   font-family: var(--sans);
   font-size: var(--fs-body);
   line-height: 1.55;
-  /* Caveat la 500: trăsătura e puțin mai plină, mai ușor de citit pe ecrane mici. */
-  font-weight: 500;
+  font-weight: 400;
   font-optical-sizing: auto;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;

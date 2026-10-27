@@ -20,7 +20,7 @@ for (let c = 0x20; c <= 0x7e; c++) LATIN += String.fromCharCode(c);
 for (let c = 0xa0; c <= 0xff; c++) LATIN += String.fromCharCode(c);
 LATIN += '–—‘’‚“”„…·•→←↑↓€×';
 
-// Fonturile de text (Dawning of a New Day + Caveat) se construiesc cu scripts/build-fonts.py.
+// Fonturile de text (Great Vibes, Alex Brush, Cormorant) se construiesc cu scripts/build-fonts.py.
 const jobs = [
   ['@fontsource/pinyon-script/files/pinyon-script-latin-400-normal.woff2', 'pinyon-mono.woff2', 'D&'],
 ];
