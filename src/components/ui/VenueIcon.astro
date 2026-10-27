@@ -1,0 +1,61 @@
+---
+/**
+ * Pictograme aurii din invitația tipărită: biserica și paharele de șampanie,
+ * în cerc dublu cu o crenguță de lauri. Linii subțiri, culoarea = currentColor.
+ */
+interface Props {
+  name: 'church' | 'toast';
+  class?: string;
+}
+const { name, class: cls } = Astro.props;
+---
+
+<svg class:list={['vicon', cls]} viewBox="0 0 96 96" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+  <circle cx="48" cy="48" r="45" stroke-width="1.2"></circle>
+  <circle cx="48" cy="48" r="40.5" stroke-width="0.6" opacity="0.6"></circle>
+  {/* lauri, jos */}
+  <g stroke-width="1" opacity="0.9">
+    <path d="M30 76c6 5 12 6.5 18 6.5s12-1.5 18-6.5"></path>
+    <path d="M33 78.6c-2.4-.2-4.4-1.6-5.2-3.8 2.4.1 4.4 1.5 5.2 3.8ZM38.5 80.9c-2.3-.6-4-2.3-4.4-4.6 2.3.5 4 2.2 4.4 4.6ZM63 78.6c2.4-.2 4.4-1.6 5.2-3.8-2.4.1-4.4 1.5-5.2 3.8ZM57.5 80.9c2.3-.6 4-2.3 4.4-4.6-2.3.5-4 2.2-4.4 4.6Z"></path>
+    <path d="M45.4 82.4 48 80l2.6 2.4L48 84.8Z"></path>
+  </g>
+  {
+    name === 'church' ? (
+      <g stroke-width="1.6">
+        <path d="M48 14v9M44.5 17.5h7"></path>
+        <path d="M42 33l6-9 6 9"></path>
+        <path d="M43 33v9h10v-9"></path>
+        <circle cx="48" cy="37" r="1.6"></circle>
+        <path d="M25 50l23-9 23 9"></path>
+        <path d="M28 49v20h40V49"></path>
+        <path d="M43.5 69v-8a4.5 4.5 0 0 1 9 0v8"></path>
+        <path d="M33 56.5v5M63 56.5v5"></path>
+        <path d="M24 69h48"></path>
+      </g>
+    ) : (
+      <g stroke-width="1.6">
+        <g transform="rotate(-14 37 46)">
+          <path d="M31.5 24h11l-1.2 15a4.3 4.3 0 0 1-8.6 0Z"></path>
+          <path d="M32.6 32h8.8"></path>
+          <path d="M37 43.5v15M32.5 58.5h9"></path>
+        </g>
+        <g transform="rotate(14 59 46)">
+          <path d="M53.5 24h11l-1.2 15a4.3 4.3 0 0 1-8.6 0Z"></path>
+          <path d="M54.6 32h8.8"></path>
+          <path d="M59 43.5v15M54.5 58.5h9"></path>
+        </g>
+        <path d="M48 12.5v5M42.5 15l2.4 3M53.5 15l-2.4 3" stroke-width="1.2"></path>
+        <path d="M48 23.6c-1.4-1.3-3.4-.3-3.4 1.4 0 2 3.4 4 3.4 4s3.4-2 3.4-4c0-1.7-2-2.7-3.4-1.4Z" stroke-width="1.1"></path>
+      </g>
+    )
+  }
+</svg>
+
+<style>
+  .vicon {
+    display: block;
+    width: 100%;
+    height: auto;
+    overflow: visible;
+  }
+</style>

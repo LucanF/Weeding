@@ -1,7 +1,7 @@
 ---
 import Img from './ui/Img.astro';
 import { finale, couple, date } from '../data/wedding';
-import { photos, crops } from '../data/photos';
+import { finalPhoto } from '../data/photos';
 ---
 
 <section class="fin" id="final" aria-labelledby="fin-title" data-finale>
@@ -9,13 +9,10 @@ import { photos, crops } from '../data/photos';
     <div class="fin__frame" data-fin-frame>
       <div class="fin__media" data-fin-media>
         <Img
-          src={photos.arcada.src}
-          mobile={crops.finalMobile}
-          alt={photos.arcada.alt}
-          widths={[960, 1440, 2048]}
+          src={finalPhoto.src}
+          alt={finalPhoto.alt}
+          widths={[720, 1060]}
           sizes="100vw"
-          mobileWidths={[480, 720, 956]}
-          lqip={photos.arcada.lqip}
           class="fin__pic"
           imgClass="fin__img"
         />
@@ -89,15 +86,15 @@ import { photos, crops } from '../data/photos';
   }
   .fin__media :global(.fin__img) {
     object-fit: cover;
-    object-position: 36% 60%;
+    object-position: 50% 45%;
     background-size: cover;
   }
   .fin__shade {
     position: absolute;
     inset: 0;
     background:
-      radial-gradient(70% 60% at 50% 55%, rgb(14 13 10 / 0.35), rgb(14 13 10 / 0.75)),
-      linear-gradient(to bottom, var(--night), transparent 25%);
+      radial-gradient(70% 60% at 50% 45%, rgb(6 20 13 / 0.05), rgb(6 20 13 / 0.45)),
+      linear-gradient(to bottom, var(--emerald), transparent 22%);
   }
   .fin__content {
     position: relative;
@@ -143,6 +140,8 @@ import { photos, crops } from '../data/photos';
     font-size: var(--fs-display);
     font-style: italic;
     line-height: 0.95;
+    color: var(--amber-soft);
+    text-shadow: 0 2px 20px rgb(0 0 0 / 0.5);
   }
   .fin__text {
     /* titlul are line-height strâns: loc pentru descendente (ș, g) */

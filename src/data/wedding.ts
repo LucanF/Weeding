@@ -39,7 +39,7 @@ export const meta = {
   description: `Vă invităm cu drag la nunta noastră, ${date.long.toLowerCase()}. Detalii, program și confirmare.`,
   ogTitle: 'Diana & Dragoș – Ne căsătorim!',
   ogDescription: `${date.long} · Vă așteptăm cu drag să sărbătorim împreună.`,
-  themeColor: '#0E0D0A',
+  themeColor: '#0B2418',
 };
 
 // ── Navigație (ancore) ───────────────────────────────────────────────────────
@@ -65,9 +65,9 @@ export const invitation = {
     { label: 'Părinții miresei', names: ['Nicoleta & Pavel Ivan'] },
     { label: 'Părinții mirelui', names: ['Mihaela Oana', 'Bogdan Spridon & Camelia Oprișan'] },
   ],
-  godparents: { label: 'Nașii', names: ['Alexandra & Alexandru Neagoe'] },
-  /** Fraza principală – se „luminează" cuvânt cu cuvânt la scroll. */
-  text: 'Împreună cu părinții și nașii noștri, vă invităm cu bucurie să fiți alături de noi în ziua în care ne unim destinele și să sărbătorim iubirea printr-o seară de neuitat.',
+  godparents: { label: 'Alături de dragii noștri nași', names: ['Alexandra & Alexandru Neagoe'] },
+  /** Fraza principală (din invitația tipărită) – se „luminează" cuvânt cu cuvânt la scroll. */
+  text: 'Alături de părinții noștri, ne bucurăm să vă invităm să ne fiți alături în ziua în care îi dăm iubirii un nume pentru totdeauna!',
 };
 
 // ── 3. Countdown ─────────────────────────────────────────────────────────────

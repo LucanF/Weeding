@@ -37,7 +37,7 @@ import { schedule } from '../data/wedding';
 
 <style>
   .sch {
-    background: var(--ivory-2);
+    background: var(--velvet);
   }
   .sch__grid {
     display: grid;
@@ -89,9 +89,9 @@ import { schedule } from '../data/wedding';
     width: 44px;
     height: 52px;
     border-radius: 22px 22px 8px 8px;
-    background: var(--ivory);
-    border: 1px solid rgb(31 42 30 / 0.16);
-    color: var(--forest);
+    background: var(--emerald-2);
+    border: 1px solid rgb(201 165 90 / 0.31);
+    color: var(--ivory);
     transition:
       background-color 0.5s var(--ease-out),
       color 0.5s var(--ease-out);
@@ -101,14 +101,14 @@ import { schedule } from '../data/wedding';
     height: 22px;
   }
   :global(.sch__item.is-active) .sch__icon {
-    background: var(--forest);
-    color: var(--amber-soft);
+    background: var(--amber);
+    color: var(--night);
   }
   .sch__time {
     font-family: var(--sans);
     font-size: 1.6rem;
     line-height: 1;
-    color: var(--terracotta);
+    color: var(--amber);
     font-feature-settings: 'lnum' 1, 'tnum' 1;
     /* terracotta e folosit doar la dimensiune mare (contrast AA pentru text mare) */
   }
@@ -116,11 +116,11 @@ import { schedule } from '../data/wedding';
     margin-top: 0.35rem;
     font-size: clamp(1.45rem, 2.6vw, 1.9rem);
     line-height: 1.15;
-    color: var(--night);
+    color: var(--ivory);
   }
   .sch__text {
     margin-top: 0.3rem;
-    color: var(--ink-soft);
+    color: var(--on-dark-soft);
   }
 
   @media (min-width: 960px) {
@@ -141,7 +141,7 @@ import { schedule } from '../data/wedding';
       font-family: var(--sans);
       font-size: clamp(6rem, 12vw, 10.5rem);
       line-height: 1;
-      color: var(--forest);
+      color: var(--ivory);
       font-feature-settings: 'lnum' 1, 'tnum' 1;
       letter-spacing: -0.02em;
     }
@@ -187,7 +187,7 @@ import { schedule } from '../data/wedding';
       font-family: var(--sans);
       font-size: 1.05rem;
       font-weight: 600;
-      color: var(--moss);
+      color: var(--amber);
     }
     .sch__title {
       margin-top: 0.4rem;

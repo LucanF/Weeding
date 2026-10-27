@@ -1,37 +1,88 @@
 ---
 import ThreadLine from './ui/ThreadLine.astro';
-import { invitation } from '../data/wedding';
+import Rings from './ui/Rings.astro';
+import Ornament from './ui/Ornament.astro';
+import VenueIcon from './ui/VenueIcon.astro';
+import { couple, date, events, invitation } from '../data/wedding';
+
+const stripQuotes = (s: string) => s.replace(/[„”"]/g, '');
+const venues = events.items.map((e) => ({
+  ...e,
+  label: stripQuotes(e.place),
+  icon: e.id === 'cununie' ? ('church' as const) : ('toast' as const),
+}));
 ---
 
 <section class="inv on-ivory" id="invitatie" data-invite aria-labelledby="inv-title">
   <div class="inv__inner">
-    <ThreadLine height="clamp(7rem, 22vh, 13rem)" variant="straight" knot />
-    <div class="container inv__body" id="continut">
-      <h2 class="kicker kicker--center inv__kicker" id="inv-title" data-reveal>{invitation.kicker}</h2>
-      <p class="inv__text" data-words>{invitation.text}</p>
+    <ThreadLine height="clamp(6rem, 18vh, 11rem)" variant="straight" knot />
 
-      <div class="inv__families">
-        {
-          invitation.parents.map((p, i) => (
-            <div class="inv__fam" data-reveal style={`--d:${i * 120}`}>
-              <p class="inv__label">{p.label}</p>
-              <p class="inv__names">{p.names.map((n) => <span>{n}</span>)}</p>
-            </div>
-          ))
-        }
-        <div class="inv__fam inv__fam--god" data-reveal style="--d:240">
+    <!-- Invitația „tipărită": chenar auriu dublu, flori în colțuri, ca pe hârtie. -->
+    <article class="card-inv" id="continut">
+      <img class="card-inv__corner card-inv__corner--tr" src="/decor/corner-tr.webp" alt="" width="420" height="634" loading="lazy" decoding="async" />
+      <img class="card-inv__corner card-inv__corner--bl" src="/decor/corner-bl.webp" alt="" width="460" height="663" loading="lazy" decoding="async" />
+
+      <div class="card-inv__body">
+        <div class="card-inv__rings" data-reveal="scale"><Rings /></div>
+        <h2 class="sr-only" id="inv-title">{invitation.kicker}</h2>
+        <p class="card-inv__couple gold-text" data-reveal style="--d:80" aria-hidden="true">
+          {couple.bride} <span class="card-inv__amp">&amp;</span> {couple.groom}
+        </p>
+
+        <p class="inv__text" data-words>{invitation.text}</p>
+
+        <Ornament class="card-inv__orn" />
+
+        <div class="inv__families">
+          {
+            invitation.parents.map((p, i) => (
+              <div class="inv__fam" data-reveal style={`--d:${i * 120}`}>
+                <p class="inv__label">{p.label}</p>
+                <p class="inv__names">{p.names.map((n) => <span>{n}</span>)}</p>
+              </div>
+            ))
+          }
+        </div>
+
+        <Ornament class="card-inv__orn" />
+
+        <div class="inv__fam inv__fam--god" data-reveal>
           <p class="inv__label">{invitation.godparents.label}</p>
           <p class="inv__names">{invitation.godparents.names.map((n) => <span>{n}</span>)}</p>
         </div>
+
+        <Ornament class="card-inv__orn" />
+
+        <p class="card-inv__date" data-reveal>
+          <time datetime={date.start.slice(0, 10)}>
+            <span class="card-inv__day">{date.day}</span>
+            <span class="card-inv__sep" aria-hidden="true"></span>
+            <span class="card-inv__my"><span>{date.month}</span><span>{date.year}</span></span>
+          </time>
+        </p>
+
+        <ul class="card-inv__venues" role="list">
+          {
+            venues.map((v, i) => (
+              <li class="venue" data-reveal style={`--d:${i * 140}`}>
+                <span class="venue__icon"><VenueIcon name={v.icon} /></span>
+                <span class="venue__txt">
+                  <span class="venue__time">ora {v.time}</span>
+                  <span class="venue__place">{v.label}</span>
+                </span>
+              </li>
+            ))
+          }
+        </ul>
       </div>
-    </div>
-    <ThreadLine variant="loop" height="clamp(8rem, 22vh, 14rem)" />
+    </article>
+
+    <ThreadLine variant="loop" height="clamp(7rem, 20vh, 12rem)" />
   </div>
 </section>
 
 <style>
-  /* Secțiunea urcă peste poza din hero cu marginea de sus arcuită (motivul arcadei),
-     în loc de un crossfade night → ivory care trecea prin gri. */
+  /* Secțiunea urcă peste poza din hero cu marginea de sus arcuită (motivul arcadei). */
   .inv {
     position: relative;
     z-index: 5;
@@ -40,65 +91,171 @@ import { invitation } from '../data/wedding';
     margin-top: calc(-1 * var(--seam));
     border-radius: 50% 50% 0 0 / var(--seam) var(--seam) 0 0;
   }
-  .inv__body {
+
+  /* ── Cartonașul invitației ─────────────────────────────────────────── */
+  .card-inv {
+    position: relative;
+    width: min(100% - 2 * clamp(0.75rem, 3vw, 2rem), 46rem);
+    margin: clamp(0.5rem, 2vw, 1.5rem) auto;
+    /* jos: loc pentru buchetul din colț, ca să nu acopere locurile */
+    padding: clamp(3.25rem, 9vw, 5rem) clamp(1.25rem, 6vw, 4.5rem) clamp(9rem, 34vw, 13.5rem);
+    border: 1px solid rgb(201 165 90 / 0.75);
+    border-radius: 2px;
+    background:
+      radial-gradient(90% 55% at 50% 0%, rgb(46 98 66 / 0.35), transparent 70%),
+      radial-gradient(80% 50% at 50% 100%, rgb(0 0 0 / 0.3), transparent 70%),
+      url('/decor/velvet.webp') 0 0 / 512px 512px,
+      var(--emerald-2);
+    box-shadow:
+      0 0 0 6px var(--emerald),
+      0 0 0 7px rgb(201 165 90 / 0.4),
+      0 40px 80px -40px rgb(0 0 0 / 0.8);
+    text-align: center;
+    overflow: clip;
+  }
+  .card-inv__corner {
+    position: absolute;
+    z-index: 0;
+    pointer-events: none;
+    height: auto;
+  }
+  .card-inv__corner--tr {
+    top: 0;
+    right: 0;
+    width: clamp(8rem, 30%, 12rem);
+  }
+  .card-inv__corner--bl {
+    bottom: 0;
+    left: 0;
+    width: clamp(7rem, 26%, 9.5rem);
+  }
+  .card-inv__body {
+    position: relative;
+    z-index: 1;
     display: grid;
     justify-items: center;
-    text-align: center;
-    padding-block: clamp(3rem, 8vh, 5rem) clamp(3rem, 8vh, 5rem);
+  }
+  .card-inv__rings {
+    width: clamp(4.5rem, 16vw, 6.5rem);
+  }
+  .card-inv__couple {
+    margin-top: 0.75rem;
+    font-family: var(--serif);
+    font-size: clamp(2.9rem, 11vw, 5.25rem);
+    line-height: 1.15;
+    padding: 0.05em 0.15em 0.15em;
+  }
+  .card-inv__amp {
+    font-size: 0.85em;
   }
   .inv__text {
-    margin-top: clamp(2rem, 5vw, 3rem);
-    max-width: 21em;
+    margin-top: clamp(1rem, 3vw, 1.75rem);
+    max-width: 24em;
     font-family: var(--sans);
-    font-size: clamp(1.85rem, 4.4vw, 3.5rem);
-    line-height: 1.18;
-    letter-spacing: -0.005em;
-    color: var(--forest);
+    font-size: clamp(1.3rem, 3.6vw, 1.75rem);
+    line-height: 1.35;
+    color: var(--ivory);
     text-wrap: balance;
   }
   .inv__text :global(.word) {
     will-change: auto;
   }
+  .card-inv :global(.card-inv__orn) {
+    margin-block: clamp(1.5rem, 4vw, 2.25rem);
+  }
   .inv__families {
     display: grid;
-    gap: 2rem;
-    margin-top: clamp(3.5rem, 8vw, 6rem);
+    gap: 1.5rem;
     width: 100%;
-    max-width: 56rem;
   }
   .inv__label {
-    font-size: var(--fs-kicker);
+    font-size: 1.1rem;
     font-weight: 600;
-    color: var(--moss);
+    color: var(--amber);
   }
   .inv__names {
-    margin-top: 0.5rem;
+    margin-top: 0.4rem;
     font-family: var(--serif);
-    font-style: italic;
-    font-size: clamp(1.5rem, 2.6vw, 2rem);
-    line-height: 1.15;
-    color: var(--night);
+    font-size: clamp(1.7rem, 5vw, 2.2rem);
+    line-height: 1.2;
+    color: var(--ivory);
   }
   /* Fiecare nume pe rândul lui (ex. mama; tata cu soția). */
   .inv__names span {
     display: block;
   }
   .inv__names span + span {
-    margin-top: 0.3em;
+    margin-top: 0.25em;
   }
-  .inv__fam--god {
-    padding-top: 2rem;
-    border-top: 1px solid rgb(31 42 30 / 0.15);
-  }
-  @media (min-width: 768px) {
+  @media (min-width: 640px) {
     .inv__families {
       grid-template-columns: 1fr 1fr;
-      column-gap: 4rem;
+      column-gap: 2.5rem;
     }
-    .inv__fam--god {
-      grid-column: 1 / -1;
-      justify-self: center;
-      padding-inline: 4rem;
+  }
+
+  /* ── Data: 29 | MAI 2027 ─────────────────────────────────────────── */
+  .card-inv__date time {
+    display: flex;
+    align-items: center;
+    gap: 1.1rem;
+    color: var(--amber-soft);
+  }
+  .card-inv__day {
+    font-family: var(--sans);
+    font-weight: 600;
+    font-size: clamp(3.75rem, 14vw, 5rem);
+    line-height: 1;
+  }
+  .card-inv__sep {
+    width: 1px;
+    align-self: stretch;
+    background: linear-gradient(transparent, var(--amber), transparent);
+  }
+  .card-inv__my {
+    display: grid;
+    text-align: left;
+    font-family: var(--sans);
+    font-weight: 600;
+    font-size: clamp(1.5rem, 5vw, 1.9rem);
+    line-height: 1.05;
+  }
+
+  /* ── Cele două locuri, cu pictogramele aurii ─────────────────────── */
+  .card-inv__venues {
+    display: grid;
+    gap: 1.5rem;
+    width: 100%;
+    max-width: 36rem;
+    margin-top: clamp(1.75rem, 5vw, 2.5rem);
+  }
+  .venue {
+    display: grid;
+    grid-template-columns: clamp(4.25rem, 18vw, 5.25rem) 1fr;
+    align-items: center;
+    gap: 1rem;
+    text-align: left;
+  }
+  .venue__icon {
+    color: var(--amber);
+  }
+  .venue__txt {
+    display: grid;
+    gap: 0.15rem;
+  }
+  .venue__time {
+    font-weight: 600;
+    font-size: 1.35rem;
+    color: var(--amber-soft);
+  }
+  .venue__place {
+    font-size: 1.15rem;
+    line-height: 1.3;
+    color: var(--ivory);
+  }
+  @media (min-width: 640px) {
+    .card-inv__venues {
+      grid-template-columns: 1fr 1fr;
     }
   }
 </style>

@@ -38,10 +38,10 @@ import { info } from '../data/wedding';
     }
   }
   .info__list {
-    border-top: 1px solid rgb(31 42 30 / 0.18);
+    border-top: 1px solid rgb(201 165 90 / 0.33);
   }
   .acc {
-    border-bottom: 1px solid rgb(31 42 30 / 0.18);
+    border-bottom: 1px solid rgb(201 165 90 / 0.33);
     interpolate-size: allow-keywords;
   }
   .acc::details-content {
@@ -72,7 +72,7 @@ import { info } from '../data/wedding';
     font-family: var(--serif);
     font-size: clamp(1.6rem, 3vw, 2.1rem);
     line-height: 1.1;
-    color: var(--night);
+    color: var(--ivory);
     transition: transform 0.4s var(--ease-out);
   }
   @media (hover: hover) {
@@ -86,7 +86,7 @@ import { info } from '../data/wedding';
     width: 44px;
     height: 44px;
     border-radius: 50%;
-    border: 1px solid rgb(31 42 30 / 0.25);
+    border: 1px solid rgb(201 165 90 / 0.40);
     transition:
       background-color 0.35s,
       transform 0.5s var(--ease-out);
@@ -100,26 +100,26 @@ import { info } from '../data/wedding';
     width: 14px;
     height: 1.5px;
     margin: -0.75px 0 0 -7px;
-    background: var(--forest);
+    background: var(--amber-soft);
     transition: transform 0.5s var(--ease-out);
   }
   .acc__icon::after {
     transform: rotate(90deg);
   }
   .acc[open] .acc__icon {
-    background: var(--forest);
+    background: var(--amber);
     transform: rotate(180deg);
   }
   .acc[open] .acc__icon::before,
   .acc[open] .acc__icon::after {
-    background: var(--ivory);
+    background: var(--night);
   }
   .acc[open] .acc__icon::after {
     transform: rotate(0deg);
   }
   .acc__body {
     padding: 0 3.5rem 1.75rem 0;
-    color: var(--ink-soft);
+    color: var(--on-dark-soft);
     max-width: 40rem;
   }
   @media (prefers-reduced-motion: reduce) {

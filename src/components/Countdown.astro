@@ -69,8 +69,7 @@ const units = ['days', 'hours', 'minutes', 'seconds'] as const;
 <style>
   .cd {
     padding-top: clamp(3rem, 8vw, 6rem);
-    /* loc pentru arcul cu care urcă „Povestea"; firul auriu se termină exact în vârful arcului */
-    padding-bottom: var(--seam);
+    padding-bottom: 0;
   }
   .cd__inner {
     display: grid;
@@ -92,7 +91,7 @@ const units = ['days', 'hours', 'minutes', 'seconds'] as const;
     margin-top: clamp(2.5rem, 6vw, 4rem);
     grid-template-columns: repeat(2, auto);
     gap: 2.25rem 3rem;
-    color: var(--forest);
+    color: var(--ivory);
   }
   :global(.js) .cd__grid {
     display: grid;
@@ -151,7 +150,7 @@ const units = ['days', 'hours', 'minutes', 'seconds'] as const;
   .cd__label {
     font-size: var(--fs-kicker);
     font-weight: 600;
-    color: var(--moss);
+    color: var(--amber);
   }
   @media (min-width: 768px) {
     .cd__grid {
@@ -178,7 +177,7 @@ const units = ['days', 'hours', 'minutes', 'seconds'] as const;
     font-style: italic;
     font-size: var(--fs-display);
     line-height: 1;
-    color: var(--forest);
+    color: var(--ivory);
   }
   .cd__cal {
     margin-top: clamp(3rem, 7vw, 4.5rem);
@@ -188,7 +187,7 @@ const units = ['days', 'hours', 'minutes', 'seconds'] as const;
   }
   .cd__cal-label {
     font-size: var(--fs-small);
-    color: var(--ink-soft);
+    color: var(--on-dark-soft);
   }
   .cd__cal-btns {
     display: flex;

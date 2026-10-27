@@ -92,8 +92,6 @@ import { photos } from '../data/photos';
     z-index: 1;
     isolation: isolate;
     padding-block: clamp(4rem, 10vw, 7rem) 0;
-    margin-top: calc(-1 * var(--seam));
-    border-radius: 50% 50% 0 0 / var(--seam) var(--seam) 0 0;
   }
   .story__track {
     position: relative;
@@ -162,7 +160,7 @@ import { photos } from '../data/photos';
   :global(.moment.is-on) .moment__dot,
   :global(html:not(.js)) .moment__dot {
     background: var(--amber);
-    box-shadow: 0 0 0 6px rgb(200 146 74 / 0.18);
+    box-shadow: 0 0 0 6px rgb(201 165 90 / 0.18);
   }
   .moment__fig {
     position: relative;
@@ -339,7 +337,7 @@ import { photos } from '../data/photos';
     content: '';
     position: absolute;
     inset: 0;
-    background: linear-gradient(to top, rgb(14 13 10 / 0.85), transparent 55%);
+    background: linear-gradient(to top, rgb(6 20 13 / 0.85), transparent 55%);
   }
   .pano__cap {
     position: absolute;

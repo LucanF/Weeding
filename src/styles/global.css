@@ -51,21 +51,31 @@
    Tokens
    ────────────────────────────────────────────────────────────────────────── */
 :root {
-  --night: #0e0d0a;
-  --night-2: #16150f;
-  --forest: #1f2a1e;
-  --moss: #5a5a32;
-  --amber: #c8924a;
-  --amber-soft: #e0b77c;
-  --terracotta: #a0624e;
+  /* Paleta invitației tipărite: verde-smarald catifelat + auriu. */
+  --night: #06140d;
+  --night-2: #0a1d13;
+  --forest: #0f2a1c;
+  --emerald: #0b2418;
+  --emerald-2: #10301f;
+  --emerald-3: #173b28;
+  --moss: #c8b07a;
+  --amber: #c9a55a;
+  --amber-soft: #e8d09a;
+  --gold-deep: #9a7634;
+  --gold-grad: linear-gradient(100deg, #a8843e 0%, #f3e2b3 30%, #c9a55a 52%, #f6e7bd 72%, #9a7634 100%);
+  --hairline: rgb(201 165 90 / 0.32);
+  --terracotta: #b0644f;
   --ivory: #f4ede1;
   --ivory-2: #ebe2d2;
   --royal: #34548a;
 
-  --ink: var(--night);
-  --ink-soft: color-mix(in srgb, var(--forest) 82%, var(--ivory));
+  --ink: var(--ivory);
+  --ink-soft: color-mix(in srgb, var(--ivory) 74%, var(--emerald));
   --on-dark: var(--ivory);
-  --on-dark-soft: color-mix(in srgb, var(--ivory) 72%, var(--night));
+  --on-dark-soft: color-mix(in srgb, var(--ivory) 74%, var(--emerald));
+  /* Catifea: lumină moale + textura fină (o singură imagine de 8 KB, repetată). */
+  /* Fără gradient de lumină per secțiune: secțiunile se îmbină fără margini vizibile. */
+  --velvet: url('/decor/velvet.webp') 0 0 / 512px 512px, var(--emerald);
 
   /* --serif = titluri și nume (caligrafic), --sans = restul textului (scris de mână lizibil). */
   --serif: 'Dawning', 'Snell Roundhand', 'Apple Chancery', cursive;
@@ -104,6 +114,7 @@
   box-sizing: border-box;
 }
 html {
+  background: var(--night);
   /* Fonturile de mână au o singură greutate/stil: fără bold sau italic „fals" generate de browser. */
   font-synthesis: none;
   -webkit-text-size-adjust: 100%;
@@ -202,7 +213,7 @@ a {
 }
 .on-ivory :focus-visible,
 .on-ivory:focus-visible {
-  outline-color: var(--royal);
+  outline-color: var(--amber-soft);
 }
 ::selection {
   background: var(--amber);
@@ -258,17 +269,56 @@ p {
   position: relative;
   padding-block: var(--section-y);
 }
-.on-ivory {
-  background: var(--ivory);
-  color: var(--ink);
+/* Toate secțiunile sunt acum pe catifea verde (ca invitația); clasele vechi rămân ca nume. */
+.on-ivory,
+.on-forest {
+  background: var(--velvet);
+  color: var(--ivory);
 }
 .on-dark {
-  background: var(--night);
+  background:
+    radial-gradient(120% 70% at 50% 0%, rgb(0 0 0 / 0.25), transparent 60%),
+    url('/decor/velvet.webp') 0 0 / 512px 512px,
+    var(--night-2);
   color: var(--on-dark);
 }
-.on-forest {
-  background: var(--forest);
-  color: var(--on-dark);
+
+/* Chenar auriu dublu (ca pe invitație). */
+.gold-frame {
+  position: relative;
+  border: 1px solid rgb(201 165 90 / 0.7);
+  outline: 1px solid rgb(201 165 90 / 0.35);
+  outline-offset: 6px;
+}
+/* Separator: linie – inimioară – linie. */
+.ornament {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  color: var(--amber);
+}
+.ornament::before,
+.ornament::after {
+  content: '';
+  height: 1px;
+  width: clamp(3.5rem, 18vw, 7rem);
+  background: linear-gradient(to var(--dir, right), transparent, currentColor);
+}
+.ornament::after {
+  --dir: left;
+}
+.ornament svg {
+  width: 1.1rem;
+  height: 1.1rem;
+  flex: none;
+}
+/* Text auriu metalic (nume, titluri mari). */
+.gold-text {
+  background: var(--gold-grad);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
 
 .kicker {
@@ -288,7 +338,7 @@ p {
   opacity: 0.7;
 }
 .on-ivory .kicker {
-  color: var(--moss);
+  color: var(--amber);
 }
 .kicker--center::after {
   content: '';
@@ -300,13 +350,14 @@ p {
 .h2 {
   font-size: var(--fs-h2);
   margin-top: 1.25rem;
+  color: var(--amber-soft);
 }
 .h2 em {
   font-style: italic;
   color: var(--amber);
 }
 .on-ivory .h2 em {
-  color: var(--terracotta);
+  color: var(--amber);
 }
 .lead {
   font-size: var(--fs-lead);
@@ -315,7 +366,7 @@ p {
   color: var(--on-dark-soft);
 }
 .on-ivory .lead {
-  color: var(--ink-soft);
+  color: var(--on-dark-soft);
 }
 .amp {
   font-family: var(--script);
@@ -341,7 +392,7 @@ p {
   inset: 0;
   pointer-events: none;
   z-index: 2;
-  background: radial-gradient(120% 90% at 50% 45%, transparent 55%, rgb(14 13 10 / 0.6) 100%);
+  background: radial-gradient(120% 90% at 50% 45%, transparent 55%, rgb(6 20 13 / 0.6) 100%);
 }
 
 /* ──────────────────────────────────────────────────────────────────────────
@@ -410,18 +461,19 @@ p {
   border-color: color-mix(in srgb, currentColor 35%, transparent);
 }
 .on-ivory .btn--ghost {
-  color: var(--forest);
+  color: var(--ivory);
 }
 .btn--dark {
-  --btn-bg: var(--forest);
+  --btn-bg: var(--emerald-3);
   --btn-fg: var(--ivory);
   --btn-fill: var(--night);
+  border-color: rgb(201 165 90 / 0.55);
 }
 .btn--wa {
   --btn-bg: transparent;
-  --btn-fg: var(--forest);
+  --btn-fg: var(--ivory);
   --btn-fill: #1f6f45;
-  border-color: color-mix(in srgb, var(--forest) 35%, transparent);
+  border-color: rgb(244 237 225 / 0.35);
 }
 @media (hover: hover) {
   .btn--wa:hover,
