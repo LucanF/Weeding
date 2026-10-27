@@ -6,7 +6,7 @@ interface Props {
 const { class: cls } = Astro.props;
 ---
 
-<div class:list={['ornament', cls]} aria-hidden="true">
+<div class:list={['ornament', cls]} aria-hidden="true" data-reveal="orn">
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round">
     <path d="M12 19.5s-7.5-4.6-7.5-9.6A3.9 3.9 0 0 1 12 7.7a3.9 3.9 0 0 1 7.5 2.2c0 5-7.5 9.6-7.5 9.6Z"></path>
   </svg>

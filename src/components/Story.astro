@@ -128,15 +128,17 @@ import { photos } from '../data/photos';
     overflow-anchor: none;
     pointer-events: none;
   }
-  .story__vthread span {
+  .story__vthread > span {
+    position: relative;
     display: block;
     width: 100%;
     height: 100%;
     border-radius: 1px;
     background: var(--amber);
     transform-origin: 50% 0;
+    overflow: hidden;
   }
-  :global(.motion-ok) .story__vthread span {
+  :global(.motion-ok) .story__vthread > span {
     transform: scaleY(0);
   }
   .moment {
@@ -161,6 +163,29 @@ import { photos } from '../data/photos';
   :global(html:not(.js)) .moment__dot {
     background: var(--amber);
     box-shadow: 0 0 0 6px rgb(201 165 90 / 0.18);
+  }
+  /* Când scânteia firului ajunge la punct: un inel auriu se lărgește și se stinge (o dată). */
+  .moment__dot::after {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border-radius: 50%;
+    border: 1px solid var(--amber-soft);
+    opacity: 0;
+    pointer-events: none;
+  }
+  :global(.motion-ok .moment.is-on) .moment__dot::after {
+    animation: dot-ripple 1.1s var(--ease-out);
+  }
+  @keyframes dot-ripple {
+    from {
+      transform: scale(1);
+      opacity: 0.9;
+    }
+    to {
+      transform: scale(3.2);
+      opacity: 0;
+    }
   }
   .moment__fig {
     position: relative;

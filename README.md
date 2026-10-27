@@ -44,6 +44,15 @@ La build, Astro generează automat AVIF, WebP și JPEG în mai multe dimensiuni.
 Sunt self-hosted în `public/fonts/` (Cormorant Garamond, Manrope, Pinyon Script), reduse la latin + diacriticele românești.
 Le regenerezi din pachetele `@fontsource` cu `npm run fonts`.
 
+## Animațiile (intensitate)
+
+Efectele aurii se reglează din două locuri:
+- `src/scripts/motion.ts` → obiectul `FX`: scânteia firului (`spark`, `sparkSpeedGlow`), luciul firelor verticale
+  (`lineSheen`), sclipirea sigiliului (`sealGlint`), numărul de particule de praf auriu (`heroDust`, `finaleDust`; 0 = oprit).
+- `src/styles/global.css` → `--spark-size`, `--spark-glow`, `--sheen` (mărimea/luminozitatea scânteii și a luciului).
+
+Cu „Reduce motion" activ în sistem, niciunul dintre aceste efecte nu rulează (layout static).
+
 ## Deploy pe Netlify
 
 1. Urcă proiectul pe GitHub (sau GitLab sau Bitbucket).

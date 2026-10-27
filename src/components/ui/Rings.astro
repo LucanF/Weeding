@@ -27,8 +27,8 @@ const id = `rg${Math.random().toString(36).slice(2, 8)}`;
   <ellipse cx="74" cy="36" rx="27" ry="21" fill="none" stroke={`url(#${id}b)`} stroke-width="5.5"></ellipse>
   <ellipse cx="46" cy="30" rx="27" ry="21" fill="none" stroke={`url(#${id}a)`} stroke-width="5.5"></ellipse>
   <path d="M62.5 16.9a27 21 0 0 1 11.5-1.9" fill="none" stroke={`url(#${id}b)`} stroke-width="5.5" stroke-linecap="round"></path>
-  <ellipse cx="46" cy="30" rx="27" ry="21" fill="none" stroke="#fff6dc" stroke-opacity="0.45" stroke-width="1" stroke-dasharray="14 120" stroke-dashoffset="-6"></ellipse>
-  <ellipse cx="74" cy="36" rx="27" ry="21" fill="none" stroke="#fff6dc" stroke-opacity="0.4" stroke-width="1" stroke-dasharray="12 130" stroke-dashoffset="-70"></ellipse>
+  <ellipse class="rings__hl" cx="46" cy="30" rx="27" ry="21" fill="none" stroke="#fff6dc" stroke-opacity="0.45" stroke-width="1" stroke-dasharray="14 120" stroke-dashoffset="-6"></ellipse>
+  <ellipse class="rings__hl rings__hl--b" cx="74" cy="36" rx="27" ry="21" fill="none" stroke="#fff6dc" stroke-opacity="0.4" stroke-width="1" stroke-dasharray="12 130" stroke-dashoffset="-70"></ellipse>
 </svg>
 
 <style>
@@ -38,5 +38,24 @@ const id = `rg${Math.random().toString(36).slice(2, 8)}`;
     height: auto;
     overflow: visible;
     filter: drop-shadow(0 4px 10px rgb(0 0 0 / 0.45));
+  }
+  /* Când inelele apar, reflexia albă alunecă o dată în jurul fiecărui inel (stroke-dashoffset pe
+     un SVG de ~100px: cost neglijabil). Doar cu animații. */
+  :global(.motion-ok .is-in) > .rings .rings__hl {
+    animation: rings-glint 2.4s 0.5s cubic-bezier(0.45, 0, 0.2, 1) both;
+  }
+  :global(.motion-ok .is-in) > .rings .rings__hl--b {
+    animation-name: rings-glint-b;
+    animation-delay: 0.75s;
+  }
+  @keyframes rings-glint-b {
+    to {
+      stroke-dashoffset: -212;
+    }
+  }
+  @keyframes rings-glint {
+    to {
+      stroke-dashoffset: -140;
+    }
   }
 </style>

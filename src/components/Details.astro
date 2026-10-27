@@ -207,6 +207,27 @@ const mapLinks = (e: (typeof events.items)[number]) => [
     border: 1px solid rgb(201 165 90 / 0.35);
     pointer-events: none;
   }
+  /* Hover (doar mouse): rama aurie se aprinde. Umbra stă pe un pseudo-element, animăm doar opacitatea. */
+  .card::after {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    box-shadow:
+      0 0 0 1px rgb(232 208 154 / 0.85),
+      0 0 34px -4px rgb(201 165 90 / 0.45);
+    opacity: 0;
+    transition: opacity 0.7s var(--ease-out);
+    pointer-events: none;
+  }
+  @media (hover: hover) {
+    .card:hover::after {
+      opacity: 1;
+    }
+    .card:hover .card__pin {
+      transform: translateY(-4px);
+    }
+  }
   /* Pictograma aurie (ca pe invitație), așezată pe marginea de sus a cardului. */
   .card__pin {
     position: absolute;
@@ -218,6 +239,7 @@ const mapLinks = (e: (typeof events.items)[number]) => [
     border-radius: 50%;
     background: var(--emerald);
     color: var(--amber);
+    transition: transform 0.6s var(--ease-out);
   }
   .card__type {
     font-size: var(--fs-kicker);

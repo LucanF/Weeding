@@ -209,6 +209,25 @@ const speeds = [-8, 10, -4];
       transform: scale(0.8);
     }
   }
+  .gal__item::after {
+    content: '';
+    position: absolute;
+    inset: 10px;
+    border-radius: 999px 999px 0.6rem 0.6rem;
+    border: 1px solid rgb(232 208 154 / 0.75);
+    opacity: 0;
+    transform: scale(1.03);
+    transition:
+      opacity 0.6s var(--ease-out),
+      transform 0.8s var(--ease-out);
+    pointer-events: none;
+  }
+  @media (hover: hover) {
+    .gal__item:hover::after {
+      opacity: 1;
+      transform: none;
+    }
+  }
   .gal__item:focus-visible {
     outline-offset: 4px;
   }
@@ -360,7 +379,24 @@ const speeds = [-8, 10, -4];
   }
   .lb__img.is-swapping {
     opacity: 0;
-    transform: scale(0.98);
+    transform: translateX(calc(var(--dir, 0) * -28px)) scale(0.985);
+  }
+  .lb[open] .lb__fig {
+    animation: lb-fig-in 0.6s var(--ease-out);
+  }
+  @keyframes lb-fig-in {
+    from {
+      opacity: 0;
+      transform: scale(0.96);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .lb[open] .lb__fig {
+      animation: none;
+    }
+    .lb__img.is-swapping {
+      transform: none;
+    }
   }
   .lb__cap {
     margin-top: 1rem;

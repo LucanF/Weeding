@@ -131,8 +131,12 @@ const units = ['days', 'hours', 'minutes', 'seconds'] as const;
     line-height: 1;
     text-align: center;
   }
+  /* Cifra nouă urcă cu un mic „recul" (overshoot), cea veche se estompează pe drum. */
   .cd__num :global(.dg.is-rolling span) {
-    animation: roll 0.7s var(--ease-out) both;
+    animation: roll 0.8s cubic-bezier(0.25, 1.3, 0.45, 1) both;
+  }
+  .cd__num :global(.dg.is-rolling span:first-child) {
+    animation-name: roll-out;
   }
   @keyframes roll {
     from {
@@ -140,6 +144,18 @@ const units = ['days', 'hours', 'minutes', 'seconds'] as const;
     }
     to {
       transform: translateY(-100%);
+    }
+  }
+  @keyframes roll-out {
+    from {
+      transform: translateY(0);
+    }
+    60% {
+      opacity: 0;
+    }
+    to {
+      transform: translateY(-100%);
+      opacity: 0;
     }
   }
   @media (prefers-reduced-motion: reduce) {

@@ -2,6 +2,7 @@ import { setRoll } from './roller';
 
 const $ = <T extends Element = HTMLElement>(s: string, r: ParentNode = document) => r.querySelector<T>(s);
 const $$ = <T extends Element = HTMLElement>(s: string, r: ParentNode = document) => [...r.querySelectorAll<T>(s)];
+const reducedMotion = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 /** Blochează / deblochează scroll-ul (meniu, lightbox); Lenis ascultă evenimentul. */
 export function lockScroll(lock: boolean) {
@@ -25,8 +26,10 @@ export function initReveal() {
   els.forEach((el) => io.observe(el));
 
   // Punctele din povestea (mobil) se aprind când momentul trece de mijlocul ecranului.
+  // Cu animații (.motion-ok), le aprinde scânteia firului (motion.ts), sincron cu scroll-ul.
   const momentsIO = new IntersectionObserver(
     (entries) => {
+      if (document.documentElement.classList.contains('motion-ok')) return;
       for (const e of entries) if (e.isIntersecting) e.target.classList.add('is-on');
     },
     { rootMargin: '0px 0px -45% 0px' },
@@ -256,8 +259,43 @@ export function initForm() {
       $('[data-success-yes]', success)!.hidden = !yes;
       $('[data-success-no]', success)!.hidden = yes;
       success.focus();
+      if (yes) goldBurst($('.success__mark', success));
     }
   });
+}
+
+/**
+ * Mică explozie de praf auriu când confirmarea „Da" reușește (o singură dată, ~1,4s).
+ * Web Animations API, doar transform/opacity; elementele se șterg la final. Fără ea la mișcare redusă.
+ */
+function goldBurst(anchor: Element | null) {
+  if (!anchor || reducedMotion() || !('animate' in Element.prototype)) return;
+  const host = anchor.parentElement;
+  if (!host) return;
+  host.style.position ||= 'relative';
+  const box = anchor.getBoundingClientRect();
+  const hb = host.getBoundingClientRect();
+  const cx = box.left - hb.left + box.width / 2;
+  const cy = box.top - hb.top + box.height * 0.45;
+  const n = 14;
+  for (let i = 0; i < n; i++) {
+    const d = document.createElement('i');
+    d.className = 'dust';
+    d.setAttribute('aria-hidden', 'true');
+    const size = 2.5 + (i % 3) * 1.5;
+    d.style.cssText = `left:${cx - size / 2}px;top:${cy - size / 2}px;width:${size}px;height:${size}px`;
+    host.appendChild(d);
+    const a = (i / n) * Math.PI * 2 + (i % 2) * 0.3;
+    const r = 60 + (i % 4) * 18;
+    d.animate(
+      [
+        { opacity: 0, transform: 'translate3d(0,0,0) scale(0.4)' },
+        { opacity: 1, offset: 0.2 },
+        { opacity: 0, transform: `translate3d(${Math.cos(a) * r}px, ${Math.sin(a) * r + 24}px, 0) scale(1)` },
+      ],
+      { duration: 1300 + (i % 5) * 80, delay: 450 + (i % 3) * 40, easing: 'cubic-bezier(0.2, 0.7, 0.3, 1)', fill: 'both' },
+    ).finished.finally(() => d.remove());
+  }
 }
 
 /* ── Galerie: puncte carusel (mobil) + lightbox <dialog> ─────────────────── */
@@ -305,9 +343,12 @@ export function initGallery() {
   let idx = 0;
   let opener: HTMLElement | null = null;
 
-  const show = (i: number) => {
+  const show = (i: number, dir = 0) => {
     idx = (i + items.length) % items.length;
     const d = items[idx].dataset;
+    // Direcția schimbului: poza veche iese într-o parte, cea nouă intră din cealaltă.
+    const move = reducedMotion() ? 0 : dir;
+    img.style.setProperty('--dir', String(move));
     img.classList.add('is-swapping');
     const apply = () => {
       sAvif.srcset = d.avif ?? '';
@@ -323,7 +364,24 @@ export function initGallery() {
     if (dlg.open) {
       setTimeout(apply, 180);
     } else apply();
-    const done = () => img.classList.remove('is-swapping');
+    let finished = false;
+    const done = () => {
+      if (finished) return;
+      finished = true;
+      if (move && dlg.open && img.animate) {
+        img.style.transition = 'none';
+        img.classList.remove('is-swapping');
+        img
+          .animate(
+            [
+              { opacity: 0, transform: `translateX(${move * 28}px) scale(0.985)` },
+              { opacity: 1, transform: 'none' },
+            ],
+            { duration: 520, easing: 'cubic-bezier(0.22, 1, 0.36, 1)' },
+          )
+          .finished.finally(() => img.style.removeProperty('transition'));
+      } else img.classList.remove('is-swapping');
+    };
     img.addEventListener('load', done, { once: true });
     setTimeout(done, 900);
   };
@@ -341,11 +399,11 @@ export function initGallery() {
 
   items.forEach((b, i) => b.addEventListener('click', () => open(i, b)));
   $('[data-lb-close]', dlg)?.addEventListener('click', () => dlg.close());
-  $('[data-lb-prev]', dlg)?.addEventListener('click', () => show(idx - 1));
-  $('[data-lb-next]', dlg)?.addEventListener('click', () => show(idx + 1));
+  $('[data-lb-prev]', dlg)?.addEventListener('click', () => show(idx - 1, -1));
+  $('[data-lb-next]', dlg)?.addEventListener('click', () => show(idx + 1, 1));
   dlg.addEventListener('keydown', (e) => {
-    if (e.key === 'ArrowLeft') show(idx - 1);
-    if (e.key === 'ArrowRight') show(idx + 1);
+    if (e.key === 'ArrowLeft') show(idx - 1, -1);
+    if (e.key === 'ArrowRight') show(idx + 1, 1);
   });
   // click pe fundal (în afara imaginii și a butoanelor) închide
   let swipedAt = 0;
@@ -372,7 +430,7 @@ export function initGallery() {
     const dy = e.clientY - y0;
     if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.2) {
       swipedAt = Date.now();
-      show(dx < 0 ? idx + 1 : idx - 1);
+      show(dx < 0 ? idx + 1 : idx - 1, dx < 0 ? 1 : -1);
     }
   });
   fig.addEventListener('pointercancel', () => (tracking = false));

@@ -20,6 +20,10 @@ export function initCountdown() {
 
   let timer = 0;
   let first = true;
+  // Cu animații: la prima apariție cifrele „se derulează" de la 00 la valoarea reală (~1,6s),
+  // apoi countdown-ul normal (cifre care se rotesc). Până atunci afișăm 00.
+  const motion = document.documentElement.classList.contains('motion-ok');
+  let counting = motion;
 
   const tick = () => {
     const diff = target - Date.now();
@@ -35,14 +39,15 @@ export function initCountdown() {
     const h = Math.floor((s % 86400) / 3600);
     const m = Math.floor((s % 3600) / 60);
     const sec = s % 60;
+    if (sr && !sr.textContent) {
+      // Text static pentru cititoare de ecran (fără anunțuri la fiecare secundă).
+      sr.textContent = `Mai sunt ${d} zile, ${h} ore și ${m} minute până la nuntă.`;
+    }
+    if (counting) return;
     if (els.days) setRoll(els.days, pad(d), !first);
     if (els.hours) setRoll(els.hours, pad(h), !first);
     if (els.minutes) setRoll(els.minutes, pad(m), !first);
     if (els.seconds) setRoll(els.seconds, pad(sec), !first);
-    if (first && sr) {
-      // Text static pentru cititoare de ecran (fără anunțuri la fiecare secundă).
-      sr.textContent = `Mai sunt ${d} zile, ${h} ore și ${m} minute până la nuntă.`;
-    }
     first = false;
   };
 
@@ -59,6 +64,45 @@ export function initCountdown() {
     clearTimeout(timer);
     timer = 0;
   };
+
+  const countUp = () => {
+    const diff = Math.max(0, target - Date.now());
+    const s = Math.floor(diff / 1000);
+    const goal = [Math.floor(s / 86400), Math.floor((s % 86400) / 3600), Math.floor((s % 3600) / 60), s % 60];
+    const list = [els.days, els.hours, els.minutes, els.seconds];
+    const dur = 1600;
+    const t0 = performance.now();
+    const frame = (now: number) => {
+      const t = Math.min(1, (now - t0) / dur);
+      const e = 1 - Math.pow(1 - t, 4); // easeOutQuart: rapid la început, se așază frumos
+      list.forEach((el, i) => el && setRoll(el, pad(Math.round(goal[i] * e)), false));
+      if (t < 1) requestAnimationFrame(frame);
+      else {
+        counting = false;
+        tick();
+      }
+    };
+    requestAnimationFrame(frame);
+  };
+
+  if (counting) {
+    [els.days, els.hours, els.minutes, els.seconds].forEach((el) => el && setRoll(el, '00', false));
+    // Pornește când grila e chiar în ecran (nu doar aproape), ca derularea să fie văzută.
+    const grid0 = grid ?? root;
+    const io = new IntersectionObserver(
+      ([e]) => {
+        if (!e.isIntersecting) return;
+        io.disconnect();
+        // Dacă între timp s-a dezactivat animația (ex. GSAP n-a pornit), sari direct la valori.
+        if (!document.documentElement.classList.contains('motion-ok')) {
+          counting = false;
+          tick();
+        } else countUp();
+      },
+      { threshold: 0.6 },
+    );
+    io.observe(grid0);
+  }
 
   tick();
   // Rulează doar când secțiunea e vizibilă (economie de baterie).

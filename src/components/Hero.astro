@@ -52,6 +52,7 @@ import { photos, crops } from '../data/photos';
             </span>
           ))
         }
+        <span class="env__seal-glint" data-seal-glint><i></i></span>
       </span>
     </div>
 
@@ -218,6 +219,21 @@ import { photos, crops } from '../data/photos';
       inset 0 0 0 5px rgb(0 0 0 / 0.08),
       inset 0 0 0 9px rgb(255 230 190 / 0.12);
     will-change: transform, opacity;
+  }
+  /* Sclipirea de pe ceară: o dungă de lumină mutată doar prin transform (GSAP, motion.ts). */
+  .env__seal-glint {
+    position: absolute;
+    inset: 0;
+    border-radius: 47% 53% 50% 50% / 52% 48% 52% 48%;
+    overflow: hidden;
+    pointer-events: none;
+  }
+  .env__seal-glint i {
+    position: absolute;
+    inset: -10% 25%;
+    background: linear-gradient(100deg, transparent 20%, rgb(255 248 225 / 0.55) 50%, transparent 80%);
+    transform: translateX(-160%) rotate(12deg);
+    will-change: transform;
   }
   /* Linia de crăpătură (zimțată) dintre cele două jumătăți ale sigiliului. */
   .env__seal-half--l {

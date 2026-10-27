@@ -118,6 +118,15 @@
   --arch: 999px 999px 0 0;
   --header-h: 4rem;
 
+  /* ── Efecte aurii: „butoanele de volum" (vezi și FX în scripts/motion.ts) ──
+     --spark-size  diametrul halo-ului scânteii care conduce firul auriu
+     --spark-glow  intensitatea halo-ului (0 = doar miezul, 1 = maxim)
+     --sheen       intensitatea luciului care trece peste fir / butoane / nume (0 = oprit) */
+  --spark-size: 26px;
+  --spark-glow: 0.9;
+  --sheen: 0.55;
+  --gold-light: #fff3cf;
+
   color-scheme: dark light;
 }
 
@@ -519,6 +528,140 @@ svg:has(> .thread) {
   overflow-anchor: none;
 }
 
+/* Scânteia din capătul firului (creată din motion.ts, deci există doar cu animații).
+   Poziția = un singur translate3d; halo-ul reacționează la viteză (scale/opacity). Fără filter/blur:
+   lumina e un radial-gradient rasterizat o dată, deci totul rămâne pe compozitor. */
+.spark {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 0; /* sub conținutul poziționat de deasupra firului (carduri, pictograme) */
+  width: 0;
+  height: 0;
+  pointer-events: none;
+  opacity: 0;
+  will-change: transform, opacity;
+  overflow-anchor: none;
+}
+.spark__halo,
+.spark__core {
+  position: absolute;
+  border-radius: 50%;
+}
+.spark__halo {
+  left: calc(var(--spark-size) / -2);
+  top: calc(var(--spark-size) / -2);
+  width: var(--spark-size);
+  height: var(--spark-size);
+  background: radial-gradient(
+    circle,
+    rgb(255 243 207 / calc(var(--spark-glow) * 0.95)) 0%,
+    rgb(232 208 154 / calc(var(--spark-glow) * 0.45)) 28%,
+    rgb(201 165 90 / calc(var(--spark-glow) * 0.14)) 55%,
+    transparent 72%
+  );
+  will-change: transform, opacity;
+}
+.spark__core {
+  left: -2.5px;
+  top: -2.5px;
+  width: 5px;
+  height: 5px;
+  background: var(--gold-light);
+  box-shadow: 0 0 6px 1px rgb(255 236 190 / 0.8);
+}
+/* Coada (doar pe firele verticale): fir mai luminos chiar în spatele scânteii. */
+.spark__tail {
+  position: absolute;
+  left: -0.75px;
+  bottom: 0;
+  width: 1.5px;
+  height: 64px;
+  border-radius: 1px;
+  background: linear-gradient(to bottom, transparent, rgb(255 243 207 / 0.95));
+}
+/* Luciul care curge pe partea deja umplută a firelor verticale (rulează doar cât e în ecran). */
+.line-sheen {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 22%;
+  background: linear-gradient(to bottom, transparent, rgb(255 246 222 / var(--sheen)), transparent);
+  transform: translate3d(0, -100%, 0);
+  pointer-events: none;
+}
+.is-live > * > .line-sheen {
+  animation: line-sheen 3.6s cubic-bezier(0.45, 0, 0.25, 1) infinite;
+}
+@keyframes line-sheen {
+  0% {
+    transform: translate3d(0, -100%, 0);
+  }
+  70%,
+  100% {
+    transform: translate3d(0, 560%, 0);
+  }
+}
+/* Praf auriu (creat din motion.ts): la ruperea sigiliului și ambiental în final. */
+.dust {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--gold-light) 0%, #e8d09a 40%, rgb(201 165 90 / 0) 72%);
+  opacity: 0;
+  pointer-events: none;
+  will-change: transform, opacity;
+}
+.dust-burst {
+  position: absolute;
+  z-index: 4;
+  left: 50%;
+  top: 58%;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+.dust-burst .dust {
+  left: -2px;
+  top: -2px;
+}
+.dust-field {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  overflow: hidden;
+  pointer-events: none;
+}
+.dust-field .dust {
+  animation: dust-rise 12s linear infinite;
+  animation-play-state: paused;
+}
+.dust-field.is-live .dust {
+  animation-play-state: running;
+}
+@keyframes dust-rise {
+  0% {
+    transform: translate3d(0, 0, 0);
+    opacity: 0;
+  }
+  18%,
+  75% {
+    opacity: var(--o, 0.6);
+  }
+  100% {
+    transform: translate3d(var(--dx, 0), -42vh, 0);
+    opacity: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .spark,
+  .line-sheen,
+  .dust-burst,
+  .dust-field {
+    display: none;
+  }
+}
+
 /* ──────────────────────────────────────────────────────────────────────────
    Reveal simplu (IntersectionObserver + CSS). Ascuns DOAR sub .js
    ────────────────────────────────────────────────────────────────────────── */
@@ -542,6 +685,105 @@ svg:has(> .thread) {
   .js [data-reveal] {
     transition: opacity 0.4s linear;
     transform: none !important;
+  }
+}
+
+/* ── Rafinări de reveal (doar cu animații: sub .motion-ok) ─────────────── */
+/* Titlurile scrise de mână „se scriu" de la stânga la dreapta (o singură dată, la intrare).
+   Margini negative mari ca să nu taie bucle/codițe ale fontului script. */
+.motion-ok .h2[data-reveal] {
+  clip-path: inset(-40% -12% -45% -12%);
+  transition:
+    opacity 0.9s var(--ease-out),
+    transform 1.1s var(--ease-out),
+    clip-path 1.5s cubic-bezier(0.55, 0.05, 0.25, 1);
+  transition-delay: calc(var(--d, 0) * 1ms);
+}
+.motion-ok .h2[data-reveal]:not(.is-in) {
+  clip-path: inset(-40% 100% -45% -12%);
+}
+/* Liniuțele kicker-ului cresc dinspre text spre exterior. */
+.motion-ok .kicker[data-reveal]::before,
+.motion-ok .kicker[data-reveal]::after {
+  transform-origin: 100% 50%;
+  transition: transform 1.1s 0.25s var(--ease-out);
+}
+.motion-ok .kicker[data-reveal]::after {
+  transform-origin: 0 50%;
+}
+.motion-ok .kicker[data-reveal]:not(.is-in)::before,
+.motion-ok .kicker[data-reveal]:not(.is-in)::after {
+  transform: scaleX(0);
+}
+/* Ornamentul (linie – inimioară – linie): inima apare, liniile se întind din ea. */
+.motion-ok .ornament[data-reveal]::before,
+.motion-ok .ornament[data-reveal]::after {
+  transform-origin: 100% 50%;
+  transition: transform 1.3s 0.2s var(--ease-out);
+}
+.motion-ok .ornament[data-reveal]::after {
+  transform-origin: 0 50%;
+}
+.motion-ok .ornament[data-reveal] svg {
+  transition: transform 0.9s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.motion-ok .ornament[data-reveal]:not(.is-in)::before,
+.motion-ok .ornament[data-reveal]:not(.is-in)::after {
+  transform: scaleX(0);
+}
+.motion-ok .ornament[data-reveal]:not(.is-in) svg {
+  transform: scale(0.4);
+}
+.js .ornament[data-reveal]:not(.is-in) {
+  transform: none;
+}
+
+/* Luciu auriu care trece o dată peste textul metalic (numele mirilor) când apare.
+   Excepție intenționată de la „doar transform/opacity": background-position, o singură
+   trecere de ~2s pe un singur element (nu se repetă, nu e legat de scroll). */
+.motion-ok .gold-text[data-reveal] {
+  background-image:
+    linear-gradient(105deg, transparent 40%, rgb(255 250 232 / var(--sheen)) 50%, transparent 60%),
+    var(--gold-grad);
+  background-size:
+    300% 100%,
+    100% 100%;
+  background-repeat: no-repeat;
+  background-position:
+    100% 0,
+    0 0;
+}
+.motion-ok .gold-text[data-reveal].is-in {
+  animation: gold-sheen 2.2s 0.6s cubic-bezier(0.45, 0, 0.2, 1) both;
+}
+@keyframes gold-sheen {
+  from {
+    background-position:
+      100% 0,
+      0 0;
+  }
+  to {
+    background-position:
+      0% 0,
+      0 0;
+  }
+}
+
+/* Butoane: o dungă de lumină trece peste buton la hover (doar transform, doar pe dispozitive cu mouse). */
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .btn::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    background: linear-gradient(105deg, transparent 30%, rgb(255 246 222 / var(--sheen)) 50%, transparent 70%);
+    transform: translateX(-110%);
+    pointer-events: none;
+  }
+  .btn:hover::after {
+    transform: translateX(110%);
+    transition: transform 0.9s cubic-bezier(0.45, 0, 0.2, 1);
   }
 }
 
