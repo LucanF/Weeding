@@ -28,6 +28,9 @@ const Q = {
   desktop: '(min-width: 1024px) and (prefers-reduced-motion: no-preference)',
   mobile: '(max-width: 1023px) and (prefers-reduced-motion: no-preference)',
   reduced: '(prefers-reduced-motion: reduce)',
+  // Telefon/tabletă în landscape: fereastra arcuită ar fi prea lată și prea joasă (poza nu încape),
+  // deci hero-ul și finalul rămân full-bleed. Cheia separată face ca rotirea să reconstruiască animațiile.
+  landscape: '(max-width: 1023px) and (orientation: landscape) and (prefers-reduced-motion: no-preference)',
 };
 
 /**
@@ -83,7 +86,7 @@ async function heroIntro() {
 }
 
 /** Hero: imaginea full-bleed se strânge într-o fereastră arcuită; numele urcă în header. */
-function heroScroll(desktop: boolean) {
+function heroScroll(desktop: boolean, landscape = false) {
   const hero = $('[data-hero]');
   const frame = $('[data-hero-frame]');
   const media = $('[data-hero-media]');
@@ -142,8 +145,11 @@ function heroScroll(desktop: boolean) {
 
   // Predare titlu → logo: titlul ajunge la poziția logo-ului la ~0.58; în aceeași fereastră
   // (0.48–0.6) titlul se stinge și logo-ul se aprinde pe loc → fără gol și fără „pas".
-  tl.fromTo(frame, { clipPath: FULL }, { clipPath: () => insetStr(win, radius()), ease: 'power2.inOut', duration: 0.7 }, 0)
-    .fromTo(
+  // În landscape pe telefon poza rămâne full-bleed (fără fereastra arcuită și fără inel).
+  if (!landscape) {
+    tl.fromTo(frame, { clipPath: FULL }, { clipPath: () => insetStr(win, radius()), ease: 'power2.inOut', duration: 0.7 }, 0);
+  }
+  tl.fromTo(
       media,
       { scale: 1, x: 0 },
       {
@@ -165,7 +171,12 @@ function heroScroll(desktop: boolean) {
     .fromTo(header, { '--hdr-bg': 0 }, { '--hdr-bg': 1, duration: 0.16, ease: 'sine.inOut' }, 0.44)
     .to(title, { opacity: 0, duration: 0.12, ease: 'sine.inOut' }, 0.48)
     .fromTo(logo, { opacity: 0, y: -4 }, { opacity: 1, y: 0, duration: 0.12, ease: 'sine.inOut', force3D: true }, 0.48)
-    .fromTo('[data-hero-ring]', { opacity: 0, scale: 0.96 }, { opacity: 1, scale: 1, duration: 0.28, ease: 'power2.out' }, 0.52)
+    .fromTo(
+      '[data-hero-ring]',
+      { opacity: 0, scale: 0.96 },
+      { opacity: landscape ? 0 : 1, scale: 1, duration: 0.28, ease: 'power2.out' },
+      0.52,
+    )
     .fromTo('[data-hero-caption]', { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.22, ease: 'power2.out' }, 0.6)
     .to({}, { duration: 0.18 });
 
@@ -408,7 +419,7 @@ function parallax(desktop: boolean) {
 }
 
 /** Finalul oglindește hero-ul: fereastra arcuită se deschide spre full-bleed; firul închide monograma. */
-function finale(desktop: boolean) {
+function finale(desktop: boolean, landscape = false) {
   const sec = $('[data-finale]');
   const frame = $('[data-fin-frame]');
   const media = $('[data-fin-media]');
@@ -429,8 +440,10 @@ function finale(desktop: boolean) {
       onRefreshInit: () => (vw = innerWidth),
     },
   });
-  tl.fromTo(frame, { clipPath: () => insetStr(win, radius()) }, { clipPath: FULL, ease: 'power2.inOut', duration: 0.6 }, 0)
-    .fromTo(
+  if (!landscape) {
+    tl.fromTo(frame, { clipPath: () => insetStr(win, radius()) }, { clipPath: FULL, ease: 'power2.inOut', duration: 0.6 }, 0);
+  }
+  tl.fromTo(
       media,
       { scale: 1.18, x: () => (desktop ? vw * 0.16 : 0) },
       { scale: 1, x: 0, ease: 'power2.inOut', duration: 0.6, force3D: true },
@@ -459,7 +472,7 @@ export function initMotion() {
 
   const mm = gsap.matchMedia();
   mm.add(Q, (ctx) => {
-    const { desktop, reduced } = ctx.conditions as Record<keyof typeof Q, boolean>;
+    const { desktop, reduced, landscape } = ctx.conditions as Record<keyof typeof Q, boolean>;
     if (reduced) {
       // Fără pin/scrub/parallax: layout static + fade-uri CSS scurte.
       html.classList.remove('motion-ok');
@@ -468,13 +481,13 @@ export function initMotion() {
     }
     SCRUB = desktop ? 0.5 : 0.6;
     SCRUB_SOFT = desktop ? 0.7 : 0.9;
-    const cleanupHero = heroScroll(desktop);
+    const cleanupHero = heroScroll(desktop, landscape);
     invitation();
     threads();
     const cleanupStory = story(desktop);
     pano();
     parallax(desktop);
-    finale(desktop);
+    finale(desktop, landscape);
     return () => {
       cleanupHero?.();
       cleanupStory?.();
