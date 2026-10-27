@@ -227,6 +227,22 @@ function threads() {
       })
       .add(drawTween(p, 1), 0);
   });
+
+  // Linia din „Program": element scalat pe Y (compozitat), nu SVG cu stroke-dash.
+  const fill = $('[data-sch-fill]');
+  const list = fill?.closest('ol');
+  if (fill && list) {
+    gsap.fromTo(
+      fill,
+      { scaleY: 0 },
+      {
+        scaleY: 1,
+        ease: 'none',
+        force3D: true,
+        scrollTrigger: { trigger: list, start: 'top 70%', end: 'bottom 55%', scrub: SCRUB_SOFT },
+      },
+    );
+  }
 }
 
 /** Povestea: desktop = timeline orizontal (sticky + translateX); mobil = vertical. */
@@ -369,6 +385,7 @@ function parallax(desktop: boolean) {
       {
         y: 0,
         ease: 'power1.out',
+        force3D: true, // umbra mare a panoului se rasterizează o dată, nu la fiecare frame
         scrollTrigger: { trigger: panel, start: 'top bottom', end: 'top 45%', scrub: SCRUB_SOFT },
       },
     );

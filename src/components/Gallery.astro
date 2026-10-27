@@ -7,13 +7,27 @@ import { photos, galleryOrder } from '../data/photos';
 const items = await Promise.all(
   galleryOrder.map(async (key, index) => {
     const p = photos[key];
+    // Lightbox: srcset (telefon ~1080px, desktop/retina mare ~1800px), încărcat doar la deschidere.
     const w = Math.min(1800, p.src.width);
-    const [avif, webp, jpg] = await Promise.all(
-      (['avif', 'webp', 'jpg'] as const).map((format) =>
-        getImage({ src: p.src, width: w, format, quality: format === 'avif' ? 55 : 76 }),
-      ),
-    );
-    return { key, index, p, avif: avif.src, webp: webp.src, jpg: jpg.src, w, h: Math.round((p.src.height * w) / p.src.width) };
+    const ws = [...new Set([1080, 1800].map((x) => Math.min(x, p.src.width)))];
+    const set = async (format: 'avif' | 'webp' | 'jpg') => {
+      const imgs = await Promise.all(
+        ws.map((x) => getImage({ src: p.src, width: x, format, quality: format === 'avif' ? 55 : 76 })),
+      );
+      return { srcset: imgs.map((r, i) => `${r.src} ${ws[i]}w`).join(', '), src: imgs[imgs.length - 1].src };
+    };
+    const [avif, webp, jpg] = await Promise.all([set('avif'), set('webp'), set('jpg')]);
+    return {
+      key,
+      index,
+      p,
+      avif: avif.srcset,
+      webp: webp.srcset,
+      jpgSet: jpg.srcset,
+      jpg: jpg.src,
+      w,
+      h: Math.round((p.src.height * w) / p.src.width),
+    };
   }),
 );
 // Trei coloane pe desktop (parallax cu viteze diferite); pe mobil devin un carusel.
@@ -40,6 +54,7 @@ const speeds = [-8, 10, -4];
               data-avif={it.avif}
               data-webp={it.webp}
               data-jpg={it.jpg}
+              data-jpgset={it.jpgSet}
               data-w={it.w}
               data-h={it.h}
               data-alt={it.p.alt}
@@ -80,9 +95,15 @@ const speeds = [-8, 10, -4];
     </div>
     <figure class="lb__fig" data-lb-fig>
       <picture>
-        <source type="image/avif" data-lb-avif />
-        <source type="image/webp" data-lb-webp />
-        <img class="lb__img" alt="" data-lb-img decoding="async" />
+        <source type="image/avif" data-lb-avif sizes="(min-width: 960px) calc(100vw - 14rem), 100vw" />
+        <source type="image/webp" data-lb-webp sizes="(min-width: 960px) calc(100vw - 14rem), 100vw" />
+        <img
+          class="lb__img"
+          alt=""
+          data-lb-img
+          decoding="async"
+          sizes="(min-width: 960px) calc(100vw - 14rem), 100vw"
+        />
       </picture>
       <figcaption class="lb__cap" data-lb-cap></figcaption>
     </figure>

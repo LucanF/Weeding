@@ -89,7 +89,7 @@ const style = lqip ? `background-image:url(${lqip})` : undefined;
     class:list={['img', imgClass]}
     style={style}
     loading={priority ? 'eager' : 'lazy'}
-    decoding={priority ? 'sync' : 'async'}
+    decoding="async"
     fetchpriority={priority ? 'high' : 'auto'}
     {...imgAttrs}
   />

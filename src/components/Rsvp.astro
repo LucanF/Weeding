@@ -205,6 +205,9 @@ const f = rsvp.fields;
     border-radius: 50% 50% 1.5rem 1.5rem / 10rem 10rem 1.5rem 1.5rem;
     box-shadow: 0 40px 80px -30px rgb(0 0 0 / 0.6);
   }
+  :global(.motion-ok) .rsvp__panel {
+    will-change: transform;
+  }
   @media (max-width: 600px) {
     .rsvp__panel {
       border-radius: 50% 50% 1.25rem 1.25rem / 7rem 7rem 1.25rem 1.25rem;

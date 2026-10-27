@@ -328,6 +328,11 @@ import { photos } from '../data/photos';
     position: absolute;
     inset: 0;
   }
+  :global(.motion-ok) .pano__clip,
+  :global(.motion-ok) .pano__media {
+    will-change: transform;
+    backface-visibility: hidden;
+  }
   .pano__media :global(.pano__pic),
   .pano__media :global(.pano__img) {
     width: 100%;

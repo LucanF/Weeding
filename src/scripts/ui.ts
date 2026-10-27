@@ -37,6 +37,12 @@ export function initReveal() {
 /* ── Pozele „lazy" se încarcă și se decodează cu ~1,5 ecrane înainte să apară ──
    (decode() în afara thread-ului principal → fără sacadare când intră în viewport). */
 export function initPreload() {
+  $$<HTMLImageElement>('img[style*="background-image"]').forEach((img) => {
+    const clear = () => img.style.removeProperty('background-image');
+    if (img.complete && img.naturalWidth) clear();
+    else img.addEventListener('load', clear, { once: true });
+  });
+
   const imgs = $$<HTMLImageElement>('img[loading="lazy"]');
   if (!imgs.length || !('IntersectionObserver' in window)) return;
   const io = new IntersectionObserver(
@@ -257,14 +263,26 @@ export function initGallery() {
   const dots = $$('.gal__dot');
   if (!track || !items.length) return;
 
+  // Lățimea unui pas se măsoară doar la încărcare / resize (fără layout forțat în timpul scroll-ului).
+  let step = 0;
+  const measure = () => {
+    const a = items[0].getBoundingClientRect();
+    const b = items[1]?.getBoundingClientRect();
+    step = b ? Math.abs(b.left - a.left) || a.width : a.width;
+  };
+  new ResizeObserver(measure).observe(track);
   let raf = 0;
+  let current = 0;
   track.addEventListener(
     'scroll',
     () => {
-      cancelAnimationFrame(raf);
+      if (raf) return;
       raf = requestAnimationFrame(() => {
-        const w = items[0].getBoundingClientRect().width + 14;
-        const i = Math.round(track.scrollLeft / w);
+        raf = 0;
+        if (!step) return;
+        const i = Math.round(track.scrollLeft / step);
+        if (i === current) return;
+        current = i;
         dots.forEach((d, k) => d.classList.toggle('is-on', k === i));
       });
     },
@@ -288,6 +306,7 @@ export function initGallery() {
     const apply = () => {
       sAvif.srcset = d.avif ?? '';
       sWebp.srcset = d.webp ?? '';
+      img.srcset = d.jpgset ?? '';
       img.src = d.jpg ?? '';
       img.width = Number(d.w);
       img.height = Number(d.h);

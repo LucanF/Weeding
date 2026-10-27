@@ -93,6 +93,7 @@ import { photos, crops } from '../data/photos';
   }
   /* Straturi proprii pe GPU (iOS Safari nu le promovează singur pentru transform-uri 2D):
      poza și titlul nu se mai re-randează la fiecare frame de scroll. */
+  :global(.motion-ok) .hero__frame,
   :global(.motion-ok) .hero__media,
   :global(.motion-ok) .hero__title {
     will-change: transform;

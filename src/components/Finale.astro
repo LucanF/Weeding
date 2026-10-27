@@ -76,6 +76,12 @@ import { photos, crops } from '../data/photos';
     position: absolute;
     inset: 0;
   }
+  /* Strat propriu: clip-path-ul animat devine mască pe GPU (WebKit), fără repaint de poză. */
+  :global(.motion-ok) .fin__frame,
+  :global(.motion-ok) .fin__media {
+    will-change: transform;
+    backface-visibility: hidden;
+  }
   .fin__media :global(.fin__pic),
   .fin__media :global(.fin__img) {
     width: 100%;
