@@ -51,6 +51,9 @@ import { couple, nav } from '../data/wedding';
   }
   .hdr__bar {
     pointer-events: auto;
+    transition:
+      opacity 0.6s var(--ease-out),
+      transform 0.6s var(--ease-out);
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -72,6 +75,12 @@ import { couple, nav } from '../data/wedding';
   }
   :global(.hdr.is-solid) .hdr__bar::before {
     opacity: 1;
+  }
+  /* Plic închis: bara de sus nu se vede (doar cu animații – altfel nu există plic). */
+  :global(.motion-ok .hdr.is-veiled) .hdr__bar {
+    opacity: 0;
+    transform: translateY(-10px);
+    pointer-events: none;
   }
   .hdr__logo {
     display: inline-flex;

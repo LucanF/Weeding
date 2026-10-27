@@ -65,13 +65,20 @@ export function initHeader() {
   const header = $('[data-header]');
   const hero = $('[data-hero]');
   if (!header) return;
-  // Logo-ul e vizibil de la început (numele sunt pe plic, nu mai „zboară" în header).
-
+  // Cât timp plicul e închis, bara de sus (nume, „Confirmă", meniu) e ascunsă; apare când se deschide.
+  // Fără animații (sau dacă GSAP nu pornește) nu există plic, deci bara e vizibilă de la început (vezi CSS).
+  let envOpen = false;
   let heroDone = false;
   let pastHero = false;
   const sync = () => {
     header.classList.toggle('is-solid', pastHero || heroDone);
+    header.classList.toggle('is-veiled', !(envOpen || pastHero));
   };
+  sync();
+  window.addEventListener('dd:env', (e) => {
+    envOpen = (e as CustomEvent<boolean>).detail;
+    sync();
+  });
   window.addEventListener('dd:hero', (e) => {
     heroDone = (e as CustomEvent<boolean>).detail;
     sync();

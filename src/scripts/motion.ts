@@ -86,6 +86,7 @@ function heroScroll() {
   const g = { force3D: true };
 
   let wasDone = false;
+  let wasOpen = false;
   const tl = gsap.timeline({
     defaults: { ease: 'none' },
     scrollTrigger: {
@@ -94,6 +95,12 @@ function heroScroll() {
       end: 'bottom bottom',
       scrub: SCRUB,
       onUpdate(self) {
+        // clapele de jos/laterale au ieșit pe jumătate → plicul „e deschis", apare bara de sus
+        const open = self.progress > 0.45;
+        if (open !== wasOpen) {
+          wasOpen = open;
+          window.dispatchEvent(new CustomEvent('dd:env', { detail: open }));
+        }
         const done = self.progress > 0.7;
         if (done !== wasDone) {
           wasDone = done;
@@ -401,6 +408,7 @@ export function initMotion() {
       // Fără pin/scrub/parallax: layout static + fade-uri CSS scurte.
       html.classList.remove('motion-ok');
       window.dispatchEvent(new CustomEvent('dd:hero', { detail: false }));
+      window.dispatchEvent(new CustomEvent('dd:env', { detail: true }));
       return () => html.classList.add('motion-ok');
     }
     SCRUB = desktop ? 0.5 : 0.6;
