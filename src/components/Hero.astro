@@ -91,6 +91,13 @@ import { photos, crops } from '../data/photos';
     inset: 0;
     transform-origin: 50% 45%;
   }
+  /* Straturi proprii pe GPU (iOS Safari nu le promovează singur pentru transform-uri 2D):
+     poza și titlul nu se mai re-randează la fiecare frame de scroll. */
+  :global(.motion-ok) .hero__media,
+  :global(.motion-ok) .hero__title {
+    will-change: transform;
+    backface-visibility: hidden;
+  }
   .hero__media :global(.hero__pic),
   .hero__media :global(.hero__img) {
     width: 100%;

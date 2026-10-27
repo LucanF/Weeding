@@ -73,7 +73,9 @@ async function heroIntro() {
   const split = SplitText.create(names, { type: 'chars,lines', mask: 'lines', aria: 'none', linesClass: 'hl' });
   visual.classList.add('is-ready');
 
-  const tl = gsap.timeline({ defaults: { ease: 'expo.out' } });
+  // După intro, SplitText se anulează: titlul redevine text simplu (fără zeci de span-uri cu măști),
+  // deci se rasterizează o singură dată când e scalat spre header.
+  const tl = gsap.timeline({ defaults: { ease: 'expo.out' }, onComplete: () => split.revert() });
   if (img) tl.fromTo(img, { scale: 1.08 }, { scale: 1, duration: 2.8, ease: 'power3.out', clearProps: 'transform' }, 0);
   tl.from(split.chars, { yPercent: 118, duration: 1.6, stagger: 0.045 }, 0.15)
     .from('[data-hero-amp]', { opacity: 0, scale: 0.6, rotate: -10, duration: 1.7 }, 0.5)
@@ -87,7 +89,10 @@ function heroScroll(desktop: boolean) {
   const media = $('[data-hero-media]');
   const title = $('[data-hero-title]');
   const logo = $('[data-logo]');
-  if (!hero || !frame || !media || !title || !logo) return;
+  const header = $('[data-header]');
+  if (!hero || !frame || !media || !title || !logo || !header) return;
+  // Logo-ul și fundalul header-ului sunt conduse de scroll (nu de tranziții CSS pe timp).
+  header.classList.add('is-linked');
 
   const win: Inset = desktop ? { t: 13, r: 35, b: 11, l: 35 } : { t: 16, r: 12, b: 16, l: 12 };
   // Lățimea se citește doar la refresh (nu la fiecare frame).
@@ -99,10 +104,13 @@ function heroScroll(desktop: boolean) {
   const measure = () => {
     vw = innerWidth;
     const prev = title.style.transform;
+    const prevLogo = logo.style.transform;
     title.style.transform = 'none';
+    logo.style.transform = 'none';
     const a = title.getBoundingClientRect();
-    title.style.transform = prev;
     const b = logo.getBoundingClientRect();
+    title.style.transform = prev;
+    logo.style.transform = prevLogo;
     const s = desktop ? b.width / a.width : Math.min(b.width / a.width, (b.height / a.height) * 2.2);
     delta = {
       x: b.left + b.width / 2 - (a.left + a.width / 2),
@@ -123,7 +131,7 @@ function heroScroll(desktop: boolean) {
       invalidateOnRefresh: true,
       onRefreshInit: measure,
       onUpdate(self) {
-        const done = self.progress > 0.62;
+        const done = self.progress > 0.6;
         if (done !== wasDone) {
           wasDone = done;
           window.dispatchEvent(new CustomEvent('dd:hero', { detail: done }));
@@ -132,20 +140,39 @@ function heroScroll(desktop: boolean) {
     },
   });
 
+  // Predare titlu → logo: titlul ajunge la poziția logo-ului la ~0.58; în aceeași fereastră
+  // (0.48–0.6) titlul se stinge și logo-ul se aprinde pe loc → fără gol și fără „pas".
   tl.fromTo(frame, { clipPath: FULL }, { clipPath: () => insetStr(win, radius()), ease: 'power2.inOut', duration: 0.7 }, 0)
     .fromTo(
       media,
       { scale: 1, x: 0 },
-      { scale: desktop ? 1.14 : 1.04, x: () => (desktop ? vw * 0.16 : 0), ease: 'power2.inOut', duration: 0.7 },
+      {
+        scale: desktop ? 1.14 : 1.04,
+        x: () => (desktop ? vw * 0.16 : 0),
+        ease: 'power2.inOut',
+        duration: 0.7,
+        force3D: true,
+      },
       0,
     )
     .to('[data-hero-shade]', { opacity: 0.2, duration: 0.5, ease: 'sine.inOut' }, 0)
     .to('[data-hero-fade]', { opacity: 0, y: -24, duration: 0.2, stagger: 0.03, ease: 'power1.in' }, 0)
-    .to(title, { x: () => delta.x, y: () => delta.y, scale: () => delta.s, ease: 'power2.inOut', duration: 0.55 }, 0.06)
-    .to(title, { opacity: 0, duration: 0.1, ease: 'sine.in' }, desktop ? 0.55 : 0.45)
+    .to(
+      title,
+      { x: () => delta.x, y: () => delta.y, scale: () => delta.s, ease: 'power2.inOut', duration: 0.52, force3D: true },
+      0.06,
+    )
+    .fromTo(header, { '--hdr-bg': 0 }, { '--hdr-bg': 1, duration: 0.16, ease: 'sine.inOut' }, 0.44)
+    .to(title, { opacity: 0, duration: 0.12, ease: 'sine.inOut' }, 0.48)
+    .fromTo(logo, { opacity: 0, y: -4 }, { opacity: 1, y: 0, duration: 0.12, ease: 'sine.inOut', force3D: true }, 0.48)
     .fromTo('[data-hero-ring]', { opacity: 0, scale: 0.96 }, { opacity: 1, scale: 1, duration: 0.28, ease: 'power2.out' }, 0.52)
     .fromTo('[data-hero-caption]', { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.22, ease: 'power2.out' }, 0.6)
     .to({}, { duration: 0.18 });
+
+  return () => {
+    header.classList.remove('is-linked');
+    gsap.set([logo, header], { clearProps: 'opacity,transform,--hdr-bg' });
+  };
 }
 
 /** Invitația: night → ivory (crossfade de strat), apoi textul se luminează cuvânt cu cuvânt. */
@@ -424,14 +451,17 @@ export function initMotion() {
     }
     SCRUB = desktop ? 0.5 : 0.6;
     SCRUB_SOFT = desktop ? 0.7 : 0.9;
-    heroScroll(desktop);
+    const cleanupHero = heroScroll(desktop);
     invitation();
     threads();
     const cleanupStory = story(desktop);
     pano();
     parallax(desktop);
     finale(desktop);
-    return () => cleanupStory?.();
+    return () => {
+      cleanupHero?.();
+      cleanupStory?.();
+    };
   });
 
   smoothScroll();
