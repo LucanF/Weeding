@@ -73,16 +73,6 @@ import { couple, nav } from '../data/wedding';
   :global(.hdr.is-solid) .hdr__bar::before {
     opacity: 1;
   }
-  /* Cu animații: fundalul și logo-ul urmează scroll-ul din hero (GSAP), fără tranziții pe timp
-     care s-ar bate cu scrub-ul. */
-  :global(.hdr.is-linked) .hdr__bar::before {
-    opacity: var(--hdr-bg, 1);
-    transition: none;
-  }
-  :global(.hdr.is-linked) .hdr__logo {
-    transition: none;
-    will-change: opacity, transform;
-  }
   .hdr__logo {
     display: inline-flex;
     align-items: baseline;
@@ -102,12 +92,6 @@ import { couple, nav } from '../data/wedding';
     font-size: 1.3em;
     line-height: 1;
     transform: translateY(0.08em);
-  }
-  /* Logo-ul apare abia după hero (doar cu JS). */
-  :global(.js .hdr.is-hero) .hdr__logo {
-    opacity: 0;
-    transform: translateY(-6px);
-    pointer-events: none;
   }
   .hdr__nav {
     display: none;

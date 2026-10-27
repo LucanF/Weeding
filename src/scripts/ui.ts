@@ -65,12 +65,11 @@ export function initHeader() {
   const header = $('[data-header]');
   const hero = $('[data-hero]');
   if (!header) return;
-  header.classList.add('is-hero');
+  // Logo-ul e vizibil de la început (numele sunt pe plic, nu mai „zboară" în header).
 
   let heroDone = false;
   let pastHero = false;
   const sync = () => {
-    header.classList.toggle('is-hero', !(heroDone || pastHero));
     header.classList.toggle('is-solid', pastHero || heroDone);
   };
   window.addEventListener('dd:hero', (e) => {
