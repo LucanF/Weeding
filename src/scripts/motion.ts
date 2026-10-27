@@ -172,24 +172,33 @@ function invitation() {
   );
 }
 
+/**
+ * Desenează un fir SVG (pathLength="1") la scroll. CAUZA „snappy": GSAP rotunjește strokeDashoffset
+ * (unitless 1→0) la întreg, deci firul sărea de la 1 la 0 la jumătatea scroll-ului. Animăm un proxy
+ * numeric și scriem stilul direct; fade-in în primele ~12% ca capătul rotunjit al unui dash ~0 să nu
+ * apară ca un punct. Se adaugă într-un timeline: `.add(drawTween(p, durată), poziție)`.
+ */
+function drawTween(p: SVGPathElement, duration: number) {
+  const draw = { v: 1 };
+  p.style.strokeDasharray = '1';
+  p.style.strokeDashoffset = '1';
+  return gsap
+    .timeline({ defaults: { ease: 'none' } })
+    .to(draw, { v: 0, duration, onUpdate: () => (p.style.strokeDashoffset = draw.v.toFixed(4)) }, 0)
+    .fromTo(p, { opacity: 0 }, { opacity: 1, duration: duration * 0.12, ease: 'sine.out' }, 0);
+}
+
 /** Firele aurii mici (segmentele dintre secțiuni) se desenează la scroll. */
 function threads() {
   $$<SVGPathElement>('[data-draw]').forEach((p) => {
     const svg = p.ownerSVGElement ?? p;
-    // Interval generos (de la intrarea în viewport până spre centru) + fade-in blând la început,
-    // ca să nu existe apariție bruscă (capătul rotunjit al unui dash de ~0 se vedea ca un punct).
-    // CAUZA „snappy": GSAP rotunjește strokeDashoffset (unitless 1→0) la întreg, deci firul sărea
-    // de la 1 la 0 la jumătatea scroll-ului. Animăm un proxy numeric și scriem stilul direct.
-    const draw = { v: 1 };
-    p.style.strokeDasharray = '1';
-    p.style.strokeDashoffset = '1';
+    // Interval generos (de la intrarea în viewport până spre centru).
     gsap
       .timeline({
         defaults: { ease: 'none' },
         scrollTrigger: { trigger: svg, start: 'top 92%', end: 'bottom 40%', scrub: SCRUB_SOFT },
       })
-      .to(draw, { v: 0, duration: 1, onUpdate: () => (p.style.strokeDashoffset = draw.v.toFixed(4)) }, 0)
-      .fromTo(p, { opacity: 0 }, { opacity: 1, duration: 0.12, ease: 'sine.out' }, 0);
+      .add(drawTween(p, 1), 0);
   });
 }
 
@@ -225,7 +234,7 @@ function story(desktop: boolean) {
       scrollTrigger: { trigger: pin, start: 'top top', end: 'bottom bottom', scrub: SCRUB, invalidateOnRefresh: true },
     });
     tl.to(track, { x: () => -dist, force3D: true }, 0);
-    if (hpath) tl.fromTo(hpath, { strokeDasharray: 1, strokeDashoffset: 1 }, { strokeDashoffset: 0 }, 0);
+    if (hpath) tl.add(drawTween(hpath, 0.5), 0); // 0.5 = durata implicită a tween-ului track
     const move = tl;
 
     $$('[data-moment]').forEach((m) => {
@@ -385,7 +394,7 @@ function finale(desktop: boolean) {
     )
     .from('.fin__letters', { opacity: 0, scale: 0.85, duration: 0.28, ease: 'power2.out' }, 0.38)
     .from('[data-fin-text]', { opacity: 0, y: 30, stagger: 0.08, duration: 0.28, ease: 'power2.out' }, 0.48);
-  if (ring) tl.fromTo(ring, { strokeDasharray: 1, strokeDashoffset: 1 }, { strokeDashoffset: 0, duration: 0.45 }, 0.33);
+  if (ring) tl.add(drawTween(ring, 0.45), 0.33);
   tl.to({}, { duration: 0.15 });
 }
 
