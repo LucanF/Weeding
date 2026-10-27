@@ -1,0 +1,22 @@
+name: audit-build
+on: push
+permissions:
+  contents: write
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: pip install fonttools brotli && python scripts/build-fonts.py
+      - run: npm ci --no-audit --no-fund
+      - run: npx astro check 2>&1 | tail -40 || true
+      - run: npm run build
+      - name: publish dist to audit-dist branch
+        run: |
+          cd dist
+          git init -q -b audit-dist
+          git config user.name ci && git config user.email ci@example.com
+          git add -A && git commit -qm "dist ${GITHUB_SHA}"
+          git push -f "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git" audit-dist
