@@ -1,0 +1,26 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Diana si Dragos//Invitatie//RO
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+BEGIN:VEVENT
+UID:nunta-diana-dragos-20270529T120000Z@invitatie
+DTSTAMP:20261027T090638Z
+DTSTART:20270529T120000Z
+DTEND:20270530T010000Z
+SUMMARY:Nunta Dianei și a lui Dragoș
+DESCRIPTION:Cununia religioasă – 15:00\, Biserica „Sfinții Împăraț
+ i Constantin și Elena"\, Strada Alexandru Odobescu 10\, Brașov\nPetrecer
+ ea – 18:00\, Restaurant Diamant\, Strada Făgărașului 44\, Ghimbav\, j
+ ud. Brașov\nhttps://diana-si-dragos.netlify.app/
+LOCATION:Biserica „Sfinții Împărați Constantin și Elena"\, Strada Al
+ exandru Odobescu 10\, Brașov
+GEO:45.63799;25.61635
+URL:https://diana-si-dragos.netlify.app/
+BEGIN:VALARM
+TRIGGER:-P1D
+ACTION:DISPLAY
+DESCRIPTION:Nunta Dianei și a lui Dragoș – mâine!
+END:VALARM
+END:VEVENT
+END:VCALENDAR

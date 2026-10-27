@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <path d="M6 62V30a26 26 0 0 1 52 0v32Z" fill="#0E0D0A"/>
+  <path d="M11 62V30.5a21 21 0 0 1 42 0V62" fill="none" stroke="#C8924A" stroke-width="1.6"/>
+  <text x="32" y="50" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-style="italic" font-size="25" fill="#F4EDE1">D<tspan fill="#C8924A" font-size="19">&amp;</tspan>D</text>
+</svg>
