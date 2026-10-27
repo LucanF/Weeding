@@ -272,6 +272,10 @@ import { photos } from '../data/photos';
       color: var(--amber);
       animation: nudge 2.4s var(--ease-in-out) infinite;
     }
+    /* Oprită cât povestea e în afara ecranului (.is-off din motion.ts). */
+    .story__hint:global(.is-off) {
+      animation-play-state: paused;
+    }
     @keyframes nudge {
       50% {
         transform: translateX(10px);

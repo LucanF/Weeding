@@ -40,8 +40,13 @@ const Q = {
 const FX = {
   /** Scânteia care conduce firele aurii (capătul luminos care se mișcă odată cu progresul). */
   spark: true,
-  /** Cât de mult se aprinde halo-ul scânteii la scroll rapid (0 = static, 1 = normal). */
-  sparkSpeedGlow: 1,
+  /**
+   * Cât de mult se aprinde halo-ul scânteii la scroll rapid (0 = static, 1 = normal).
+   * 0 = aspectul de până acum: în versiunea anterioară efectul NU se vedea deloc (quickTo pe „scale"
+   * nu e suportat de GSAP → avertisment în consolă la fiecare frame + tween re-inițializat, halo-ul
+   * rămânea la scale 1). Acum mecanismul funcționează; pune 1 dacă vrei să-l activezi.
+   */
+  sparkSpeedGlow: 0,
   /** Luciul care curge pe partea umplută a firelor verticale (poveste pe mobil, program). */
   lineSheen: true,
   /** Sclipirea care trece peste sigiliul de ceară cât plicul e închis. */
@@ -58,6 +63,18 @@ const onRefresh = (fn: () => void) => {
   ScrollTrigger.addEventListener('refresh', fn);
   offs.push(() => ScrollTrigger.removeEventListener('refresh', fn));
 };
+
+/**
+ * Animațiile CSS infinite (indiciile „derulează") se opresc cât elementul e în afara ecranului (.is-off).
+ * Altfel continuau la nesfârșit și forțau un recalcul de stil la fiecare frame, pe toată pagina
+ * (inclusiv în repaus). Clasa marchează starea „oprit", deci până se încarcă GSAP nimic nu se schimbă.
+ */
+function pauseOffscreen(trigger: Element | null, target: Element | null = trigger) {
+  if (!trigger || !target) return;
+  const set = (self: ScrollTrigger) => target.classList.toggle('is-off', !self.isActive);
+  ScrollTrigger.create({ trigger, start: 'top bottom', end: 'bottom top', onToggle: set, onRefresh: set });
+  offs.push(() => target.classList.remove('is-off'));
+}
 
 /** PRNG determinist (aceleași particule la fiecare încărcare, fără „salturi" între build-uri). */
 function rng(seed: number) {
@@ -76,7 +93,7 @@ type Spark = (x: number, y: number, t: number) => void;
 
 /**
  * Scânteia din capătul unui fir: miez luminos + halo (radial-gradient, fără filter).
- * Se aprinde la început, se stinge când firul e complet; halo-ul crește puțin cu viteza.
+ * Se aprinde la început, se stinge când firul e complet; opțional (FX.sparkSpeedGlow) halo-ul crește cu viteza.
  * Totul prin transform/opacity (quickSetter → un singur write de stil per frame).
  */
 function makeSpark(host: HTMLElement, tail = false): Spark | undefined {
@@ -92,15 +109,21 @@ function makeSpark(host: HTMLElement, tail = false): Spark | undefined {
   const setX = gsap.quickSetter(el, 'x', 'px');
   const setY = gsap.quickSetter(el, 'y', 'px');
   const setO = gsap.quickSetter(el, 'opacity');
-  const glow = gsap.quickTo(halo, 'scale', { duration: 0.5, ease: 'power3.out' });
-  const settle = gsap.delayedCall(0.12, () => glow(1)).pause();
+  // quickTo acceptă doar proprietăți simple: „scale" (= scaleX + scaleY) nu poate fi resetat.
+  const qx = FX.sparkSpeedGlow ? gsap.quickTo(halo, 'scaleX', { duration: 0.5, ease: 'power3.out' }) : null;
+  const qy = FX.sparkSpeedGlow ? gsap.quickTo(halo, 'scaleY', { duration: 0.5, ease: 'power3.out' }) : null;
+  const glow = (v: number) => {
+    qx?.(v);
+    qy?.(v);
+  };
+  const settle = FX.sparkSpeedGlow ? gsap.delayedCall(0.12, () => glow(1)).pause() : null;
   let lastT = 0;
   let lastAt = 0;
   return (x, y, t) => {
     setX(x);
     setY(y);
     setO(smooth(0, 0.035, t) * (1 - smooth(0.93, 0.995, t)));
-    if (!FX.sparkSpeedGlow) return;
+    if (!settle) return;
     const now = performance.now();
     const dt = Math.max(16, now - lastAt);
     const speed = Math.abs(t - lastT) / dt; // progres / ms
@@ -319,6 +342,8 @@ function heroScroll(desktop: boolean) {
     .fromTo('[data-hero-caption]', { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.18, ease: 'power2.out' }, 0.66)
     .to({}, { duration: 0.16 });
 
+  pauseOffscreen(hero, $('.hero__scroll', hero));
+
   const glint = $('[data-seal-glint]');
   if (glint) tl.to(glint, { opacity: 0, duration: 0.04 }, 0.05);
   sealDust(tl, desktop);
@@ -470,6 +495,7 @@ function story(desktop: boolean) {
     // 0.5 = durata implicită a tween-ului track; scânteia stă în track, deci se mișcă odată cu el.
     if (hpath) tl.add(drawTween(hpath, 0.5, track), 0);
     const move = tl;
+    pauseOffscreen(pin, $('.story__hint', pin));
 
     $$('[data-moment]').forEach((m) => {
       const par = $('[data-par]', m);

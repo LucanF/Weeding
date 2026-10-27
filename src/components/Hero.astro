@@ -170,15 +170,21 @@ import { photos, crops } from '../data/photos';
   .env__flap--r polygon {
     fill: #0a2016;
   }
-  /* Umbre fine: clapele par suprapuse, iar când ies din ecran își poartă umbra peste poză. */
-  .env__flap--l {
+  /* Umbre fine: clapele par suprapuse, iar când ies din ecran își poartă umbra peste poză.
+     PERFORMANȚĂ: umbra stă pe <svg>-ul din clapă, NU pe .env__flap. Clapa e strat GPU (will-change),
+     iar un filter pe stratul însuși e recalculat de compozitor la FIECARE frame (4 straturi cât
+     ecranul + blur → sacadat pe GPU-uri integrate / monitoare 4K-5K). Pe copil, umbra se
+     rasterizează o singură dată în textura clapei, care apoi doar se mișcă. Aspect identic. */
+  .env__flap--l svg {
     filter: drop-shadow(4px 0 10px rgb(0 0 0 / 0.28));
   }
-  .env__flap--r {
+  .env__flap--r svg {
     filter: drop-shadow(-4px 0 10px rgb(0 0 0 / 0.28));
   }
   .env__flap--b {
     z-index: 1;
+  }
+  .env__flap--b svg {
     filter: drop-shadow(0 -4px 12px rgb(0 0 0 / 0.3));
   }
   .env__flap--b polygon {
@@ -187,7 +193,12 @@ import { photos, crops } from '../data/photos';
   .env__flap--t {
     z-index: 2;
     transform-origin: 50% 0;
+  }
+  .env__flap--t svg {
     filter: drop-shadow(0 10px 18px rgb(0 0 0 / 0.35));
+    /* WebKit: copilul cu filter nu moștenește ascunderea feței din spate a clapei rotite la 180°
+       (rămânea o linie aurie de 1px sus); o repetăm aici. */
+    backface-visibility: hidden;
   }
   .env__flap--t polygon {
     fill: #123020;
@@ -309,6 +320,10 @@ import { photos, crops } from '../data/photos';
     background: var(--amber);
     transform: translateY(-100%);
     animation: scroll-line 2.2s var(--ease-in-out) infinite;
+  }
+  /* Oprită cât hero-ul e în afara ecranului (.is-off din motion.ts); altfel ținea pagina „trează". */
+  .hero__scroll:global(.is-off) i::after {
+    animation-play-state: paused;
   }
   @keyframes scroll-line {
     0% {

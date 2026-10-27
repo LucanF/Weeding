@@ -51,7 +51,21 @@ Efectele aurii se reglează din două locuri:
   (`lineSheen`), sclipirea sigiliului (`sealGlint`), numărul de particule de praf auriu (`heroDust`, `finaleDust`; 0 = oprit).
 - `src/styles/global.css` → `--spark-size`, `--spark-glow`, `--sheen` (mărimea/luminozitatea scânteii și a luciului).
 
+`sparkSpeedGlow` e 0 implicit (aspectul actual: halo-ul scânteii nu crește cu viteza; înainte efectul
+era „activ" dar nu funcționa și umplea consola cu avertismente). Pune 1 ca să-l vezi.
+
 Cu „Reduce motion" activ în sistem, niciunul dintre aceste efecte nu rulează (layout static).
+
+### Performanță (de păstrat la modificări)
+
+- Fără `filter` / `box-shadow` mare pe elemente care sunt strat GPU și se mișcă (`will-change`, GSAP cu `force3D`):
+  compozitorul recalculează blur-ul la fiecare frame. Umbra se pune pe un copil (se rasterizează o dată).
+  Exemplu: umbrele clapelor plicului stau pe `<svg>`, nu pe `.env__flap`.
+- Animațiile CSS infinite se opresc în afara ecranului (`pauseOffscreen` în `motion.ts`, clasa `.is-off`);
+  altfel pagina se redesenează la 60 fps și în repaus.
+- `gsap.quickTo` doar pe proprietăți simple (`scaleX`/`scaleY`, nu `scale`).
+- În Chrome pe laptop, „Economizor de energie" (implicit sub 20% baterie) limitează totul la 30 fps:
+  testează fluiditatea cu laptopul la priză sau cu economizorul oprit.
 
 ## Deploy pe Netlify
 
