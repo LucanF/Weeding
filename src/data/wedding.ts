@@ -170,22 +170,6 @@ export const schedule = {
   ],
 } as const;
 
-// ── 7. Dress code ────────────────────────────────────────────────────────────
-// TODO: dress code-ul dorit și paleta.
-export const dressCode = {
-  kicker: 'Dress code',
-  title: 'Elegant, în tonuri de pământ',
-  text: 'Ne-ar bucura să vă vedem în ținute elegante, în nuanțele toamnei timpurii. Vă rugăm să lăsați albul miresei.',
-  colors: [
-    { name: 'Verde pădure', hex: '#1F2A1E' },
-    { name: 'Oliv', hex: '#5A5A32' },
-    { name: 'Chihlimbar', hex: '#C8924A' },
-    { name: 'Teracotă', hex: '#A0624E' },
-    { name: 'Albastru regal', hex: '#34548A' },
-  ],
-  avoid: 'Fără alb sau ivoriu, vă rugăm.',
-};
-
 // ── 8. Galerie ───────────────────────────────────────────────────────────────
 export const gallery = {
   kicker: 'Galerie',
