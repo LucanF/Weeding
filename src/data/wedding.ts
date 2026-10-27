@@ -92,7 +92,7 @@ export const story = {
   title: 'De la „bună" la „pentru totdeauna"',
   moments: [
     {
-      year: '2019',
+      year: '2017',
       title: 'Prima privire',
       text: 'O seară de toamnă, prieteni comuni și o conversație care n-a vrut să se termine. Am râs de aceleași glume și am știut, fără să ne-o spunem, că e începutul a ceva frumos.',
       photo: 'apus',
