@@ -63,9 +63,9 @@ export const invitation = {
   // `names` poate fi un text sau o listă de rânduri (ex. părinți despărțiți: fiecare pe rândul lui).
   parents: [
     { label: 'Părinții miresei', names: ['Nicoleta & Pavel Ivan'] },
-    { label: 'Părinții mirelui', names: ['Mihaela Oana', 'Bogdan Spiridon & Camelia Oprișan'] },
+    { label: 'Părinții mirelui', names: ['Mihaela Oana', 'Bogdan Spridon & Camelia Oprișan'] },
   ],
-  godparents: { label: 'Nașii', names: ['Andreea & Radu Stan'] }, // TODO: numele nașilor
+  godparents: { label: 'Nașii', names: ['Alexandra & Alexandru Neagoe'] },
   /** Fraza principală – se „luminează" cuvânt cu cuvânt la scroll. */
   text: 'Împreună cu părinții și nașii noștri, vă invităm cu bucurie să fiți alături de noi în ziua în care ne unim destinele și să sărbătorim iubirea printr-o seară de neuitat.',
 };
