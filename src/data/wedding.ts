@@ -17,20 +17,20 @@ export const couple = {
 };
 
 // ── Data și ora ──────────────────────────────────────────────────────────────
-// TODO: data reală. Format ISO cu fusul orar al României (vara +03:00, iarna +02:00).
-// Countdown-ul numără până la `start` (ora cununiei religioase).
+// Format ISO cu fusul orar al României (vara +03:00, iarna +02:00).
+// Countdown-ul numără până la `start` (ora începerii evenimentului).
 export const date = {
-  start: '2027-09-11T15:00:00+03:00',
-  end: '2027-09-12T04:00:00+03:00',
+  start: '2027-05-29T18:00:00+03:00',
+  end: '2027-05-30T04:00:00+03:00',
   timeZone: 'Europe/Bucharest',
   /** Afișări textuale (păstrează-le sincronizate cu `start`). */
-  long: 'Sâmbătă, 11 septembrie 2027', // TODO
-  short: '11 · 09 · 2027', // TODO
-  day: '11',
-  month: 'septembrie',
+  long: 'Sâmbătă, 29 mai 2027',
+  short: '29 · 05 · 2027',
+  day: '29',
+  month: 'mai',
   year: '2027',
   weekday: 'sâmbătă',
-  rsvpDeadline: '1 august 2027', // TODO
+  rsvpDeadline: '1 mai 2027', // TODO: de confirmat cu mirii
 };
 
 // ── Metadate (titlu tab, preview WhatsApp/Facebook) ─────────────────────────
@@ -60,12 +60,12 @@ export const hero = {
 // ── 2. Invitația ─────────────────────────────────────────────────────────────
 export const invitation = {
   kicker: 'Invitație',
-  // TODO: numele reale ale părinților și nașilor.
+  // `names` poate fi un text sau o listă de rânduri (ex. părinți despărțiți: fiecare pe rândul lui).
   parents: [
-    { label: 'Părinții miresei', names: 'Elena & Mihai Popescu' },
-    { label: 'Părinții mirelui', names: 'Maria & Ion Ionescu' },
+    { label: 'Părinții miresei', names: ['Nicoleta & Pavel Ivan'] },
+    { label: 'Părinții mirelui', names: ['Mihaela Oana', 'Bogdan Spiridon & Camelia Oprișan'] },
   ],
-  godparents: { label: 'Nașii', names: 'Andreea & Radu Stan' },
+  godparents: { label: 'Nașii', names: ['Andreea & Radu Stan'] }, // TODO: numele nașilor
   /** Fraza principală – se „luminează" cuvânt cu cuvânt la scroll. */
   text: 'Împreună cu părinții și nașii noștri, vă invităm cu bucurie să fiți alături de noi în ziua în care ne unim destinele și să sărbătorim iubirea printr-o seară de neuitat.',
 };
@@ -138,17 +138,17 @@ export const events = {
       address: 'Strada Bisericii 12, Sibiu',
       lat: 45.7983,
       lng: 24.1521,
-      note: 'Vă rugăm să ajungeți cu 15 minute mai devreme.',
+      note: '',
     },
     {
       id: 'petrecere',
       type: 'Petrecerea',
-      time: '18:30',
-      place: 'Domeniul Livada cu Tei',
-      address: 'Drumul Pădurii 3, Cisnădioara, jud. Sibiu',
-      lat: 45.7137,
-      lng: 24.1132,
-      note: 'Parcare gratuită în incintă.',
+      time: '18:00',
+      place: 'Restaurant Diamant',
+      address: 'Strada Făgărașului 44, Ghimbav, jud. Brașov',
+      lat: 45.66575,
+      lng: 25.51344,
+      note: 'Parcare în incintă.',
     },
   ],
   routeLabel: '≈ 20 min cu mașina',
@@ -231,7 +231,7 @@ export const rsvp = {
   or: 'sau',
   whatsapp: 'Confirmă pe WhatsApp',
   whatsappNumber: '40700000000', // TODO
-  whatsappMessage: 'Bună, Diana și Dragoș! Confirm prezența la nunta voastră din 11 septembrie 2027. Nume: … Număr persoane: …',
+  whatsappMessage: `Bună, Diana și Dragoș! Confirm prezența la nunta voastră din ${date.day} ${date.month} ${date.year}. Nume: … Număr persoane: …`,
 };
 
 // ── 10. Info utile ───────────────────────────────────────────────────────────

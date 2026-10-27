@@ -65,7 +65,7 @@ const mapLinks = (e: (typeof events.items)[number]) => [
                 {e.place}
               </h3>
               <p class="card__addr">{e.address}</p>
-              <p class="card__note">{e.note}</p>
+              {e.note && <p class="card__note">{e.note}</p>}
               <div class="card__maps" role="group" aria-label={`Navigație către ${e.place}`}>
                 {mapLinks(e).map((l) => (
                   <a class="btn btn--sm btn--ghost" href={l.href} target="_blank" rel="noopener">

@@ -15,13 +15,13 @@ import { invitation } from '../data/wedding';
           invitation.parents.map((p, i) => (
             <div class="inv__fam" data-reveal style={`--d:${i * 120}`}>
               <p class="inv__label">{p.label}</p>
-              <p class="inv__names">{p.names}</p>
+              <p class="inv__names">{p.names.map((n) => <span>{n}</span>)}</p>
             </div>
           ))
         }
         <div class="inv__fam inv__fam--god" data-reveal style="--d:240">
           <p class="inv__label">{invitation.godparents.label}</p>
-          <p class="inv__names">{invitation.godparents.names}</p>
+          <p class="inv__names">{invitation.godparents.names.map((n) => <span>{n}</span>)}</p>
         </div>
       </div>
     </div>
@@ -80,6 +80,13 @@ import { invitation } from '../data/wedding';
     font-size: clamp(1.5rem, 2.6vw, 2rem);
     line-height: 1.15;
     color: var(--night);
+  }
+  /* Fiecare nume pe rândul lui (ex. mama; tata cu soția). */
+  .inv__names span {
+    display: block;
+  }
+  .inv__names span + span {
+    margin-top: 0.3em;
   }
   .inv__fam--god {
     padding-top: 2rem;
