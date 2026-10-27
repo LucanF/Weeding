@@ -55,28 +55,14 @@ import { photos, crops } from '../data/photos';
       </span>
     </div>
 
-    <div class="hero__content">
-      <p class="kicker kicker--center hero__eyebrow" data-hero-fade>{hero.eyebrow}</p>
-      <h1 class="hero__title" id="hero-title" data-hero-title>
-        <span class="sr-only">{couple.bride} și {couple.groom}</span>
-        <span class="hero__visual" aria-hidden="true">
-          <span class="hero__name" data-split>{couple.bride}</span>
-          <span class="hero__amp amp" data-hero-amp>&amp;</span>
-          <span class="hero__name" data-split>{couple.groom}</span>
-        </span>
-      </h1>
-    </div>
-
-    <p class="hero__date" data-hero-fade>
-      <time datetime={date.start.slice(0, 10)}>{date.long}</time>
-    </p>
+    <!-- Pe plic nu e niciun text, doar sigiliul cu inițialele; numele rămân pentru cititoarele de ecran. -->
+    <h1 class="sr-only" id="hero-title">{couple.bride} și {couple.groom} – {date.long}</h1>
 
     <p class="hero__caption" data-hero-caption aria-hidden="true">
       <span class="hero__caption-date">{date.short}</span>
     </p>
 
-    <a class="hero__scroll" href="#invitatie" data-hero-fade>
-      <span>{hero.scrollHint}</span>
+    <a class="hero__scroll" href="#invitatie" data-hero-fade aria-label={hero.scrollHint}>
       <i aria-hidden="true"></i>
     </a>
   </div>
@@ -122,8 +108,7 @@ import { photos, crops } from '../data/photos';
   }
   /* Straturi proprii pe GPU (iOS Safari nu le promovează singur pentru transform-uri 2D):
      poza și titlul nu se mai re-randează la fiecare frame de scroll. */
-  :global(.motion-ok) .hero__media,
-  :global(.motion-ok) .hero__title {
+  :global(.motion-ok) .hero__media {
     will-change: transform;
     backface-visibility: hidden;
   }
@@ -149,65 +134,6 @@ import { photos, crops } from '../data/photos';
     background:
       linear-gradient(to top, rgb(6 20 13 / 0.78) 0%, rgb(6 20 13 / 0.3) 24%, transparent 42%),
       linear-gradient(to bottom, rgb(6 20 13 / 0.5), transparent 18%);
-  }
-
-  /* ── Numele: pe plic (cu animații) sau peste poză (fără) ─────────────── */
-  .hero__content {
-    position: absolute;
-    z-index: 4;
-    left: 0;
-    right: 0;
-    bottom: 50%;
-    padding: 0 var(--gutter) clamp(2.5rem, 7svh, 4.5rem);
-    display: grid;
-    justify-items: center;
-    gap: clamp(1rem, 3svh, 1.6rem);
-    text-align: center;
-  }
-  .hero__eyebrow {
-    color: var(--amber-soft);
-  }
-  .hero__title {
-    color: var(--amber-soft);
-    text-shadow: 0 2px 18px rgb(0 0 0 / 0.35);
-    font-size: clamp(2.6rem, 11.5vw, 6.5rem);
-    font-style: italic;
-    line-height: 1;
-    letter-spacing: -0.01em;
-  }
-  .hero__visual {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    align-items: baseline;
-    column-gap: 0.28em;
-  }
-  .hero__name {
-    display: block;
-    padding-inline: 0.04em;
-  }
-  .hero__amp {
-    display: block;
-    font-size: 0.9em;
-    line-height: 1;
-  }
-  .hero__date {
-    position: absolute;
-    z-index: 4;
-    left: 0;
-    right: 0;
-    top: calc(58% + clamp(3.5rem, 8svh, 4.75rem));
-    padding-inline: var(--gutter);
-    text-align: center;
-    font-family: var(--sans);
-    font-size: 1.05rem;
-    font-weight: 500;
-    color: var(--on-dark-soft);
-  }
-  /* Fără animații nu există plic: textul stă peste poză, cu umbră pentru lizibilitate. */
-  :global(html:not(.motion-ok)) .hero__content,
-  :global(html:not(.motion-ok)) .hero__date {
-    text-shadow: 0 2px 24px rgb(6 20 13 / 0.6);
   }
 
   /* ── Plicul ─────────────────────────────────────────────────────────── */
@@ -386,14 +312,5 @@ import { photos, crops } from '../data/photos';
     }
   }
 
-  /* Măștile SplitText: puțin spațiu pentru diacritice (ș) și înclinarea italicului. */
-  :global(.hero__name > div) {
-    padding: 0.08em 0.1em 0.2em;
-    margin: -0.08em -0.1em -0.2em;
-  }
 
-  /* Intro (doar cu JS): numele sunt ascunse până la SplitText. */
-  :global(.js.motion-ok) .hero__visual:not(.is-ready) {
-    opacity: 0;
-  }
 </style>

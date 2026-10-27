@@ -59,22 +59,12 @@ function safeRefresh() {
   ScrollTrigger.addEventListener('scrollEnd', once);
 }
 
-/** Animații de intrare (o singură dată, la load): sigiliul se așază, numele urcă din mască. */
-async function heroIntro() {
-  const visual = $('.hero__visual');
-  if (!visual) return;
-  // Fontul titlului (preîncărcat) – maxim ~0,8 s, ca intro-ul să nu sară când se schimbă fontul.
-  await Promise.race([document.fonts?.ready, new Promise((r) => setTimeout(r, 800))]);
-  const names = $$('[data-split]', visual);
-  const split = SplitText.create(names, { type: 'chars,lines', mask: 'lines', aria: 'none', linesClass: 'hl' });
-  visual.classList.add('is-ready');
-
-  // După intro, SplitText se anulează: titlul redevine text simplu (mai puțin de compus la scroll).
-  const tl = gsap.timeline({ defaults: { ease: 'expo.out' }, onComplete: () => split.revert() });
-  tl.from('[data-env-seal]', { scale: 1.6, opacity: 0, rotate: -18, duration: 1.1, ease: 'back.out(1.6)' }, 0.1)
-    .from(split.chars, { yPercent: 118, duration: 1.5, stagger: 0.04 }, 0.25)
-    .from('[data-hero-amp]', { opacity: 0, scale: 0.6, rotate: -10, duration: 1.5 }, 0.55)
-    .from('[data-hero-fade]', { opacity: 0, y: 14, duration: 1.2, stagger: 0.12 }, 0.7);
+/** Animație de intrare (o singură dată, la load): sigiliul se așază pe plic. */
+function heroIntro() {
+  gsap
+    .timeline({ defaults: { ease: 'expo.out' } })
+    .from('[data-env-seal]', { scale: 1.6, opacity: 0, rotate: -18, duration: 1.1, ease: 'back.out(1.6)' }, 0.15)
+    .from('[data-hero-fade]', { opacity: 0, y: 14, duration: 1.2 }, 0.7);
 }
 
 /**
@@ -85,7 +75,6 @@ async function heroIntro() {
 function heroScroll() {
   const hero = $('[data-hero]');
   const media = $('[data-hero-media]');
-  const title = $('[data-hero-title]');
   const top = $('[data-env-t]');
   const left = $('[data-env-l]');
   const right = $('[data-env-r]');
@@ -93,7 +82,7 @@ function heroScroll() {
   const sealL = $('[data-seal-l]');
   const sealR = $('[data-seal-r]');
   const sealShadow = $('[data-seal-shadow]');
-  if (!hero || !media || !title || !top || !left || !right || !bottom || !sealL || !sealR || !sealShadow) return;
+  if (!hero || !media || !top || !left || !right || !bottom || !sealL || !sealR || !sealShadow) return;
   const g = { force3D: true };
 
   let wasDone = false;
@@ -115,7 +104,6 @@ function heroScroll() {
   });
 
   tl.to('[data-hero-fade]', { opacity: 0, y: -16, duration: 0.14, stagger: 0.02, ease: 'power1.in', ...g }, 0)
-    .to(title, { opacity: 0, y: -28, scale: 0.97, duration: 0.18, ease: 'power1.in', ...g }, 0)
     // sigiliul crapă în două: jumătățile se depărtează, se rotesc și cad ușor
     .to(sealShadow, { opacity: 0, duration: 0.06 }, 0.05)
     .to(sealL, { xPercent: -26, yPercent: 14, rotate: -24, opacity: 0, duration: 0.16, ease: 'power2.in', ...g }, 0.05)
