@@ -53,6 +53,8 @@ export const nav = [
 
 // ── 1. Hero ──────────────────────────────────────────────────────────────────
 export const hero = {
+  title: 'Diana și Dragoș',
+  tagline: 'Noi doi, de la întâlnire la totdeauna.',
   eyebrow: 'Ne căsătorim',
   scrollHint: 'Derulează',
 };
@@ -94,26 +96,26 @@ export const story = {
     {
       year: '2017',
       title: 'Prima privire',
-      text: 'O seară de toamnă, prieteni comuni și o conversație care n-a vrut să se termine. Am râs de aceleași glume și am știut, fără să ne-o spunem, că e începutul a ceva frumos.',
-      photo: 'apus',
+      text: 'O seară de toamnă, prieteni noi și o conversație ce nu a vrut să se termine. Am râs de aceleași glume și am știut, fără să ne-o spunem, că e începutul a ceva frumos.',
+      photo: 'primaPrivire',
     },
     {
-      year: '2021',
-      title: 'Primul nostru „acasă"',
-      text: 'Două periuțe de dinți, o plantă care a supraviețuit miraculos și duminici lungi cu cafea. Am învățat că acasă nu e un loc, ci un om.',
-      photo: 'intim',
+      year: '15 Decembrie 2024',
+      title: 'Întrebarea',
+      text: 'Al 3-lea an de împodobit bradul în aceeași chirie… Dragoș a îngenunchiat. Răspunsul a venit înainte să termine întrebarea.',
+      photo: 'intrebarea',
     },
     {
       year: '2025',
-      title: 'Întrebarea',
-      text: 'Pe o alee umbrită, cu inima cât un purice, Dragoș a îngenuncheat. Răspunsul a venit înainte să termine întrebarea.',
-      photo: 'portret',
+      title: 'Primul nostru „acasă”',
+      text: 'Am păstrat visul acesta doar pentru noi, departe de ochii lumii, până când a venit momentul să-i deschidem ușa. Am găsit locul unde povestea noastră avea să crească.',
+      photo: 'primulAcasa',
     },
     {
-      year: '2026',
+      year: '06.09.2025',
       title: 'Cununia civilă',
-      text: 'O zi însorită de vară, o rochie albă și un costum albastru. Am semnat, am râs, am plâns puțin — și am promis că abia am început.',
-      photo: 'civila',
+      text: 'O zi însorită de toamnă, o rochie albă și un costum albastru. Am semnat, am râs mult și am promis că aceasta a fost abia începutul! Și așa am învățat că „acasă” este „cineva”, nu „undeva”.',
+      photo: 'civilaParc',
     },
   ],
   finale: {
@@ -230,10 +232,6 @@ export const info = {
     {
       q: 'Transport',
       a: 'Locația are parcare gratuită. Pentru cei care nu conduc, un microbuz va face curse spre Sibiu la 01:00 și 03:00.',
-    },
-    {
-      q: 'Darul',
-      a: 'Prezența voastră este cel mai frumos dar. Dacă doriți totuși să ne oferiți ceva, o contribuție pentru luna de miere ne-ar bucura nespus.',
     },
     {
       q: 'Copii',

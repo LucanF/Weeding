@@ -1,7 +1,7 @@
 ---
 import Img from './ui/Img.astro';
 import { couple, date, hero } from '../data/wedding';
-import { photos, crops } from '../data/photos';
+import { heroPhoto, crops } from '../data/photos';
 ---
 
 <section class="hero" id="acasa" data-hero aria-labelledby="hero-title">
@@ -9,7 +9,7 @@ import { photos, crops } from '../data/photos';
     <div class="hero__frame" data-hero-frame>
       <div class="hero__media" data-hero-media>
         <Img
-          src={photos.arcada.src}
+          src={heroPhoto.src}
           mobile={crops.heroMobile}
           alt=""
           widths={[1280, 1920, 2048]}

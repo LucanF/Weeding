@@ -28,8 +28,8 @@ async function crop(file, out, { cx, top = 0, ratio, height = 1 }) {
   console.log(`crop ${out}: ${w}×${h}`);
 }
 
-// Hero mobil: cuplul din poza „portret" e în dreapta (x≈45–90%).
-await crop('portret.jpg', 'hero-mobile.jpg', { cx: 0.66, ratio: 0.66 });
+// Hero mobil: cuplul din poza „hero" (bănci albastre) e în centru-stânga (x≈38–60%).
+await crop('hero.jpg', 'hero-mobile.jpg', { cx: 0.48, ratio: 0.66 });
 // RSVP mobil: prim-planul intim, fețele în centru-dreapta.
 await crop('intim.jpg', 'rsvp-mobile.jpg', { cx: 0.47, ratio: 0.7 });
 // Final mobil: sărutul de lângă arcadă (stânga-centru).
@@ -39,15 +39,15 @@ await crop('arcada.jpg', 'final-mobile.jpg', { cx: 0.36, ratio: 0.7 });
 {
   const vignette = Buffer.from(
     `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630">
-      <defs><radialGradient id="v" cx="62%" cy="45%" r="75%">
+      <defs><radialGradient id="v" cx="48%" cy="55%" r="75%">
         <stop offset="55%" stop-color="#0E0D0A" stop-opacity="0"/>
         <stop offset="100%" stop-color="#0E0D0A" stop-opacity=".55"/>
       </radialGradient></defs>
       <rect width="1200" height="630" fill="url(#v)"/>
     </svg>`,
   );
-  await sharp(path.join(photos, 'portret.jpg'))
-    .extract({ left: 380, top: 40, width: 1668, height: 876 })
+  await sharp(path.join(photos, 'hero.jpg'))
+    .extract({ left: 0, top: 200, width: 1600, height: 840 })
     .resize(1200, 630)
     .composite([{ input: vignette }])
     .jpeg({ quality: 82, mozjpeg: true })
@@ -57,8 +57,20 @@ await crop('arcada.jpg', 'final-mobile.jpg', { cx: 0.36, ratio: 0.7 });
 
 // LQIP: miniaturi de ~20px, ca data URI WebP.
 const lqip = {};
-for (const name of ['civila', 'arcada', 'inel', 'intim', 'apus', 'portret']) {
-  const buf = await sharp(path.join(photos, `${name}.jpg`))
+const lqipFiles = {
+  civila: 'civila', arcada: 'arcada', inel: 'inel', intim: 'intim', apus: 'apus', portret: 'portret',
+  primaPrivire: 'prima-privire',
+  civilaParc: 'civila-parc',
+  primulAcasa: 'primul-acasa',
+  intrebarea: 'intrebarea',
+  galerieAlee: 'galerie-alee',
+  galerieImbratisare: 'galerie-imbratisare',
+  galerieArcadaUmbra: 'galerie-arcada-umbra',
+  galeriePortretSezut: 'galerie-portret-sezut',
+  galeriePrivire: 'galerie-privire',
+};
+for (const [name, file] of Object.entries(lqipFiles)) {
+  const buf = await sharp(path.join(photos, `${file}.jpg`))
     .resize(20)
     .webp({ quality: 40 })
     .toBuffer();
