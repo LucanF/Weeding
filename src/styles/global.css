@@ -546,6 +546,13 @@ body {
     color: var(--ivory);
   }
 }
+/* Telefoane înguste: majusculele rărite încap pe un rând (ex. „Confirmă pe WhatsApp" la 360 px). */
+@media (max-width: 400px) {
+  .btn {
+    padding-inline: 1.1rem;
+    letter-spacing: 0.1em;
+  }
+}
 .btn--sm {
   min-height: 2.75rem;
   padding: 0.6rem 1.05rem 0.55rem;
