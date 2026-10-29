@@ -105,7 +105,6 @@ const speeds = [-8, 10, -4];
           sizes="(min-width: 960px) calc(100vw - 14rem), 100vw"
         />
       </picture>
-      <figcaption class="lb__cap" data-lb-cap></figcaption>
     </figure>
     <button type="button" class="lb__btn lb__nav lb__prev" data-lb-prev>
       <span class="sr-only">{gallery.prev}</span>
@@ -397,13 +396,6 @@ const speeds = [-8, 10, -4];
     .lb__img.is-swapping {
       transform: none;
     }
-  }
-  .lb__cap {
-    margin-top: 1rem;
-    max-width: 40rem;
-    text-align: center;
-    font-size: var(--fs-small);
-    color: var(--on-dark-soft);
   }
   .lb__nav {
     position: absolute;

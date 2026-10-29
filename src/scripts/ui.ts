@@ -338,7 +338,6 @@ export function initGallery() {
   const img = $<HTMLImageElement>('[data-lb-img]', dlg)!;
   const sAvif = $<HTMLSourceElement>('[data-lb-avif]', dlg)!;
   const sWebp = $<HTMLSourceElement>('[data-lb-webp]', dlg)!;
-  const cap = $('[data-lb-cap]', dlg)!;
   const count = $('[data-lb-count]', dlg)!;
   let idx = 0;
   let opener: HTMLElement | null = null;
@@ -358,7 +357,6 @@ export function initGallery() {
       img.width = Number(d.w);
       img.height = Number(d.h);
       img.alt = d.alt ?? '';
-      cap.textContent = d.alt ?? '';
       count.textContent = `${idx + 1} / ${items.length}`;
     };
     if (dlg.open) {
