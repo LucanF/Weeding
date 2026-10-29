@@ -354,7 +354,7 @@ p {
   color: transparent;
 }
 
-/* Eticheta de capitol: „II ── POVESTEA NOASTRĂ". Numerotarea (cifre romane) vine dintr-un
+/* Eticheta de capitol: „I ── POVESTEA NOASTRĂ". Numerotarea (cifre romane) vine dintr-un
    contor CSS pe .kicker[data-ch], deci ordinea secțiunilor rămâne singura sursă. */
 body {
   counter-reset: ch;

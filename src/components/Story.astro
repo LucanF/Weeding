@@ -87,11 +87,14 @@ import { photos } from '../data/photos';
 </section>
 
 <style>
+  /* Primul capitol după plic: urcă peste poza din hero cu marginea de sus arcuită (motivul arcadei). */
   .story {
     position: relative;
-    z-index: 1;
+    z-index: 5;
     isolation: isolate;
-    padding-block: clamp(4rem, 10vw, 7rem) 0;
+    margin-top: calc(-1 * var(--seam));
+    border-radius: 50% 50% 0 0 / var(--seam) var(--seam) 0 0;
+    padding-block: calc(var(--seam) + clamp(2.5rem, 7vw, 5rem)) 0;
   }
   .story__track {
     position: relative;

@@ -2,6 +2,7 @@
 import Img from './ui/Img.astro';
 import { couple, date, hero } from '../data/wedding';
 import { heroPhoto, crops } from '../data/photos';
+import decor from '../data/decor.json';
 ---
 
 <section class="hero" id="acasa" data-hero aria-labelledby="hero-title">
@@ -44,11 +45,7 @@ import { heroPhoto, crops } from '../data/photos';
         {
           (['l', 'r'] as const).map((side) => (
             <span class:list={['env__seal-half', `env__seal-half--${side}`]} data-seal-l={side === 'l' ? '' : undefined} data-seal-r={side === 'r' ? '' : undefined}>
-              <span class="env__seal-mono">
-                {couple.monogram[0]}
-                <span class="env__seal-amp">&amp;</span>
-                {couple.monogram[1]}
-              </span>
+              <img class="env__seal-img" src="/decor/seal.webp" alt="" width={decor.seal.w} height={decor.seal.h} decoding="async" />
             </span>
           ))
         }
@@ -73,7 +70,7 @@ import { heroPhoto, crops } from '../data/photos';
       </h1>
     </div>
 
-    <a class="hero__scroll" href="#invitatie" data-hero-fade aria-label={hero.scrollHint}>
+    <a class="hero__scroll" href="#povestea" data-hero-fade aria-label={hero.scrollHint}>
       <i aria-hidden="true"></i>
     </a>
   </div>
@@ -227,24 +224,26 @@ import { heroPhoto, crops } from '../data/photos';
   .env__seal-half {
     position: absolute;
     inset: 0;
-    border-radius: 47% 53% 50% 50% / 52% 48% 52% 48%;
   }
+  /* Sigiliul e o imagine (ceară aurie cu D&D gravat, public/decor/seal.webp); umbra stă sub ea. */
   .env__seal-shadow {
-    box-shadow: 0 6px 16px rgb(0 0 0 / 0.4);
+    inset: 6%;
+    border-radius: 47% 53% 50% 50% / 52% 48% 52% 48%;
+    box-shadow: 0 6px 16px rgb(0 0 0 / 0.45);
   }
   .env__seal-half {
-    display: grid;
-    place-items: center;
-    background: radial-gradient(circle at 38% 32%, #f3dca2 0%, #c9a55a 45%, #86662a 100%);
-    box-shadow:
-      inset 0 0 0 5px rgb(0 0 0 / 0.08),
-      inset 0 0 0 9px rgb(255 230 190 / 0.12);
     will-change: transform, opacity;
+  }
+  .env__seal-img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
   }
   /* Sclipirea de pe ceară: o dungă de lumină mutată doar prin transform (GSAP, motion.ts). */
   .env__seal-glint {
     position: absolute;
-    inset: 0;
+    inset: 8%;
     border-radius: 47% 53% 50% 50% / 52% 48% 52% 48%;
     overflow: hidden;
     pointer-events: none;
@@ -263,25 +262,7 @@ import { heroPhoto, crops } from '../data/photos';
   .env__seal-half--r {
     clip-path: polygon(53% 0, 100% 0, 100% 100%, 52% 100%, 46% 70%, 55% 46%, 47% 24%);
   }
-  .env__seal-mono {
-    display: flex;
-    gap: 0;
-    align-items: baseline;
-    font-family: var(--script);
-    font-size: clamp(1.9rem, 8vw, 2.6rem);
-    line-height: 1;
-    color: #5a4012;
-    text-shadow: 0 1px 0 rgb(255 225 180 / 0.35);
-  }
-  .env__seal-amp {
-    margin-inline: -0.06em;
-    font-size: 0.8em;
-  }
   @media (min-width: 1024px) {
-    .env__seal,
-    .env__seal-mono {
-      font-size: 2.8rem;
-    }
     .env__seal {
       width: 7rem;
       margin: -3.5rem 0 0 -3.5rem;

@@ -402,7 +402,7 @@ function sealGlint() {
   });
 }
 
-/** Invitația: textul se luminează cuvânt cu cuvânt (secțiunea urcă peste hero cu un arc, din CSS). */
+/** Invitația: textul se luminează cuvânt cu cuvânt (vine după poveste; arcul de peste hero e pe .story). */
 function invitation() {
   const text = $('[data-words]');
   if (!text) return;

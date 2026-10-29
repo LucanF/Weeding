@@ -34,6 +34,10 @@ await crop('hero.jpg', 'hero-mobile.jpg', { cx: 0.48, ratio: 0.66 });
 await crop('intim.jpg', 'rsvp-mobile.jpg', { cx: 0.47, ratio: 0.7 });
 // Final mobil: sărutul de lângă arcadă (stânga-centru).
 await crop('arcada.jpg', 'final-mobile.jpg', { cx: 0.36, ratio: 0.7 });
+// „Prima privire" (2017, turnul): cuplul stă jos-centru (x≈300–670, capetele la y≈650 din 1183),
+// sub mult cer. Fereastră 4:5 de 540×675 px, lipită de marginea de jos și centrată pe ei.
+// Originalul rămâne neatins (îl folosește doar acest crop).
+await crop('prima-privire.jpg', 'prima-privire-cuplu.jpg', { cx: 0.525, top: 1, ratio: 0.8, height: 0.5706 });
 
 // og:image 1200×630 din poza „portret", cu o vignetă discretă.
 {
@@ -59,7 +63,7 @@ await crop('arcada.jpg', 'final-mobile.jpg', { cx: 0.36, ratio: 0.7 });
 const lqip = {};
 const lqipFiles = {
   civila: 'civila', arcada: 'arcada', inel: 'inel', intim: 'intim', apus: 'apus', portret: 'portret',
-  primaPrivire: 'prima-privire',
+  primaPrivire: 'crops/prima-privire-cuplu',
   civilaParc: 'civila-parc',
   primulAcasa: 'primul-acasa',
   intrebarea: 'intrebarea',
