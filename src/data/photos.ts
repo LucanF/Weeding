@@ -65,7 +65,7 @@ export const photos: Record<PhotoKey, Photo> = {
 /** Poza care apare când se deschide plicul (hero). */
 export const heroPhoto = {
   src: hero,
-  alt: 'Diana și Dragoș plimbându-se pe iarbă, lângă un șir de bănci albastre',
+  alt: 'Diana și Dragoș plimbându-se de braț pe o pantă cu iarbă, lângă un șir de bănci albastre, în lumina serii; Dragoș arată ceva în depărtare, iar Diana zâmbește',
 };
 
 /** Fundalul de final, din invitația tipărită (îmbrățișare, flori albe, chenar auriu). */

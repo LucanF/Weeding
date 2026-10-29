@@ -18,6 +18,7 @@ import decor from '../data/decor.json';
           mobileWidths={[540, 720, 902]}
           mobileSizes="100vw"
           priority
+          hq
           class="hero__pic"
           imgClass="hero__img"
           imgAttrs={{ 'data-hero-img': '' }}
@@ -296,7 +297,11 @@ import decor from '../data/decor.json';
     font-size: clamp(2.6rem, 12vw, 7.5rem);
     line-height: 1.15;
     white-space: nowrap;
-    padding: 0 0.2em 0.1em;
+    /* background-clip: text pictează doar în caseta elementului; floriturile scriptului
+       (D, &, ș) ies din caseta de avans și rămâneau tăiate. Padding generos + margin negativ
+       (poziția rămâne aceeași). */
+    padding: 0.2em 0.45em 0.4em;
+    margin: -0.2em -0.45em -0.4em;
   }
   .hero__amp {
     font-size: 0.8em;
@@ -333,7 +338,8 @@ import decor from '../data/decor.json';
         linear-gradient(to bottom, rgb(6 20 13 / 0.5), transparent 18%);
     }
     .hero__caption {
-      left: max(var(--gutter), calc((100vw - var(--maxw)) / 2));
+      /* lipit de marginea din stânga a ecranului (nu de coloana centrată): cuplul stă la ~38–60% din lățime. */
+      left: var(--gutter);
       right: auto;
       bottom: calc(var(--seam) + 1.5rem);
       justify-items: start;
@@ -347,7 +353,6 @@ import decor from '../data/decor.json';
       display: grid;
       font-size: clamp(4rem, 5.2vw, 6rem);
       line-height: 1.05;
-      padding-left: 0;
     }
     .hero__n + .hero__n {
       padding-left: 0.55em;

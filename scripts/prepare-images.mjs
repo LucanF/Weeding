@@ -29,7 +29,7 @@ async function crop(file, out, { cx, top = 0, ratio, height = 1 }) {
 }
 
 // Hero mobil: cuplul din poza „hero" (bănci albastre) e în centru-stânga (x≈38–60%).
-await crop('hero.jpg', 'hero-mobile.jpg', { cx: 0.48, ratio: 0.66 });
+await crop('hero.jpg', 'hero-mobile.jpg', { cx: 0.49, ratio: 0.66 }); // sursă 2048×1366, cuplu ≈ 49%
 // RSVP mobil: prim-planul intim, fețele în centru-dreapta.
 await crop('intim.jpg', 'rsvp-mobile.jpg', { cx: 0.47, ratio: 0.7 });
 // Final mobil: sărutul de lângă arcadă (stânga-centru).
@@ -51,7 +51,7 @@ await crop('prima-privire.jpg', 'prima-privire-cuplu.jpg', { cx: 0.525, top: 1, 
     </svg>`,
   );
   await sharp(path.join(photos, 'hero.jpg'))
-    .extract({ left: 0, top: 200, width: 1600, height: 840 })
+    .extract({ left: 0, top: 190, width: 2048, height: 1075 })
     .resize(1200, 630)
     .composite([{ input: vignette }])
     .jpeg({ quality: 82, mozjpeg: true })

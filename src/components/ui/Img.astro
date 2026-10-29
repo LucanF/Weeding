@@ -16,6 +16,8 @@ interface Props {
   mobileSizes?: string;
   mobileMedia?: string;
   priority?: boolean;
+  /** Calitate mai mare (poza hero). */
+  hq?: boolean;
   lqip?: string;
   class?: string;
   imgClass?: string;
@@ -33,6 +35,7 @@ const {
   mobileSizes = '100vw',
   mobileMedia = '(max-width: 767px)',
   priority = false,
+  hq = false,
   lqip,
   class: className,
   imgClass,
@@ -40,8 +43,8 @@ const {
   imgAttrs = {},
 } = Astro.props;
 
-const QUALITY = { avif: 52, webp: 72, jpg: 78 } as const;
-type Fmt = keyof typeof QUALITY;
+type Fmt = 'avif' | 'webp' | 'jpg';
+const QUALITY: Record<Fmt, number> = hq ? { avif: 68, webp: 86, jpg: 88 } : { avif: 52, webp: 72, jpg: 78 };
 
 async function srcset(img: ImageMetadata, ws: number[], format: Fmt) {
   const list = [...new Set(ws.map((w) => Math.min(w, img.width)))];
