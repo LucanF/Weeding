@@ -179,6 +179,16 @@ import { couple, nav } from '../data/wedding';
       display: none;
     }
   }
+  /* Majusculele rărite sunt mai late decât vechiul script: pe 360 px strângem butonul. */
+  @media (max-width: 400px) {
+    .hdr__cta {
+      padding-inline: 0.8rem;
+      letter-spacing: 0.1em;
+    }
+    .hdr__logo {
+      font-size: 1.2rem;
+    }
+  }
   .hdr__actions {
     display: flex;
     align-items: center;
