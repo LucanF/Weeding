@@ -18,13 +18,14 @@ const venues = events.items.map((e) => ({
     <ThreadLine height="clamp(6rem, 18vh, 11rem)" variant="straight" knot />
 
     <!-- Invitația „tipărită": chenar auriu dublu și o margine florală ca pe invitația de hârtie:
-         buchete în toate cele patru colțuri (crem, roz pudrat, vișiniu) legate pe laterale de
-         un vrej auriu cu perle (::before / ::after). Totul static: fără animații sau filtre. -->
+         buchete în toate cele patru colțuri (trandafiri crem / piersică / roz / vișinii, bujori,
+         orhidee, frunze aurii, perle) legate pe laterale de un vrej auriu cu perle, trandafiri
+         mici și orhidee (::before / ::after). Totul static: fără animații sau filtre. -->
     <article class="card-inv" id="continut">
-      <img class="card-inv__corner card-inv__corner--tl" src="/decor/corner-tl.webp" alt="" width="340" height="490" loading="lazy" decoding="async" />
-      <img class="card-inv__corner card-inv__corner--tr" src="/decor/corner-tr.webp" alt="" width="420" height="634" loading="lazy" decoding="async" />
-      <img class="card-inv__corner card-inv__corner--bl" src="/decor/corner-bl.webp" alt="" width="460" height="663" loading="lazy" decoding="async" />
-      <img class="card-inv__corner card-inv__corner--br" src="/decor/corner-br.webp" alt="" width="340" height="513" loading="lazy" decoding="async" />
+      <img class="card-inv__corner card-inv__corner--tl" src="/decor/flora-tl.webp" alt="" width="420" height="605" loading="lazy" decoding="async" />
+      <img class="card-inv__corner card-inv__corner--tr" src="/decor/flora-tr.webp" alt="" width="420" height="605" loading="lazy" decoding="async" />
+      <img class="card-inv__corner card-inv__corner--bl" src="/decor/flora-bl.webp" alt="" width="420" height="605" loading="lazy" decoding="async" />
+      <img class="card-inv__corner card-inv__corner--br" src="/decor/flora-br.webp" alt="" width="420" height="605" loading="lazy" decoding="async" />
 
       <div class="card-inv__body">
         <div class="card-inv__rings" data-reveal="scale"><Rings /></div>
@@ -96,6 +97,31 @@ const venues = events.items.map((e) => ({
     border-radius: 50% 50% 0 0 / var(--seam) var(--seam) 0 0;
   }
 
+  /* Pe ecrane late, catifeaua din jurul cartonașului primește câte o ramură (orhidee, trandafiri,
+     bujor, perle) lipită de marginile ecranului; dreapta e aceeași imagine, oglindită. Doar fundal
+     CSS în media query → pe telefon nu se descarcă deloc; static, fără filtre. */
+  @media (min-width: 1024px) {
+    .inv::before,
+    .inv::after {
+      content: '';
+      position: absolute;
+      z-index: -1;
+      top: 22%;
+      left: 0;
+      width: min(17rem, (100vw - 48rem) / 2);
+      aspect-ratio: 300 / 900;
+      background: url('/decor/edge-l.webp') 0 0 / 100% 100% no-repeat;
+      pointer-events: none;
+    }
+    .inv::after {
+      top: auto;
+      left: auto;
+      right: 0;
+      bottom: 12%;
+      transform: scaleX(-1);
+    }
+  }
+
   /* ── Cartonașul invitației ─────────────────────────────────────────── */
   .card-inv {
     position: relative;
@@ -103,7 +129,7 @@ const venues = events.items.map((e) => ({
     margin: clamp(0.5rem, 2vw, 1.5rem) auto;
     /* jos: loc pentru buchetul din colț, ca să nu acopere locurile */
     /* lateral: loc pentru ghirlanda de pe margini (--gw) + puțin aer */
-    --gw: clamp(1.35rem, 6vw, 2.25rem);
+    --gw: clamp(1.5rem, 6.5vw, 2.5rem);
     padding: clamp(3.25rem, 9vw, 5rem) max(calc(var(--gw) + 0.5rem), clamp(1.25rem, 6vw, 4.5rem)) clamp(9rem, 34vw, 13.5rem);
     border: 1px solid rgb(201 165 90 / 0.75);
     border-radius: 2px;
@@ -120,8 +146,9 @@ const venues = events.items.map((e) => ({
     overflow: clip;
     isolation: isolate;
   }
-  /* Ghirlanda de pe margini: vrej auriu + frunze aurii + șirag de perle (un SVG de ~3 KB,
-     repetat vertical). Se estompează spre buchetele din colțuri. Statică: rasterizată o dată. */
+  /* Ghirlanda de pe margini: vrej auriu, frunze aurii și verzi, șirag de perle, trandafiri mici
+     și câte o orhidee (un SVG repetat vertical, ~3 KB gzip). Se estompează spre buchetele din
+     colțuri. Statică: rasterizată o dată. */
   .card-inv::before,
   .card-inv::after {
     content: '';
@@ -145,31 +172,30 @@ const venues = events.items.map((e) => ({
     background-position: 50% calc(var(--gw) * 2.5);
     transform: scaleX(-1);
   }
+  /* Buchetele din colțuri (scripts/build-florals.mjs): același cadru 420×605 pentru toate,
+     cu aspect-ratio din atributele width/height → fără layout shift. */
   .card-inv__corner {
     position: absolute;
     z-index: 0;
     pointer-events: none;
+    width: clamp(8.25rem, 36%, 14rem);
     height: auto;
   }
   .card-inv__corner--tl {
     top: 0;
     left: 0;
-    width: clamp(6.5rem, 24%, 9rem);
-  }
-  .card-inv__corner--br {
-    bottom: 0;
-    right: 0;
-    width: clamp(6.5rem, 24%, 9rem);
   }
   .card-inv__corner--tr {
     top: 0;
     right: 0;
-    width: clamp(8rem, 30%, 12rem);
   }
   .card-inv__corner--bl {
     bottom: 0;
     left: 0;
-    width: clamp(7rem, 26%, 9.5rem);
+  }
+  .card-inv__corner--br {
+    bottom: 0;
+    right: 0;
   }
   .card-inv__body {
     position: relative;
