@@ -115,7 +115,7 @@ export const story = {
       year: '06.09.2025',
       title: 'Cununia civilă',
       text: 'O zi însorită de toamnă, o rochie albă și un costum albastru. Am semnat, am râs mult și am promis că aceasta a fost abia începutul! Și așa am învățat că „acasă” este „cineva”, nu „undeva”.',
-      photo: 'civilaParc',
+      photo: 'civila',
     },
   ],
   finale: {
