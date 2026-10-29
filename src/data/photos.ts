@@ -10,7 +10,8 @@ import inel from '../assets/photos/inel.jpg';
 import intim from '../assets/photos/intim.jpg';
 import apus from '../assets/photos/apus.jpg';
 import portret from '../assets/photos/portret.jpg';
-import primaPrivire from '../assets/photos/prima-privire.jpg';
+// „Prima privire" (2017): crop centrat pe cuplu din prima-privire.jpg (npm run images).
+import primaPrivire from '../assets/photos/crops/prima-privire-cuplu.jpg';
 import civilaParc from '../assets/photos/civila-parc.jpg';
 import hero from '../assets/photos/hero.jpg';
 import intrebarea from '../assets/photos/intrebarea.jpg';
@@ -50,7 +51,7 @@ export const photos: Record<PhotoKey, Photo> = {
   intim: { src: intim, alt: 'Prim-plan cu Diana sprijinită de umărul lui Dragoș, în lumină caldă', lqip: lqip.intim },
   apus: { src: apus, alt: 'Diana și Dragoș plimbându-se pe o pantă verde, pe lângă un șir de bănci albastre, la apus', lqip: lqip.apus },
   portret: { src: portret, alt: 'Portret al Dianei și al lui Dragoș, zâmbind, în fața unui gard viu', lqip: lqip.portret },
-  primaPrivire: { src: primaPrivire, alt: 'Diana și Dragoș, în fața unui turn de cărămidă; ea stă în spatele lui, cu mâinile pe umerii lui', lqip: lqip.primaPrivire },
+  primaPrivire: { src: primaPrivire, alt: 'Diana și Dragoș în parc, în lumina serii; ea stă în spatele lui, cu mâinile pe umerii lui', lqip: lqip.primaPrivire },
   civilaParc: { src: civilaParc, alt: 'Diana, în rochie albă, și Dragoș, în costum albastru, plimbându-se printr-un parc în ziua cununiei civile', lqip: lqip.civilaParc },
   intrebarea: { src: intrebarea, alt: 'Două mâini împreunate, cu inelul de logodnă, în fața unui brad de Crăciun plin de luminițe colorate', lqip: lqip.intrebarea },
   primulAcasa: { src: primulAcasa, alt: 'Dragoș și Diana, zâmbind într-un selfie, într-un parc cu iarbă verde și flori albe', lqip: lqip.primulAcasa },

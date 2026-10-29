@@ -43,7 +43,8 @@ const ogImage = new URL('/og-image.jpg', site).href;
     <meta name="event-date" content={date.start} />
 
     <link rel="preload" href="/fonts/great-vibes.woff2" as="font" type="font/woff2" crossorigin />
-    <link rel="preload" href="/fonts/alex-brush.woff2" as="font" type="font/woff2" crossorigin />
+    <!-- Cormorant = textul de citit + cifrele (data din hero); Alex Brush apare doar pe cartonaș, mai jos. -->
+    <link rel="preload" href="/fonts/cormorant.woff2" as="font" type="font/woff2" crossorigin />
 
     <script is:inline>
       // Stările ascunse inițial (reveal, split) se aplică doar sub .js.
@@ -59,7 +60,7 @@ const ogImage = new URL('/og-image.jpg', site).href;
     </script>
   </head>
   <body>
-    <a class="skip-link" href="#continut">Sari la conținut</a>
+    <a class="skip-link" href="#povestea">Sari la conținut</a>
     <slot />
     <script>
       import '../scripts/main';

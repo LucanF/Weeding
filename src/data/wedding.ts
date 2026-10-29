@@ -59,7 +59,7 @@ export const hero = {
   scrollHint: 'Derulează',
 };
 
-// ── 2. Invitația ─────────────────────────────────────────────────────────────
+// ── 3. Invitația (după poveste) ──────────────────────────────────────────────
 export const invitation = {
   kicker: 'Invitație',
   // `names` poate fi un text sau o listă de rânduri (ex. părinți despărțiți: fiecare pe rândul lui).
@@ -72,7 +72,7 @@ export const invitation = {
   text: 'Alături de părinții noștri, ne bucurăm să vă invităm să ne fiți alături în ziua în care îi dăm iubirii un nume pentru totdeauna!',
 };
 
-// ── 3. Countdown ─────────────────────────────────────────────────────────────
+// ── 4. Countdown ─────────────────────────────────────────────────────────────
 export const countdown = {
   kicker: 'Până la marele „DA"',
   title: 'Numărăm clipele',
@@ -87,7 +87,7 @@ export const countdown = {
   icsFile: '/nunta-diana-dragos.ics',
 };
 
-// ── 4. Povestea noastră ──────────────────────────────────────────────────────
+// ── 2. Povestea noastră (primul capitol, imediat după plic) ──────────────────
 // TODO: povestea reală (4 momente). `photo` = cheie din src/data/photos.ts.
 export const story = {
   kicker: 'Povestea noastră',

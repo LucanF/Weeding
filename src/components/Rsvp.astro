@@ -25,7 +25,7 @@ const f = rsvp.fields;
   </div>
 
   <div class="container rsvp__head">
-    <p class="kicker" data-reveal>{rsvp.kicker}</p>
+    <p class="kicker" data-ch data-reveal>{rsvp.kicker}</p>
     <h2 class="h2 rsvp__title" id="rsvp-title" data-reveal style="--d:80">{rsvp.title}</h2>
     <p class="rsvp__intro" data-reveal style="--d:160">{rsvp.intro}</p>
   </div>
@@ -201,7 +201,7 @@ const f = rsvp.fields;
     z-index: 2;
     width: min(100% - 2 * clamp(0.75rem, 3vw, 2rem), 44rem);
     margin: clamp(-14rem, -30svh, -9rem) auto 0;
-    padding: 6rem clamp(1.25rem, 6vw, 4rem) clamp(2rem, 6vw, 3.5rem);
+    padding: 6.75rem clamp(1.25rem, 6vw, 4rem) clamp(2rem, 6vw, 3.5rem);
     border-radius: 50% 50% 1.5rem 1.5rem / 10rem 10rem 1.5rem 1.5rem;
     border: 1px solid rgb(201 165 90 / 0.7);
     box-shadow: 0 40px 80px -30px rgb(0 0 0 / 0.7);
@@ -213,7 +213,7 @@ const f = rsvp.fields;
   @media (max-width: 600px) {
     .rsvp__panel {
       border-radius: 50% 50% 1.25rem 1.25rem / 7rem 7rem 1.25rem 1.25rem;
-      padding-top: 5.5rem;
+      padding-top: 6.25rem;
     }
   }
   .rsvp__panel::before {
@@ -264,9 +264,12 @@ const f = rsvp.fields;
   }
   .field__label {
     padding: 0;
-    font-size: 1rem;
+    font-size: 0.78rem;
     font-weight: 700;
-    color: var(--ivory);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    line-height: 1.35;
+    color: var(--amber-soft);
   }
   .field__input {
     width: 100%;
@@ -276,7 +279,8 @@ const f = rsvp.fields;
     border-bottom: 1px solid rgb(201 165 90 / 0.50);
     border-radius: 0;
     background: transparent;
-    font-size: 1.0625rem;
+    font-size: 1.25rem;
+    font-weight: 500;
     color: var(--ivory);
     transition: border-color 0.3s;
     appearance: none;
@@ -369,7 +373,7 @@ const f = rsvp.fields;
     border: 1px solid rgb(201 165 90 / 0.45);
     border-radius: 1.6rem 1.6rem 0.6rem 0.6rem;
     font-weight: 600;
-    font-size: 1.1rem;
+    font-size: 1.2rem;
     text-align: center;
     color: var(--ivory);
     transition:
@@ -481,7 +485,9 @@ const f = rsvp.fields;
     gap: 1rem;
     margin-block: 1.75rem 1.25rem;
     font-size: var(--fs-kicker);
-    font-weight: 600;
+    font-weight: 700;
+    letter-spacing: var(--caps-track);
+    text-transform: uppercase;
     color: var(--amber);
   }
   .rsvp__or::before,
