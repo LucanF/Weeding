@@ -35,7 +35,7 @@ const mapLinks = (e: (typeof events.items)[number]) => [
 <section class="det on-ivory section" id="detalii" aria-labelledby="det-title">
   <div class="container">
     <header class="det__head">
-      <p class="kicker kicker--center" data-reveal>{events.kicker}</p>
+      <p class="kicker kicker--center" data-ch data-reveal>{events.kicker}</p>
       <h2 class="h2" id="det-title" data-reveal style="--d:80">{events.title}</h2>
       <p class="lead det__intro" data-reveal style="--d:160">{events.intro}</p>
     </header>
@@ -243,7 +243,9 @@ const mapLinks = (e: (typeof events.items)[number]) => [
   }
   .card__type {
     font-size: var(--fs-kicker);
-    font-weight: 600;
+    font-weight: 700;
+    letter-spacing: var(--caps-track);
+    text-transform: uppercase;
     color: var(--amber);
   }
   .card__time {

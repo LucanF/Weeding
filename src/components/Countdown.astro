@@ -18,7 +18,7 @@ const units = ['days', 'hours', 'minutes', 'seconds'] as const;
 
 <section class="cd on-ivory" id="countdown" aria-labelledby="cd-title" data-countdown data-target={date.start}>
   <div class="container cd__inner">
-    <p class="kicker kicker--center" data-reveal>{countdown.kicker}</p>
+    <p class="kicker kicker--center" data-ch data-reveal>{countdown.kicker}</p>
     <h2 class="h2 cd__title" id="cd-title" data-reveal style="--d:80">{countdown.title}</h2>
 
     <p class="cd__fallback">{date.long}</p>
@@ -86,12 +86,31 @@ const units = ['days', 'hours', 'minutes', 'seconds'] as const;
   :global(.js) .cd__fallback {
     display: none;
   }
+  /* Un singur rând, ca o bandă tipărită între două linii aurii (pe telefon nu mai ocupă 2 ecrane). */
   .cd__grid {
     display: none;
-    margin-top: clamp(2.5rem, 6vw, 4rem);
-    grid-template-columns: repeat(2, auto);
-    gap: 2.25rem 3rem;
+    position: relative;
+    width: min(100%, 52rem);
+    margin-top: clamp(2.25rem, 6vw, 3.5rem);
+    padding-block: clamp(1.25rem, 3.5vw, 2.25rem);
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    border-block: 1px solid rgb(201 165 90 / 0.6);
     color: var(--ivory);
+  }
+  .cd__grid::before,
+  .cd__grid::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: rgb(201 165 90 / 0.28);
+  }
+  .cd__grid::before {
+    top: 5px;
+  }
+  .cd__grid::after {
+    bottom: 5px;
   }
   :global(.js) .cd__grid {
     display: grid;
@@ -105,12 +124,17 @@ const units = ['days', 'hours', 'minutes', 'seconds'] as const;
   .cd__unit {
     display: grid;
     justify-items: center;
-    gap: 0.6rem;
+    gap: 0.5rem;
+    min-width: 0;
+  }
+  .cd__sep + .cd__unit {
+    border-left: 1px solid rgb(201 165 90 / 0.3);
   }
   .cd__num {
     display: inline-flex;
     font-family: var(--num);
-    font-size: clamp(4.25rem, 12vw, 8.5rem);
+    font-weight: 500;
+    font-size: clamp(2.6rem, 11vw, 6.5rem);
     line-height: 0.9;
     font-variant-numeric: lining-nums tabular-nums;
     font-feature-settings: 'lnum' 1, 'tnum' 1;
@@ -164,22 +188,15 @@ const units = ['days', 'hours', 'minutes', 'seconds'] as const;
     }
   }
   .cd__label {
-    font-size: var(--fs-kicker);
-    font-weight: 600;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
     color: var(--amber);
   }
   @media (min-width: 768px) {
-    .cd__grid {
-      grid-template-columns: repeat(7, auto);
-      align-items: start;
-      gap: 0 clamp(1rem, 2.5vw, 2.5rem);
-    }
-    .cd__sep {
-      display: block;
-      font-family: var(--num);
-      font-size: clamp(3rem, 6vw, 5rem);
-      line-height: 1.2;
-      color: var(--amber);
+    .cd__label {
+      font-size: 0.8125rem;
     }
   }
   .cd__done {

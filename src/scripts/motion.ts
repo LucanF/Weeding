@@ -339,7 +339,9 @@ function heroScroll(desktop: boolean) {
     .fromTo(bottom, { yPercent: 0 }, { yPercent: 104, duration: 0.38, ease: 'power2.inOut', ...g }, 0.34)
     // poza „se apropie" puțin cât se deschide plicul
     .fromTo(media, { scale: 1.12 }, { scale: 1, duration: 0.55, ease: 'power2.out', ...g }, 0.28)
-    .fromTo('[data-hero-caption]', { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.18, ease: 'power2.out' }, 0.66)
+    // cartonul de titlu (ca genericul unui film): numele urcă și se clarifică, apoi data
+    .fromTo('.hero__names', { opacity: 0, y: 28, scale: 0.96 }, { opacity: 1, y: 0, scale: 1, duration: 0.2, ease: 'power2.out', ...g }, 0.56)
+    .fromTo('.hero__date', { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.16, ease: 'power2.out', ...g }, 0.66)
     .to({}, { duration: 0.16 });
 
   pauseOffscreen(hero, $('.hero__scroll', hero));

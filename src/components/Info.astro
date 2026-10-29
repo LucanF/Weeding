@@ -5,7 +5,7 @@ import { info } from '../data/wedding';
 <section class="info on-ivory section" id="info" aria-labelledby="info-title">
   <div class="container info__grid">
     <header>
-      <p class="kicker" data-reveal>{info.kicker}</p>
+      <p class="kicker" data-ch data-reveal>{info.kicker}</p>
       <h2 class="h2" id="info-title" data-reveal style="--d:80">{info.title}</h2>
     </header>
     <div class="info__list">
@@ -39,6 +39,22 @@ import { info } from '../data/wedding';
   }
   .info__list {
     border-top: 1px solid rgb(201 165 90 / 0.33);
+    counter-reset: q;
+  }
+  /* Index discret (01, 02…) în fața fiecărei întrebări: ritm de cuprins, ca restul capitolelor. */
+  .acc__sum::before {
+    counter-increment: q;
+    content: counter(q, decimal-leading-zero);
+    flex: none;
+    width: 2.25rem;
+    font-family: var(--text);
+    font-size: 0.8125rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    color: var(--amber);
+  }
+  .acc__q {
+    flex: 1;
   }
   .acc {
     border-bottom: 1px solid rgb(201 165 90 / 0.33);

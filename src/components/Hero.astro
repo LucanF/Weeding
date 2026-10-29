@@ -56,12 +56,22 @@ import { heroPhoto, crops } from '../data/photos';
       </span>
     </div>
 
-    <!-- Pe plic nu e niciun text, doar sigiliul cu inițialele; numele rămân pentru cititoarele de ecran. -->
-    <h1 class="sr-only" id="hero-title">{couple.bride} și {couple.groom} – {date.long}</h1>
-
-    <p class="hero__caption" data-hero-caption aria-hidden="true">
-      <span class="hero__caption-date">{date.short}</span>
-    </p>
+    <!-- Pe plic nu e niciun text, doar sigiliul cu inițialele. Cartonul de titlu (nume + dată)
+         apare abia când plicul s-a deschis, peste poză, ca genericul unui film. -->
+    <div class="hero__caption" data-hero-caption>
+      <h1 class="hero__title" id="hero-title">
+        <!-- Textul pentru cititoarele de ecran stă în afara textului auriu: background-clip: text
+             desenează și literele ascunse cu .sr-only. -->
+        <span class="sr-only">{couple.bride} și {couple.groom}, {date.long}</span>
+        <span class="gold-text hero__names" aria-hidden="true">
+          <span class="hero__n">{couple.bride}</span>
+          <span class="hero__n"><span class="hero__amp">&amp;</span> {couple.groom}</span>
+        </span>
+        <span class="hero__date" aria-hidden="true">
+          <time datetime={date.start.slice(0, 10)}>{date.short}</time>
+        </span>
+      </h1>
+    </div>
 
     <a class="hero__scroll" href="#invitatie" data-hero-fade aria-label={hero.scrollHint}>
       <i aria-hidden="true"></i>
@@ -133,7 +143,7 @@ import { heroPhoto, crops } from '../data/photos';
     inset: 0;
     /* Doar cât să se citească header-ul (sus) și data (jos); poza rămâne luminoasă. */
     background:
-      linear-gradient(to top, rgb(6 20 13 / 0.78) 0%, rgb(6 20 13 / 0.3) 24%, transparent 42%),
+      linear-gradient(to top, rgb(6 20 13 / 0.92) 0%, rgb(6 20 13 / 0.62) 22%, rgb(6 20 13 / 0.18) 40%, transparent 52%),
       linear-gradient(to bottom, rgb(6 20 13 / 0.5), transparent 18%);
   }
 
@@ -278,17 +288,95 @@ import { heroPhoto, crops } from '../data/photos';
     }
   }
 
+  /* Cartonul de titlu: jos, peste scrim-ul de la baza pozei (nu peste fețe). */
   .hero__caption {
     position: absolute;
     z-index: 4;
-    left: 0;
-    right: 0;
-    bottom: calc(var(--seam) + 1.25rem);
+    left: var(--gutter);
+    right: var(--gutter);
+    bottom: calc(var(--seam) + 0.75rem);
+    display: grid;
+    justify-items: center;
     text-align: center;
+    pointer-events: none;
+  }
+  :global(.motion-ok) .hero__names,
+  :global(.motion-ok) .hero__date {
     opacity: 0;
-    font-family: var(--num);
-    font-size: clamp(1.1rem, 2.2vw, 1.5rem);
-    color: var(--amber-soft);
+  }
+  .hero__title {
+    display: grid;
+    justify-items: center;
+    gap: 0.35rem;
+    font-weight: 400;
+  }
+  .hero__names {
+    font-family: var(--serif);
+    font-size: clamp(2.6rem, 12vw, 7.5rem);
+    line-height: 1.15;
+    white-space: nowrap;
+    padding: 0 0.2em 0.1em;
+  }
+  .hero__amp {
+    font-size: 0.8em;
+  }
+  .hero__date {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.9rem;
+    font-family: var(--text);
+    font-size: clamp(0.9rem, 1.6vw, 1.05rem);
+    font-weight: 600;
+    letter-spacing: 0.32em;
+    text-indent: 0.32em;
+    color: var(--ivory);
+    text-shadow: 0 2px 14px rgb(6 20 13 / 0.6);
+  }
+  .hero__date::before,
+  .hero__date::after {
+    content: '';
+    width: clamp(1.5rem, 6vw, 3.5rem);
+    height: 1px;
+    background: linear-gradient(to var(--dir, left), var(--amber), transparent);
+  }
+  .hero__date::after {
+    --dir: right;
+  }
+  /* Desktop: cuplul stă în centrul pozei, deci cartonul de titlu trece în colțul din stânga-jos
+     (pe două rânduri), peste un scrim lateral; textul și subiectul nu se suprapun. */
+  @media (min-width: 1024px) {
+    .hero__shade {
+      background:
+        linear-gradient(to right, rgb(6 20 13 / 0.78) 0%, rgb(6 20 13 / 0.45) 24%, transparent 42%),
+        linear-gradient(to top, rgb(6 20 13 / 0.85) 0%, rgb(6 20 13 / 0.35) 20%, transparent 40%),
+        linear-gradient(to bottom, rgb(6 20 13 / 0.5), transparent 18%);
+    }
+    .hero__caption {
+      left: max(var(--gutter), calc((100vw - var(--maxw)) / 2));
+      right: auto;
+      bottom: calc(var(--seam) + 1.5rem);
+      justify-items: start;
+      text-align: left;
+    }
+    .hero__title {
+      justify-items: start;
+      gap: 0.6rem;
+    }
+    .hero__names {
+      display: grid;
+      font-size: clamp(4rem, 5.2vw, 6rem);
+      line-height: 1.05;
+      padding-left: 0;
+    }
+    .hero__n + .hero__n {
+      padding-left: 0.55em;
+    }
+    .hero__date {
+      text-indent: 0;
+    }
+    .hero__date::before {
+      display: none;
+    }
   }
 
   .hero__scroll {

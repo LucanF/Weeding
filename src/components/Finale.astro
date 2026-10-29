@@ -147,12 +147,17 @@ import { finalPhoto } from '../data/photos';
     /* titlul are line-height strâns: loc pentru descendente (ș, g) */
     margin-top: clamp(1.4rem, 2.6vw, 2.25rem);
     max-width: 26rem;
+    font-size: var(--fs-lead);
     color: var(--on-dark-soft);
   }
+  /* Data, ca pe cartonul de titlu din hero: finalul „închide" genericul. */
   .fin__date {
     margin-top: 1.75rem;
     font-family: var(--num);
-    font-size: 1.35rem;
+    font-size: 1rem;
+    font-weight: 600;
+    letter-spacing: 0.32em;
+    text-indent: 0.32em;
     color: var(--amber-soft);
   }
 </style>

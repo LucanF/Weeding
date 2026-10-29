@@ -4,6 +4,8 @@ import { couple, nav } from '../data/wedding';
 
 <header class="hdr" data-header>
   <div class="hdr__bar">
+    <!-- Firul auriu al invitației, ca indicator de progres: cât din pagină ai parcurs. -->
+    <span class="hdr__thread" aria-hidden="true"></span>
     <a class="hdr__logo" href="#acasa" data-logo aria-label={`${couple.bride} și ${couple.groom} – începutul paginii`}>
       <span class="hdr__name">{couple.bride}</span>
       <span class="amp" aria-hidden="true">&amp;</span>
@@ -114,8 +116,10 @@ import { couple, nav } from '../data/wedding';
     position: relative;
     display: inline-block;
     padding-block: 0.6rem;
-    font-size: 1.05rem;
-    font-weight: 500;
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: var(--caps-track);
+    text-transform: uppercase;
     text-decoration: none;
     color: var(--on-dark-soft);
     transition: color 0.3s;
@@ -140,6 +144,40 @@ import { couple, nav } from '../data/wedding';
   .hdr__nav a[aria-current='true']::after {
     transform: scaleX(1);
     transform-origin: left;
+  }
+  /* Progres de lectură fără JS: animație legată de scroll (scroll-timeline), doar transform.
+     Fără suport (Firefox), firul rămâne ascuns. Apare odată cu bara solidă. */
+  .hdr__thread {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -1px;
+    height: 1px;
+    background: linear-gradient(90deg, var(--gold-deep), var(--amber-soft) 75%, var(--gold-light));
+    transform-origin: 0 50%;
+    transform: scaleX(0);
+    opacity: 0;
+    transition: opacity 0.5s var(--ease-out);
+    pointer-events: none;
+  }
+  @supports (animation-timeline: scroll()) {
+    .hdr__thread {
+      animation: hdr-progress linear both;
+      animation-timeline: scroll(root block);
+    }
+    :global(.hdr.is-solid) .hdr__thread {
+      opacity: 1;
+    }
+  }
+  @keyframes hdr-progress {
+    to {
+      transform: scaleX(1);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .hdr__thread {
+      display: none;
+    }
   }
   .hdr__actions {
     display: flex;
