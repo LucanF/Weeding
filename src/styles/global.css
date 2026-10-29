@@ -673,6 +673,21 @@ svg:has(> .thread) {
   left: -2px;
   top: -2px;
 }
+.dust-g {
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+/* Scântei-dâră (la ruperea sigiliului): fir subțire, luminos în față, orientat pe direcția de zbor. */
+.dust-burst .dust--streak {
+  left: -8px;
+  top: -0.75px;
+  width: 16px;
+  height: 1.5px;
+  border-radius: 1px;
+  background: linear-gradient(to right, rgb(255 243 207 / 0), rgb(255 243 207 / 0.95));
+  box-shadow: 0 0 4px rgb(255 226 160 / 0.6);
+}
 .dust-field {
   position: absolute;
   inset: 0;

@@ -57,6 +57,8 @@ export const hero = {
   tagline: 'Noi doi, de la întâlnire la totdeauna.',
   eyebrow: 'Ne căsătorim',
   scrollHint: 'Derulează',
+  /** Butonul invizibil de peste sigiliu (atingere / tastatură): deschide plicul. */
+  openLabel: 'Deschide invitația',
 };
 
 // ── 3. Invitația (după poveste) ──────────────────────────────────────────────

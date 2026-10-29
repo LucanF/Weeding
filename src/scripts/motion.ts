@@ -16,6 +16,8 @@ import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { SplitText } from 'gsap/SplitText';
 
+import type Lenis from 'lenis';
+
 gsap.registerPlugin(ScrollTrigger, SplitText);
 ScrollTrigger.config({ ignoreMobileResize: true, limitCallbacks: true });
 if (import.meta.env.DEV) Object.assign(window, { __gsap: gsap, __ST: ScrollTrigger });
@@ -275,18 +277,26 @@ function safeRefresh() {
   ScrollTrigger.addEventListener('scrollEnd', once);
 }
 
-/** Animație de intrare (o singură dată, la load): sigiliul se așază pe plic. */
+/** Animație de intrare (o singură dată, la load): sigiliul e „apăsat" pe plic, apoi lumina îl atinge. */
 function heroIntro() {
   gsap
     .timeline({ defaults: { ease: 'expo.out' } })
-    .from('[data-env-seal]', { scale: 1.6, opacity: 0, rotate: -18, duration: 1.1, ease: 'back.out(1.6)' }, 0.15)
-    .from('[data-hero-fade]', { opacity: 0, y: 14, duration: 1.2 }, 0.7);
+    .from('[data-env-seal]', { scale: 1.5, opacity: 0, rotate: -14, duration: 1.2, ease: 'back.out(1.4)' }, 0.2)
+    .from('[data-hero-fade]', { opacity: 0, y: 14, duration: 1.2 }, 0.8);
 }
 
+/** Pragul (progresul scroll-ului prin hero) la care se rupe sigiliul: practic la primul scroll. */
+const BREAK_AT = 0.025;
+
 /**
- * Hero: plicul se deschide la scroll. Sigiliul se rupe, clapa de sus se ridică (3D), apoi clapele
- * laterale și cea de jos ies din ecran și rămâne poza full-bleed. Doar transform/opacity (GPU).
- * Logo-ul din header e vizibil tot timpul, deci nu mai există predare titlu → logo.
+ * Hero: plicul se deschide.
+ *  1. Ruperea sigiliului e un MOMENT (pe timp, nu pe scroll), declanșat la primul scroll sau la atingerea
+ *     sigiliului: ceara se apasă, crăpătura se aprinde, jumătățile sar în lături (3D) cu scântei, iar un
+ *     bloom cald + o dâră de lumină trec peste hârtie. Ritmul e același oricât de repede derulezi (bloom-ul
+ *     urcă în ~0.5 s, o singură dată → fără pâlpâiri). Înapoi sus, sigiliul se reface (timeline inversat).
+ *  2. Restul e legat de scroll (reversibil): clapa de sus se ridică (3D) cu un reflex, lumina din plic se
+ *     revarsă peste poză, clapele laterale și cea de jos ies din ecran, poza se așază (Ken Burns), apoi
+ *     cartonul de titlu. Doar transform/opacity (GPU).
  */
 function heroScroll(desktop: boolean) {
   const hero = $('[data-hero]');
@@ -295,14 +305,48 @@ function heroScroll(desktop: boolean) {
   const left = $('[data-env-l]');
   const right = $('[data-env-r]');
   const bottom = $('[data-env-b]');
-  const sealL = $('[data-seal-l]');
-  const sealR = $('[data-seal-r]');
-  const sealShadow = $('[data-seal-shadow]');
-  if (!hero || !media || !top || !left || !right || !bottom || !sealL || !sealR || !sealShadow) return;
+  if (!hero || !media || !top || !left || !right || !bottom) return;
   const g = { force3D: true };
+
+  const seal = sealBreak(desktop);
+  const btn = $<HTMLButtonElement>('[data-env-open]');
+  if (btn) {
+    const onClick = () => openEnvelope(hero);
+    btn.addEventListener('click', onClick);
+    offs.push(() => {
+      btn.removeEventListener('click', onClick);
+      btn.hidden = false;
+    });
+  }
 
   let wasDone = false;
   let wasOpen = false;
+  let broken = false;
+  const sync = (p: number, silent: boolean) => {
+    const b = p > BREAK_AT;
+    if (b !== broken) {
+      broken = b;
+      seal?.(b, silent);
+      if (btn) {
+        // după ruperea sigiliului butonul dispare; focusul trece pe titlu (nu se pierde pe <body>)
+        const focused = document.activeElement === btn;
+        btn.hidden = b;
+        if (b && focused) $('#hero-title')?.focus({ preventScroll: true });
+      }
+    }
+    // clapele de jos/laterale au ieșit pe jumătate → plicul „e deschis", apare bara de sus
+    const open = p > 0.45;
+    if (open !== wasOpen) {
+      wasOpen = open;
+      window.dispatchEvent(new CustomEvent('dd:env', { detail: open }));
+    }
+    const done = p > 0.7;
+    if (done !== wasDone) {
+      wasDone = done;
+      window.dispatchEvent(new CustomEvent('dd:hero', { detail: done }));
+    }
+  };
+
   const tl = gsap.timeline({
     defaults: { ease: 'none' },
     scrollTrigger: {
@@ -310,80 +354,201 @@ function heroScroll(desktop: boolean) {
       start: 'top top',
       end: 'bottom bottom',
       scrub: SCRUB,
-      onUpdate(self) {
-        // clapele de jos/laterale au ieșit pe jumătate → plicul „e deschis", apare bara de sus
-        const open = self.progress > 0.45;
-        if (open !== wasOpen) {
-          wasOpen = open;
-          window.dispatchEvent(new CustomEvent('dd:env', { detail: open }));
-        }
-        const done = self.progress > 0.7;
-        if (done !== wasDone) {
-          wasDone = done;
-          window.dispatchEvent(new CustomEvent('dd:hero', { detail: done }));
-        }
-      },
+      onUpdate: (self) => sync(self.progress, false),
+      onRefresh: (self) => sync(self.progress, true),
     },
   });
 
+  const shine = $('[data-env-shine]');
+  const glow = $('[data-hero-glow]');
   tl.to('[data-hero-fade]', { opacity: 0, y: -16, duration: 0.14, stagger: 0.02, ease: 'power1.in', ...g }, 0)
-    // sigiliul crapă în două: jumătățile se depărtează, se rotesc și cad ușor
-    .to(sealShadow, { opacity: 0, duration: 0.06 }, 0.05)
-    .to(sealL, { xPercent: -26, yPercent: 14, rotate: -24, opacity: 0, duration: 0.16, ease: 'power2.in', ...g }, 0.05)
-    .to(sealR, { xPercent: 26, yPercent: 20, rotate: 20, opacity: 0, duration: 0.16, ease: 'power2.in', ...g }, 0.05)
-    // clapa de sus se ridică spre privitor și iese pe sus
-    .fromTo(top, { rotationX: 0 }, { rotationX: 180, duration: 0.3, ease: 'power2.inOut', ...g }, 0.12)
-    // celelalte clape ies din ecran
-    .fromTo(left, { xPercent: 0 }, { xPercent: -104, duration: 0.36, ease: 'power2.inOut', ...g }, 0.32)
-    .fromTo(right, { xPercent: 0 }, { xPercent: 104, duration: 0.36, ease: 'power2.inOut', ...g }, 0.32)
-    .fromTo(bottom, { yPercent: 0 }, { yPercent: 104, duration: 0.38, ease: 'power2.inOut', ...g }, 0.34)
-    // poza „se apropie" puțin cât se deschide plicul
-    .fromTo(media, { scale: 1.12 }, { scale: 1, duration: 0.55, ease: 'power2.out', ...g }, 0.28)
+    // clapa de sus se ridică spre privitor și iese pe sus; prinde lumina cât se înclină
+    .fromTo(top, { rotationX: 0 }, { rotationX: 180, duration: 0.32, ease: 'power2.inOut', ...g }, 0.08)
+    // poza se așază încet (Ken Burns) cât se deschide plicul
+    .fromTo(media, { scale: 1.16 }, { scale: 1, duration: 0.7, ease: 'power2.out', ...g }, 0.14)
+    // celelalte clape ies din ecran (cea de jos puțin după, ca hârtia care alunecă)
+    .fromTo(left, { xPercent: 0 }, { xPercent: -104, duration: 0.36, ease: 'power2.inOut', ...g }, 0.3)
+    .fromTo(right, { xPercent: 0 }, { xPercent: 104, duration: 0.36, ease: 'power2.inOut', ...g }, 0.3)
+    .fromTo(bottom, { yPercent: 0 }, { yPercent: 104, duration: 0.38, ease: 'power2.inOut', ...g }, 0.33)
     // cartonul de titlu (ca genericul unui film): numele urcă și se clarifică, apoi data
     .fromTo('.hero__names', { opacity: 0, y: 28, scale: 0.96 }, { opacity: 1, y: 0, scale: 1, duration: 0.2, ease: 'power2.out', ...g }, 0.56)
     .fromTo('.hero__date', { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.16, ease: 'power2.out', ...g }, 0.66)
     .to({}, { duration: 0.16 });
+  if (shine) {
+    tl.fromTo(shine, { opacity: 0 }, { opacity: 1, duration: 0.1, ease: 'sine.inOut' }, 0.09).to(
+      shine,
+      { opacity: 0, duration: 0.08, ease: 'sine.in' },
+      0.2,
+    );
+  }
+  // lumina caldă din plic se revarsă peste poză, apoi se retrage cât poza se limpezește
+  if (glow) {
+    tl.fromTo(glow, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2, ease: 'sine.out' }, 0.12).to(
+      glow,
+      { autoAlpha: 0, duration: 0.26, ease: 'sine.inOut' },
+      0.4,
+    );
+  }
 
   pauseOffscreen(hero, $('.hero__scroll', hero));
-
-  const glint = $('[data-seal-glint]');
-  if (glint) tl.to(glint, { opacity: 0, duration: 0.04 }, 0.05);
-  sealDust(tl, desktop);
 }
 
-/** Câteva fire de praf auriu sar din sigiliu când se rupe (legat de scroll → reversibil). */
-function sealDust(tl: gsap.core.Timeline, desktop: boolean) {
+/**
+ * Ruperea sigiliului: timeline pe timp (nu pe scroll). Întoarce `set(rupt, fărăEfecte)`:
+ * rupt → jumătățile sar + (dacă nu e „silent") bloom, dâră de lumină, scântei; nerupt → se reface.
+ */
+function sealBreak(desktop: boolean) {
+  const sealL = $('[data-seal-l]');
+  const sealR = $('[data-seal-r]');
+  const shadow = $('[data-seal-shadow]');
+  const crack = $('[data-seal-crack]');
+  const glint = $('[data-seal-glint]');
+  const whole = $('[data-seal-whole]');
+  if (!sealL || !sealR || !shadow) return;
+  const halves = [sealL, sealR];
+  const p3 = { transformPerspective: 500, force3D: true };
+
+  const tl = gsap.timeline({ paused: true });
+  // ceara cedează: o apăsare scurtă, crăpătura se aprinde, apoi jumătățile se desprind
+  tl.to([...halves, whole], { scale: 0.955, duration: 0.16, ease: 'power2.out', ...p3 }, 0);
+  if (whole) tl.set(whole, { autoAlpha: 0 }, 0.2);
+  if (glint) tl.to(glint, { opacity: 0, duration: 0.15 }, 0);
+  if (crack) {
+    tl.to(crack, { opacity: 1, duration: 0.12, ease: 'power1.out' }, 0.06).to(
+      crack,
+      { opacity: 0, duration: 0.25, ease: 'power1.in' },
+      0.22,
+    );
+  }
+  tl.to(shadow, { opacity: 0, duration: 0.35 }, 0.2)
+    .to(sealL, { xPercent: -38, rotate: -22, rotationY: -24, scale: 0.94, duration: 1.1, ease: 'power3.out', ...p3 }, 0.2)
+    .to(sealR, { xPercent: 38, rotate: 18, rotationY: 24, scale: 0.94, duration: 1.1, ease: 'power3.out', ...p3 }, 0.2)
+    // ... și cad (gravitație: y accelerat), stingându-se
+    .to(sealL, { yPercent: 70, duration: 1, ease: 'power2.in' }, 0.28)
+    .to(sealR, { yPercent: 82, duration: 1, ease: 'power2.in' }, 0.28)
+    .to(halves, { opacity: 0, duration: 0.45, ease: 'power1.in' }, 0.75);
+
+  const fx = breakFx(desktop);
+  let lastFx = 0;
+  return (broken: boolean, silent: boolean) => {
+    if (silent) {
+      tl.progress(broken ? 1 : 0).pause();
+      return;
+    }
+    if (broken) {
+      tl.timeScale(1).play();
+      // efectele de lumină: cel mult o dată la 2 s (scroll sus-jos rapid nu le repetă)
+      const now = performance.now();
+      if (fx && now - lastFx > 2000) {
+        lastFx = now;
+        fx.invalidate().restart(true);
+      }
+    } else {
+      tl.timeScale(1.8).reverse();
+    }
+  };
+}
+
+/**
+ * Efectele de la rupere (o singură „respirație" de lumină, pe timp):
+ * bloom cald din sigiliu (urcă în 0.55 s, coboară în ~1.4 s; lumină caldă, nu alb pur),
+ * o dâră de lumină care mătură hârtia și câteva scântei aurii (puncte + dâre scurte) cu „gravitație".
+ */
+function breakFx(desktop: boolean) {
   const env = $('[data-env]');
+  const bloom = $('[data-env-bloom]');
+  const glare = $('[data-env-glare]');
+  if (!env) return null;
+  const tl = gsap.timeline({ paused: true });
+  if (bloom) {
+    tl.fromTo(bloom, { scale: 0.15 }, { scale: 1.15, duration: 2.2, ease: 'expo.out', force3D: true }, 0.12)
+      .fromTo(bloom, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.55, ease: 'sine.out' }, 0.12)
+      .to(bloom, { autoAlpha: 0, duration: 1.4, ease: 'sine.inOut' }, 0.75);
+  }
+  if (glare) {
+    tl.set(glare, { autoAlpha: 1 }, 0.2)
+      .fromTo(
+        glare.firstElementChild,
+        { x: () => -0.75 * Math.max(innerWidth, innerHeight), rotate: 22 },
+        { x: () => 0.75 * Math.max(innerWidth, innerHeight), duration: 1.7, ease: 'power2.inOut', force3D: true },
+        0.2,
+      )
+      .set(glare, { autoAlpha: 0 }, 1.8);
+  }
+
   const n = desktop ? FX.heroDust.desktop : FX.heroDust.mobile;
-  if (!env || !n) return;
+  if (!n) return tl;
   const wrap = document.createElement('span');
   wrap.className = 'dust-burst';
   env.appendChild(wrap);
   made.push(wrap);
   const r = rng(29);
-  const reach = desktop ? 1 : 0.7;
-  for (let i = 0; i < n; i++) {
+  const reach = desktop ? 1 : 0.72;
+  const streaks = Math.round(n * 0.45);
+  for (let i = 0; i < n + streaks; i++) {
+    const streak = i >= n;
     const d = document.createElement('i');
-    d.className = 'dust';
-    const size = 2 + r() * 3.5;
-    d.style.width = d.style.height = `${size.toFixed(1)}px`;
-    wrap.appendChild(d);
-    // evantai spre stânga/dreapta (unde se rupe sigiliul), puțin în sus, apoi „cad"
+    d.className = streak ? 'dust dust--streak' : 'dust';
+    if (!streak) {
+      const size = 2 + r() * 3.5;
+      d.style.width = d.style.height = `${size.toFixed(1)}px`;
+    }
+    // părintele poartă „gravitația" (y accelerat), copilul zborul în evantai → traiectorie curbă
+    const g = document.createElement('b');
+    g.className = 'dust-g';
+    g.appendChild(d);
+    wrap.appendChild(g);
+    // evantai spre stânga/dreapta (unde se rupe sigiliul), puțin în sus, apoi cad
     const side = i % 2 ? 1 : -1;
-    const ang = (-70 + r() * 120) * (Math.PI / 180);
-    const dist = (70 + r() * 150) * reach;
+    const deg = -75 + r() * 115;
+    const ang = deg * (Math.PI / 180);
+    const dist = (streak ? 110 + r() * 120 : 60 + r() * 170) * reach;
     const dx = side * Math.cos(ang) * dist;
-    const dy = Math.sin(ang) * dist * 0.8 + 30 * reach;
-    const t0 = 0.05 + r() * 0.03;
+    const dy = Math.sin(ang) * dist * 0.8;
+    const t0 = 0.2 + r() * 0.08;
+    const life = streak ? 0.55 + r() * 0.2 : 1.1 + r() * 0.6;
+    // dârele stau pe direcția de zbor
+    const rot = streak ? Math.atan2(dy, dx) * (180 / Math.PI) : 0;
     tl.fromTo(
       d,
-      { x: 0, y: 0, scale: 0.4, rotate: 0 },
-      { x: dx, y: dy, scale: 1, rotate: side * 90, duration: 0.24, ease: 'power3.out', force3D: true },
+      { x: 0, y: 0, scale: streak ? 1 : 0.4, rotate: rot },
+      { x: dx, y: dy, scale: streak ? 0.6 : 1, duration: life, ease: 'power3.out', force3D: true },
       t0,
     )
-      .to(d, { opacity: 0.6 + r() * 0.4, duration: 0.025 }, t0)
-      .to(d, { opacity: 0, duration: 0.1 }, t0 + 0.1 + r() * 0.06);
+      .fromTo(g, { y: 0 }, { y: (streak ? 14 : 40 + r() * 36) * reach, duration: life, ease: 'power2.in', force3D: true }, t0)
+      .fromTo(d, { opacity: 0 }, { opacity: 0.65 + r() * 0.35, duration: 0.06 }, t0)
+      .to(d, { opacity: 0, duration: life * 0.5, ease: 'power1.in' }, t0 + life * 0.6);
   }
+  return tl;
+}
+
+/**
+ * Atingerea sigiliului / Enter: derulează animat până la poza deschisă (animația e legată de scroll,
+ * deci se vede toată). Lenis (desktop) are propriul scrollTo; altfel un tween pe window.scrollY.
+ * Orice gest al utilizatorului (rotiță, atingere, tastă) oprește derularea automată.
+ */
+function openEnvelope(hero: HTMLElement) {
+  const target = hero.offsetTop + (hero.offsetHeight - innerHeight) * 0.9;
+  const duration = 2.6;
+  if (lenis) {
+    lenis.scrollTo(target, { duration, easing: (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2) });
+    return;
+  }
+  const s = { y: scrollY };
+  const stop = () => {
+    tw.kill();
+    off();
+  };
+  const evs = ['wheel', 'touchstart', 'keydown'] as const;
+  const off = () => evs.forEach((e) => removeEventListener(e, stop));
+  const tw = gsap.to(s, {
+    y: target,
+    duration,
+    ease: 'power3.inOut',
+    onUpdate: () => scrollTo({ top: s.y, behavior: 'instant' }),
+    onComplete: off,
+  });
+  evs.forEach((e) => addEventListener(e, stop, { passive: true }));
 }
 
 /** Sclipire scurtă peste sigiliul de ceară, repetată rar cât plicul e închis. */
@@ -391,8 +556,8 @@ function sealGlint() {
   const band = $('[data-seal-glint] i');
   if (!band || !FX.sealGlint) return;
   const tl = gsap
-    .timeline({ repeat: -1, repeatDelay: 5.5, delay: 1.5 })
-    .fromTo(band, { xPercent: -160 }, { xPercent: 160, duration: 1.15, ease: 'power2.inOut', force3D: true });
+    .timeline({ repeat: -1, repeatDelay: 4.8, delay: 1.6 })
+    .fromTo(band, { xPercent: -180 }, { xPercent: 180, duration: 1.4, ease: 'power2.inOut', force3D: true });
   ScrollTrigger.create({
     trigger: '[data-hero]',
     start: 'top top',
@@ -755,15 +920,16 @@ function finale(desktop: boolean, landscape = false) {
 }
 
 /** Lenis: doar desktop cu mouse; pe touch rămâne scroll-ul nativ. */
+let lenis: Lenis | null = null;
 async function smoothScroll() {
   if (!matchMedia('(min-width: 1024px) and (pointer: fine) and (prefers-reduced-motion: no-preference)').matches) return;
-  const { default: Lenis } = await import('lenis');
+  const { default: L } = await import('lenis');
   // autoRaf: false → Lenis e condus de ticker-ul GSAP (un singur rAF pentru tot).
-  const lenis = new Lenis({ lerp: 0.1, wheelMultiplier: 0.95, syncTouch: false, autoRaf: false, anchors: { offset: -72 } });
-  lenis.on('scroll', ScrollTrigger.update);
-  gsap.ticker.add((t) => lenis.raf(t * 1000));
+  const ln = (lenis = new L({ lerp: 0.1, wheelMultiplier: 0.95, syncTouch: false, autoRaf: false, anchors: { offset: -72 } }));
+  ln.on('scroll', ScrollTrigger.update);
+  gsap.ticker.add((t) => ln.raf(t * 1000));
   gsap.ticker.lagSmoothing(0);
-  window.addEventListener('dd:lock', (e) => ((e as CustomEvent<boolean>).detail ? lenis.stop() : lenis.start()));
+  window.addEventListener('dd:lock', (e) => ((e as CustomEvent<boolean>).detail ? ln.stop() : ln.start()));
 }
 
 export function initMotion() {

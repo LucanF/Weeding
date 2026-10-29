@@ -3,6 +3,20 @@ import Img from './ui/Img.astro';
 import { couple, date, hero } from '../data/wedding';
 import { heroPhoto, crops } from '../data/photos';
 import decor from '../data/decor.json';
+
+// Clapele plicului: aceleași puncte (viewBox 0–100, întins pe tot ecranul) dau și forma hârtiei
+// (clip-path pe .env__face) și muchia aurie (polyline doar pe marginile interioare).
+const flaps = [
+  { k: 'l', pts: '0,0 54,52 0,100' },
+  { k: 'r', pts: '100,0 46,52 100,100' },
+  { k: 'b', pts: '0,100 50,44 100,100' },
+  { k: 't', pts: '0,0 50,58 100,0' },
+] as const;
+const clip = (pts: string) =>
+  `--clip: polygon(${pts
+    .split(' ')
+    .map((p) => p.split(',').map((v) => (v === '0' ? '0' : `${v}%`)).join(' '))
+    .join(', ')})`;
 ---
 
 <section class="hero" id="acasa" data-hero aria-labelledby="hero-title">
@@ -25,39 +39,61 @@ import decor from '../data/decor.json';
         />
       </div>
       <div class="hero__shade" data-hero-shade></div>
+      <!-- Lumina caldă „din interiorul plicului" care se revarsă peste poză când se deschide. -->
+      <div class="hero__glow" data-hero-glow aria-hidden="true"></div>
     </div>
 
-    <!-- Plicul (doar cu animații): patru clape care se deschid la scroll și descoperă poza. -->
+    <!-- Plicul (doar cu animații): patru clape de catifea cu muchii aurii; sigiliul se rupe la primul
+         scroll (sau la atingere), clapele se deschid și descoperă poza. -->
     <div class="env" data-env aria-hidden="true">
-      <div class="env__flap env__flap--l" data-env-l>
-        <svg viewBox="0 0 100 100" preserveAspectRatio="none" focusable="false"><polygon points="0,0 54,52 0,100"></polygon></svg>
-      </div>
-      <div class="env__flap env__flap--r" data-env-r>
-        <svg viewBox="0 0 100 100" preserveAspectRatio="none" focusable="false"><polygon points="100,0 46,52 100,100"></polygon></svg>
-      </div>
-      <div class="env__flap env__flap--b" data-env-b>
-        <svg viewBox="0 0 100 100" preserveAspectRatio="none" focusable="false"><polygon points="0,100 50,44 100,100"></polygon></svg>
-      </div>
-      <div class="env__flap env__flap--t" data-env-t>
-        <svg viewBox="0 0 100 100" preserveAspectRatio="none" focusable="false"><polygon points="0,0 100,0 50,58"></polygon></svg>
-      </div>
+      <svg class="env__defs" width="0" height="0" focusable="false">
+        <radialGradient id="env-foil" gradientUnits="userSpaceOnUse" cx="50" cy="54" r="62">
+          <stop offset="0" stop-color="#fff3cf" stop-opacity="0.95"></stop>
+          <stop offset="0.35" stop-color="#e8d09a" stop-opacity="0.7"></stop>
+          <stop offset="1" stop-color="#9a7634" stop-opacity="0.3"></stop>
+        </radialGradient>
+      </svg>
+      {
+        flaps.map((f) => (
+          <div class:list={['env__flap', `env__flap--${f.k}`]} style={clip(f.pts)} {...{ [`data-env-${f.k}`]: '' }}>
+            <div class="env__paper">
+              <div class="env__face"></div>
+              <svg viewBox="0 0 100 100" preserveAspectRatio="none" focusable="false">
+                <polyline points={f.pts}></polyline>
+              </svg>
+            </div>
+            {f.k === 't' && <div class="env__shine" data-env-shine></div>}
+          </div>
+        ))
+      }
       <span class="env__seal" data-env-seal>
-        <span class="env__seal-shadow" data-seal-shadow></span>
-        {
-          (['l', 'r'] as const).map((side) => (
-            <span class:list={['env__seal-half', `env__seal-half--${side}`]} data-seal-l={side === 'l' ? '' : undefined} data-seal-r={side === 'r' ? '' : undefined}>
-              <img class="env__seal-img" src="/decor/seal.webp" alt="" width={decor.seal.w} height={decor.seal.h} decoding="async" />
-            </span>
-          ))
-        }
-        <span class="env__seal-glint" data-seal-glint><i></i></span>
+        <span class="env__seal-lift">
+          <span class="env__seal-shadow" data-seal-shadow></span>
+          <!-- sigiliul întreg (ascunde linia fină dintre jumătăți cât e intact) -->
+          <img class="env__seal-img env__seal-whole" data-seal-whole src="/decor/seal.webp" alt="" width={decor.seal.w} height={decor.seal.h} decoding="async" />
+          {
+            (['l', 'r'] as const).map((side) => (
+              <span class:list={['env__seal-half', `env__seal-half--${side}`]} data-seal-l={side === 'l' ? '' : undefined} data-seal-r={side === 'r' ? '' : undefined}>
+                <img class="env__seal-img" src="/decor/seal.webp" alt="" width={decor.seal.w} height={decor.seal.h} decoding="async" />
+              </span>
+            ))
+          }
+          <svg class="env__crack" data-seal-crack viewBox="0 0 100 100" focusable="false">
+            <polyline points="53,0 47,24 55,46 46,70 52,100"></polyline>
+          </svg>
+          <span class="env__seal-glint" data-seal-glint><i></i></span>
+        </span>
       </span>
+      <!-- Efectele de la ruperea sigiliului: bloom cald + o dâră de lumină care trece peste hârtie. -->
+      <span class="env__bloom" data-env-bloom></span>
+      <span class="env__glare" data-env-glare><i></i></span>
     </div>
+    <button class="env__open" type="button" data-env-open aria-label={hero.openLabel}></button>
 
     <!-- Pe plic nu e niciun text, doar sigiliul cu inițialele. Cartonul de titlu (nume + dată)
          apare abia când plicul s-a deschis, peste poză, ca genericul unui film. -->
     <div class="hero__caption" data-hero-caption>
-      <h1 class="hero__title" id="hero-title">
+      <h1 class="hero__title" id="hero-title" tabindex="-1">
         <!-- Textul pentru cititoarele de ecran stă în afara textului auriu: background-clip: text
              desenează și literele ascunse cu .sr-only. -->
         <span class="sr-only">{couple.bride} și {couple.groom}, {date.long}</span>
@@ -145,9 +181,37 @@ import decor from '../data/decor.json';
       linear-gradient(to bottom, rgb(6 20 13 / 0.5), transparent 18%);
   }
 
-  /* ── Plicul ─────────────────────────────────────────────────────────── */
-  .env {
+  /* Lumina din plic: se revarsă (screen) peste poză cât se deschid clapele; doar opacity (motion.ts). */
+  .hero__glow {
     display: none;
+  }
+  :global(.motion-ok) .hero__glow {
+    display: block;
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 46% 38% at 50% 50%, rgb(255 238 200 / 0.55), rgb(232 196 120 / 0.2) 45%, transparent 75%),
+      radial-gradient(ellipse 90% 70% at 50% 50%, rgb(201 165 90 / 0.16), transparent 70%);
+    mix-blend-mode: screen;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+  }
+
+  /* ── Plicul ─────────────────────────────────────────────────────────── */
+  .env,
+  .env__open {
+    display: none;
+  }
+  .hero__sticky {
+    /* sigiliul: dimensiune comună pentru ceară, butonul de deschidere și bloom */
+    --seal: clamp(5rem, 22vw, 6.75rem);
+    --seal-y: 58%;
+  }
+  @media (min-width: 1024px) {
+    .hero__sticky {
+      --seal: 7.5rem;
+    }
   }
   :global(.motion-ok) .env {
     display: block;
@@ -157,83 +221,139 @@ import decor from '../data/decor.json';
     pointer-events: none;
     perspective: 1400px;
   }
+  .env__defs {
+    position: absolute;
+  }
   .env__flap {
     position: absolute;
     inset: 0;
     will-change: transform;
     backface-visibility: hidden;
   }
+  .env__paper,
+  .env__face,
+  .env__shine {
+    position: absolute;
+    inset: 0;
+  }
+  /* PERFORMANȚĂ: umbra (filter) stă pe .env__paper, NU pe .env__flap. Clapa e strat GPU (will-change),
+     iar un filter pe stratul însuși e recalculat de compozitor la FIECARE frame (4 straturi cât
+     ecranul + blur → sacadat pe GPU-uri integrate / monitoare 4K-5K). Pe copil, umbra se
+     rasterizează o singură dată în textura clapei, care apoi doar se mișcă. */
+  .env__paper {
+    /* WebKit: copilul cu filter nu moștenește ascunderea feței din spate a clapei rotite la 180°. */
+    backface-visibility: hidden;
+  }
+  /* Hârtia: catifea (aceeași textură de 8 KB ca secțiunile) + lumină. Toate clapele acoperă tot
+     ecranul, deci „lumina de scenă" (pata caldă din jurul sigiliului + vigneta) e un singur câmp
+     continuu peste clape; --shade dă fiecărei clape tonul ei (cea de sus e cea mai luminată,
+     buzunarul lateral cel mai adânc), iar --tex decalează textura ca să nu pară o singură foaie. */
+  .env__face {
+    clip-path: var(--clip);
+    background:
+      radial-gradient(ellipse 62% 48% at 50% var(--seal-y), rgb(255 232 180 / 0.1), rgb(255 232 180 / 0.03) 55%, transparent 80%),
+      radial-gradient(ellipse 120% 95% at 50% 52%, transparent 42%, rgb(2 9 5 / 0.6) 100%),
+      var(--shade),
+      url('/decor/velvet.webp') var(--tex, 0 0) / 512px 512px,
+      #0b2418;
+  }
   .env__flap svg {
+    position: absolute;
+    inset: 0;
     width: 100%;
     height: 100%;
     overflow: visible;
   }
-  .env__flap polygon {
-    stroke: rgb(201 165 90 / 0.55);
-    stroke-width: 1;
+  /* Muchia aurie (folio): doar pe marginile interioare, mai luminoasă spre sigiliu. */
+  .env__flap polyline {
+    fill: none;
+    stroke: url(#env-foil);
+    stroke-width: 1.25;
     vector-effect: non-scaling-stroke;
     stroke-linejoin: round;
   }
-  .env__flap--l polygon,
-  .env__flap--r polygon {
-    fill: #0a2016;
+  .env__flap--l {
+    --shade: linear-gradient(90deg, rgb(0 0 0 / 0.05), rgb(0 0 0 / 0.3) 54%);
+    --tex: 173px 61px;
   }
-  /* Umbre fine: clapele par suprapuse, iar când ies din ecran își poartă umbra peste poză.
-     PERFORMANȚĂ: umbra stă pe <svg>-ul din clapă, NU pe .env__flap. Clapa e strat GPU (will-change),
-     iar un filter pe stratul însuși e recalculat de compozitor la FIECARE frame (4 straturi cât
-     ecranul + blur → sacadat pe GPU-uri integrate / monitoare 4K-5K). Pe copil, umbra se
-     rasterizează o singură dată în textura clapei, care apoi doar se mișcă. Aspect identic. */
-  .env__flap--l svg {
-    filter: drop-shadow(4px 0 10px rgb(0 0 0 / 0.28));
+  .env__flap--r {
+    --shade: linear-gradient(270deg, rgb(0 0 0 / 0.05), rgb(0 0 0 / 0.3) 54%);
+    --tex: 311px 227px;
   }
-  .env__flap--r svg {
-    filter: drop-shadow(-4px 0 10px rgb(0 0 0 / 0.28));
+  .env__flap--l .env__paper {
+    filter: drop-shadow(5px 0 12px rgb(0 0 0 / 0.32));
+  }
+  .env__flap--r .env__paper {
+    filter: drop-shadow(-5px 0 12px rgb(0 0 0 / 0.32));
   }
   .env__flap--b {
     z-index: 1;
+    --shade: linear-gradient(0deg, rgb(255 246 225 / 0.035), rgb(0 0 0 / 0.16) 56%);
+    --tex: 97px 389px;
   }
-  .env__flap--b svg {
-    filter: drop-shadow(0 -4px 12px rgb(0 0 0 / 0.3));
-  }
-  .env__flap--b polygon {
-    fill: #0d251a;
+  .env__flap--b .env__paper {
+    filter: drop-shadow(0 -5px 14px rgb(0 0 0 / 0.34));
   }
   .env__flap--t {
     z-index: 2;
     transform-origin: 50% 0;
+    --shade: linear-gradient(180deg, rgb(255 246 225 / 0.075), rgb(255 246 225 / 0.035) 50%, rgb(0 0 0 / 0.06) 58%);
   }
-  .env__flap--t svg {
-    filter: drop-shadow(0 10px 18px rgb(0 0 0 / 0.35));
-    /* WebKit: copilul cu filter nu moștenește ascunderea feței din spate a clapei rotite la 180°
-       (rămânea o linie aurie de 1px sus); o repetăm aici. */
+  .env__flap--t .env__paper {
+    filter: drop-shadow(0 12px 22px rgb(0 0 0 / 0.42));
+  }
+  /* Reflexul de pe clapa de sus cât se ridică spre privitor (opacity, motion.ts). */
+  .env__shine {
+    clip-path: var(--clip);
+    background: linear-gradient(176deg, rgb(255 226 168 / 0.13), rgb(255 226 168 / 0.04) 50%, transparent 85%);
+    opacity: 0;
     backface-visibility: hidden;
   }
-  .env__flap--t polygon {
-    fill: #123020;
-  }
+
   .env__seal {
     position: absolute;
     z-index: 3;
     left: 50%;
-    top: 58%;
-    width: clamp(4.75rem, 20vw, 6.5rem);
+    top: var(--seal-y);
+    width: var(--seal);
     aspect-ratio: 1;
-    margin: calc(clamp(4.75rem, 20vw, 6.5rem) / -2) 0 0 calc(clamp(4.75rem, 20vw, 6.5rem) / -2);
+    margin: calc(var(--seal) / -2) 0 0 calc(var(--seal) / -2);
     will-change: transform, opacity;
   }
+  .env__seal-lift,
   .env__seal-shadow,
-  .env__seal-half {
+  .env__seal-half,
+  .env__crack {
     position: absolute;
     inset: 0;
   }
-  /* Sigiliul e o imagine (ceară aurie cu D&D gravat, public/decor/seal.webp); umbra stă sub ea. */
+  /* Răspuns la hover / apăsare pe butonul de peste sigiliu (CSS, fără JS). */
+  .env__seal-lift {
+    transition: transform 0.6s var(--ease-out);
+  }
+  .hero__sticky:has(.env__open:hover) .env__seal-lift {
+    transform: translateY(-3px) scale(1.04);
+  }
+  .hero__sticky:has(.env__open:active) .env__seal-lift {
+    transform: scale(0.96);
+    transition-duration: 0.15s;
+  }
+  /* Sigiliul e o imagine (ceară aurie cu D&D gravat, public/decor/seal.webp). Dedesubt: umbra de
+     contact, una largă și moale, plus un reflex auriu pe hârtie. */
   .env__seal-shadow {
     inset: 6%;
     border-radius: 47% 53% 50% 50% / 52% 48% 52% 48%;
-    box-shadow: 0 6px 16px rgb(0 0 0 / 0.45);
+    box-shadow:
+      0 4px 8px rgb(0 0 0 / 0.5),
+      0 16px 34px -6px rgb(0 0 0 / 0.55),
+      0 0 46px 10px rgb(201 165 90 / 0.14);
   }
   .env__seal-half {
     will-change: transform, opacity;
+  }
+  .env__seal-whole {
+    position: absolute;
+    inset: 0;
   }
   .env__seal-img {
     display: block;
@@ -241,20 +361,47 @@ import decor from '../data/decor.json';
     height: 100%;
     object-fit: contain;
   }
+  /* Ce trece peste ceară e decupat exact pe forma sigiliului (masca = aceeași imagine, deja încărcată). */
+  .env__seal-glint,
+  .env__crack {
+    -webkit-mask: url('/decor/seal.webp') center / contain no-repeat;
+    mask: url('/decor/seal.webp') center / contain no-repeat;
+    pointer-events: none;
+  }
   /* Sclipirea de pe ceară: o dungă de lumină mutată doar prin transform (GSAP, motion.ts). */
   .env__seal-glint {
     position: absolute;
-    inset: 8%;
-    border-radius: 47% 53% 50% 50% / 52% 48% 52% 48%;
+    inset: 0;
     overflow: hidden;
-    pointer-events: none;
+    mix-blend-mode: screen;
   }
   .env__seal-glint i {
     position: absolute;
-    inset: -10% 25%;
-    background: linear-gradient(100deg, transparent 20%, rgb(255 248 225 / 0.55) 50%, transparent 80%);
-    transform: translateX(-160%) rotate(12deg);
+    inset: -20% 30%;
+    background: linear-gradient(
+      100deg,
+      transparent 18%,
+      rgb(255 236 196 / 0.3) 38%,
+      rgb(255 250 236 / 0.95) 50%,
+      rgb(255 236 196 / 0.3) 62%,
+      transparent 82%
+    );
+    transform: translateX(-180%) rotate(14deg);
     will-change: transform;
+  }
+  /* Crăpătura care se aprinde o clipă înainte ca sigiliul să se rupă. */
+  .env__crack {
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    opacity: 0;
+  }
+  .env__crack polyline {
+    fill: none;
+    stroke: #fff1cc;
+    stroke-width: 1.6;
+    stroke-linejoin: round;
+    filter: drop-shadow(0 0 2px rgb(255 214 140)) drop-shadow(0 0 6px rgb(232 182 98 / 0.8));
   }
   /* Linia de crăpătură (zimțată) dintre cele două jumătăți ale sigiliului. */
   .env__seal-half--l {
@@ -263,11 +410,81 @@ import decor from '../data/decor.json';
   .env__seal-half--r {
     clip-path: polygon(53% 0, 100% 0, 100% 100%, 52% 100%, 46% 70%, 55% 46%, 47% 24%);
   }
-  @media (min-width: 1024px) {
-    .env__seal {
-      width: 7rem;
-      margin: -3.5rem 0 0 -3.5rem;
-    }
+
+  /* Bloom-ul de la ruperea sigiliului: lumină caldă, moale (fără alb pur), crește din sigiliu.
+     Element mic scalat (textură mică pe GPU); vizibil doar cât rulează efectul (autoAlpha). */
+  .env__bloom {
+    position: absolute;
+    z-index: 4;
+    left: 50%;
+    top: var(--seal-y);
+    width: 64vmax;
+    height: 64vmax;
+    margin: -32vmax 0 0 -32vmax;
+    border-radius: 50%;
+    background: radial-gradient(
+      circle,
+      rgb(255 236 196 / 0.7) 0%,
+      rgb(252 214 150 / 0.42) 6%,
+      rgb(232 182 98 / 0.2) 16%,
+      rgb(201 150 70 / 0.08) 32%,
+      transparent 56%
+    );
+    mix-blend-mode: screen;
+    opacity: 0;
+    visibility: hidden;
+  }
+  /* Dâra de lumină care mătură hârtia (ca o lumină care prinde catifeaua când se mișcă plicul). */
+  .env__glare {
+    position: absolute;
+    z-index: 4;
+    inset: 0;
+    overflow: hidden;
+    mix-blend-mode: screen;
+    opacity: 0;
+    visibility: hidden;
+  }
+  /* banda e rotită (nu gradient oblic), deci arată la fel pe telefon (înalt) și pe desktop (lat) */
+  .env__glare i {
+    position: absolute;
+    top: -60%;
+    left: 50%;
+    width: 22vmax;
+    height: 220%;
+    margin-left: -11vmax;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgb(255 222 160 / 0.04) 25%,
+      rgb(255 236 196 / 0.15) 50%,
+      rgb(255 222 160 / 0.04) 75%,
+      transparent
+    );
+    transform: translateX(-100vmax) rotate(22deg);
+  }
+
+  /* Butonul de peste sigiliu: atingere / Enter deschide plicul (derulează animat până la poză). */
+  :global(.motion-ok) .env__open {
+    display: block;
+    position: absolute;
+    z-index: 5;
+    left: 50%;
+    top: var(--seal-y);
+    width: calc(var(--seal) + 1rem);
+    aspect-ratio: 1;
+    margin: calc(var(--seal) / -2 - 0.5rem) 0 0 calc(var(--seal) / -2 - 0.5rem);
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .env__open:focus-visible {
+    outline-offset: 2px;
+    border-radius: 50%;
+  }
+  .hero__title:focus {
+    outline: none;
   }
 
   /* Cartonul de titlu: jos, peste scrim-ul de la baza pozei (nu peste fețe). */
