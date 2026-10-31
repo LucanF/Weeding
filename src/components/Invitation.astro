@@ -68,6 +68,8 @@ const venues = events.items.map((e) => ({
 
         <Ornament class="card-inv__orn" />
 
+        <p class="inv__label inv__lead" data-reveal>{invitation.parentsLead}</p>
+
         <div class="inv__families">
           {
             invitation.parents.map((p, i) => (

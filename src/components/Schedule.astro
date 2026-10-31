@@ -26,7 +26,7 @@ import { schedule } from '../data/wedding';
                 <time datetime={it.time}>{it.time}</time>
               </p>
               <h3 class="sch__title">{it.title}</h3>
-              <p class="sch__text">{it.text}</p>
+              {it.text && <p class="sch__text">{it.text}</p>}
             </div>
           </li>
         ))

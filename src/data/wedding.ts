@@ -69,9 +69,10 @@ export const invitation = {
     { label: 'Părinții miresei', names: ['Nicoleta & Pavel Ivan'] },
     { label: 'Părinții mirelui', names: ['Mihaela Oana', 'Bogdan Spridon & Camelia Oprișan'] },
   ],
-  godparents: { label: 'Alături de dragii noștri nași', names: ['Alexandra & Alexandru Neagoe'] },
+  parentsLead: 'Alături de iubiții noștri părinți',
+  godparents: { label: 'Cu ocrotirea părinților spirituali', names: ['Alexandra & Alexandru Neagoe'] },
   /** Fraza principală (din invitația tipărită) – se „luminează" cuvânt cu cuvânt la scroll. */
-  text: 'Alături de părinții noștri, ne bucurăm să vă invităm să ne fiți alături în ziua în care îi dăm iubirii un nume pentru totdeauna!',
+  text: 'Povestea noastră a fost scrisă de destin și conturată cu iubire, răbdare și promisiuni. Acest capitol va fi scris și celebrat în prezența dumneavoastră.',
 };
 
 // ── 4. Countdown ─────────────────────────────────────────────────────────────
@@ -162,15 +163,14 @@ export const events = {
 // TODO: de confirmat orele intermediare cu mirii. `icon` ∈ ring | church | glass | plate | music | cake | spark
 export const schedule = {
   kicker: 'Programul zilei',
-  title: 'O zi, pas cu pas',
+  title: 'Desfășurarea programului',
   items: [
-    { time: '14:30', title: 'Sosirea invitaților', text: 'Ne revedem în fața bisericii.', icon: 'spark' },
-    { time: '15:00', title: 'Cununia religioasă', text: 'Momentul nostru, în fața altarului.', icon: 'church' },
-    { time: '16:30', title: 'Ședința foto', text: 'Câteva cadre cu voi, după slujbă.', icon: 'ring' },
-    { time: '18:00', title: 'Bun venit la Diamant', text: 'Ne bucurăm de primul pahar împreună.', icon: 'glass' },
-    { time: '20:00', title: 'Cina', text: 'Bucate alese și primul toast.', icon: 'plate' },
-    { time: '21:30', title: 'Primul dans', text: 'Apoi ringul e al vostru.', icon: 'music' },
-    { time: '00:00', title: 'Tortul', text: 'Dulce, ca toată ziua.', icon: 'cake' },
+    { time: '14:50', title: 'Intrarea invitaților în biserică', text: 'Și așteptarea miresei.', icon: 'church' },
+    { time: '16:00', title: 'Câteva cadre cu voi', text: 'Apoi ședința foto a proaspeților căsătoriți.', icon: 'ring' },
+    { time: '18:00', title: 'Ne vedem la restaurant', text: '', icon: 'spark' },
+    { time: '19:00', title: 'Aperitivul', text: '', icon: 'glass' },
+    { time: '19:30', title: 'Dansul mirilor', text: '', icon: 'music' },
+    { time: '00:00', title: 'Tortul', text: '', icon: 'cake' },
   ],
 } as const;
 
