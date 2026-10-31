@@ -121,9 +121,9 @@ export const story = {
     },
   ],
   finale: {
-    kicker: 'Și apoi',
-    title: 'Am spus DA',
-    text: 'Acum vrem să spunem DA încă o dată — în fața lui Dumnezeu și alături de voi.',
+    kicker: 'Și pas cu pas',
+    title: 'Dragostea noastră ne poartă acum spre altar',
+    text: 'În fața lui Dumnezeu vom deveni, din două jumătăți, un întreg.',
   },
 } as const;
 
