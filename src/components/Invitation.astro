@@ -294,10 +294,10 @@ const venues = events.items.map((e) => ({
     font-size: 0.85em;
   }
   /* Fiecare nume pe rândul lui (ex. mama; tata cu soția). */
-  .inv__names span {
+  .inv__names > span {
     display: block;
   }
-  .inv__names span + span {
+  .inv__names > span + span {
     margin-top: 0.25em;
   }
   @media (min-width: 640px) {
