@@ -1,19 +1,17 @@
-// Decorul floral al cartonașului „Invitație" și sigiliul plicului, din asset-urile fotorealiste
-// generate pentru miri (new_assets/, PNG 1536×1024 cu fundal transparent): trandafiri crem /
-// piersică / roz / vișinii, bujori, orhidee Phalaenopsis albe cu centrul magenta, frunze aurii
-// și verzi, perle — aceeași paletă ca invitația tipărită.
+// Decorul floral al cartonașului „Invitație" și sigiliul plicului, din asset-urile generate pentru
+// miri (new_assets/, PNG cu fundal transparent).
 //
-//   public/decor/flora-{tl,tr,bl,br}.webp (+ -sm) – cele patru colțuri (patru buchete diferite,
-//                                                    deja desenate pentru colțul lor, fără oglindire)
-//   public/decor/garland.webp                      – marginile laterale: cele două ghirlande verticale
-//                                                    din planșa de clipart, una sub alta (tile vertical)
-//   public/decor/edge-{l,r}.webp                   – ramurile de pe marginile paginii (doar desktop):
-//                                                    cele două ghirlande orizontale din planșă, rotite
-//   public/decor/seal.webp                         – sigiliul de ceară auriu D&D de pe plic
-//   src/data/decor.json                            – dimensiunile fișierelor (pentru width/height în pagină)
+//   public/decor/border-{l,r}.webp (+ -sm) – cele două benzi florale verticale (trandafiri, orhidee,
+//                                            crini, bujori, perle, crenguțe aurii): stânga și dreapta
+//                                            cartonașului (tile vertical) și marginile paginii pe desktop
+//   public/decor/seal.webp                 – sigiliul de ceară auriu D&D de pe plic
+//   src/data/decor.json                    – dimensiunile fișierelor (pentru CSS / width/height în pagină)
 //
-// Pași: canalul alfa sub ~3% devine 0 (fără ceață), se decupează la conținut, se micșorează la
-// ~2× mărimea afișată și se exportă WebP. Rulează: node scripts/build-florals.mjs [--preview <dir>]
+// Benzile vin cu un „halou" galben-auriu pe conturul dinspre partea transparentă (fundalul decupat
+// imperfect). Curățare: alfa erodat ~1 px (min 3×3, amestecat cu originalul ca să rămână netedă),
+// pragul de jos tăiat (ceața aproape transparentă dispare) și culoarea pixelilor semitransparenți
+// desaturată și întunecată proporțional cu transparența lor → conturul nu mai e o linie galbenă pe
+// catifeaua verde. Crenguțele rare dinspre interior se estompează (fadeInner). Rulează: node scripts/build-florals.mjs [--preview <dir>]
 import { writeFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import sharp from 'sharp';
@@ -23,21 +21,14 @@ const src = (f) => here(`../new_assets/${f}`);
 const decor = (f) => here(`../public/decor/${f}`);
 const previewDir = process.argv.includes('--preview') ? process.argv[process.argv.indexOf('--preview') + 1] : null;
 
-const SHEET = 'd21f88c8-3a20-4f62-8c23-ec75c2694b89.png';
-const CORNERS = {
-  tl: '8155ab97-9f96-4668-bfe7-c9dbc67ce248.png',
-  tr: 'Romantic Floral Corner Cascade.png',
-  bl: 'Luxurious Floral Corner with Pearls and Gold.png',
-  br: 'Romantic Ivory and Gold Floral Corner.png',
+const BORDERS = {
+  l: 'Luxury Floral Wedding Border_new.png', // florile pe marginea din stânga
+  r: 'Luxurious Floral Wedding Border_new.png', // florile pe marginea din dreapta
 };
 const SEAL = 'afdedef3-7a3f-4324-a9fd-6a453abf3567.png';
 
-/**
- * Colțurile au flori de aceeași mărime în toate cele patru surse (trandafirul crem ≈ 300 px),
- * deci le scalăm cu același factor → în pagină florile au aceeași mărime în fiecare colț.
- * LG ≈ 2× pe desktop (colț ≈ 0.26 px CSS / px sursă), SM pentru telefoane.
- */
-const SCALE = { lg: 0.55, sm: 0.32 };
+/** Lățimile exportate ale benzilor (px): lg ≈ 2× pe desktop, sm pentru telefoane. */
+const BORDER_W = { lg: 520, sm: 256 };
 const WEBP = { quality: 74, alphaQuality: 80, effort: 6, smartSubsample: true };
 
 /** RGBA brut; alfa foarte mic → 0 (resturi de „glow" de la decupare). */
@@ -47,6 +38,47 @@ async function load(file, extract) {
   const { data, info } = await img.raw().toBuffer({ resolveWithObject: true });
   for (let i = 3; i < data.length; i += 4) if (data[i] < 8) data[i] = 0;
   return { data, w: info.width, h: info.height };
+}
+
+/**
+ * Scoate haloul de pe contur: alfa erodat 1 px (min 3×3, ⅔ min + ⅓ original), apoi întins între
+ * LO și HI (sub LO → 0), iar culoarea pixelilor de pe contur e desaturată (DESAT) și întunecată
+ * (DARK) proporțional cu cât sunt de transparenți — dispare franjul galben/roșu saturat.
+ */
+function despill({ data, w, h }, { lo = 28, hi = 235, desat = 0.85, dark = 0.4 } = {}) {
+  const N = w * h;
+  const al = new Uint8Array(N);
+  for (let y = 0; y < h; y++)
+    for (let x = 0; x < w; x++) {
+      let m = 255;
+      for (let j = -1; j <= 1; j++) {
+        const Y = y + j;
+        if (Y < 0 || Y >= h) continue;
+        for (let i = -1; i <= 1; i++) {
+          const X = x + i;
+          if (X < 0 || X >= w) continue;
+          const v = data[(Y * w + X) * 4 + 3];
+          if (v < m) m = v;
+        }
+      }
+      const p = y * w + x;
+      al[p] = Math.round((m * 2 + data[p * 4 + 3]) / 3);
+    }
+  const out = Buffer.alloc(N * 4);
+  for (let p = 0; p < N; p++) {
+    const a0 = al[p];
+    const a = a0 <= lo ? 0 : a0 >= hi ? 255 : Math.round(((a0 - lo) * 255) / (hi - lo));
+    if (!a) continue;
+    const s = 1 - a / 255;
+    const r = data[p * 4], g = data[p * 4 + 1], b = data[p * 4 + 2];
+    const Y = 0.3 * r + 0.59 * g + 0.11 * b;
+    const k = desat * s, d = 1 - dark * s;
+    out[p * 4] = Math.round((r + (Y - r) * k) * d);
+    out[p * 4 + 1] = Math.round((g + (Y - g) * k) * d);
+    out[p * 4 + 2] = Math.round((b + (Y - b) * k) * d);
+    out[p * 4 + 3] = a;
+  }
+  return { data: out, w, h };
 }
 
 /** Dreptunghiul care conține pixelii cu alfa > prag. */
@@ -63,51 +95,6 @@ function bbox({ data, w, h }, th = 12) {
   return { left: x0, top: y0, width: x1 - x0 + 1, height: y1 - y0 + 1 };
 }
 
-/**
- * Păstrează doar „insula" de pixeli care conține punctul (sx, sy) – pentru planșa de clipart,
- * unde elementele vecine (crenguțe, frunze) intră în dreptunghiul ghirlandei.
- * Componente conexe pe o grilă de 4 px, cu o margine de o celulă (marginile moi rămân întregi).
- */
-function isolate(img, sx, sy) {
-  const { data, w, h } = img;
-  const S = 4, gw = Math.ceil(w / S), gh = Math.ceil(h / S);
-  const grid = new Uint8Array(gw * gh);
-  for (let y = 0; y < h; y++)
-    for (let x = 0; x < w; x++) if (data[(y * w + x) * 4 + 3] > 24) grid[((y / S) | 0) * gw + ((x / S) | 0)] = 1;
-  const seen = new Uint8Array(gw * gh);
-  let start = ((sy / S) | 0) * gw + ((sx / S) | 0);
-  if (!grid[start]) throw new Error(`isolate: punctul (${sx},${sy}) e transparent`);
-  const stack = [start];
-  seen[start] = 1;
-  while (stack.length) {
-    const p = stack.pop();
-    const x = p % gw, y = (p / gw) | 0;
-    for (let j = -1; j <= 1; j++)
-      for (let i = -1; i <= 1; i++) {
-        const X = x + i, Y = y + j;
-        if (X < 0 || Y < 0 || X >= gw || Y >= gh) continue;
-        const q = Y * gw + X;
-        if (grid[q] && !seen[q]) {
-          seen[q] = 1;
-          stack.push(q);
-        }
-      }
-  }
-  // o celulă de margine în jurul insulei, ca pixelii semitransparenți de pe contur să rămână
-  const keep = new Uint8Array(gw * gh);
-  for (let y = 0; y < gh; y++)
-    for (let x = 0; x < gw; x++)
-      if (seen[y * gw + x])
-        for (let j = -1; j <= 1; j++)
-          for (let i = -1; i <= 1; i++) {
-            const X = x + i, Y = y + j;
-            if (X >= 0 && Y >= 0 && X < gw && Y < gh) keep[Y * gw + X] = 1;
-          }
-  for (let y = 0; y < h; y++)
-    for (let x = 0; x < w; x++) if (!keep[((y / S) | 0) * gw + ((x / S) | 0)]) data[(y * w + x) * 4 + 3] = 0;
-  return img;
-}
-
 const toSharp = ({ data, w, h }) => sharp(data, { raw: { width: w, height: h, channels: 4 } });
 async function cropped(img, th) {
   const b = bbox(img, th);
@@ -118,7 +105,7 @@ async function cropped(img, th) {
 async function preview(name, buf) {
   if (!previewDir) return;
   const m = await sharp(buf).metadata();
-  await sharp({ create: { width: m.width, height: m.height, channels: 3, background: '#163a2a' } })
+  await sharp({ create: { width: m.width, height: m.height, channels: 3, background: '#0b2418' } })
     .composite([{ input: buf }]).png().toFile(`${previewDir}/${name}.png`);
 }
 
@@ -130,58 +117,46 @@ async function save(name, pipeline) {
   return { w: r.width, h: r.height };
 }
 
-// ── 1. Colțurile ─────────────────────────────────────────────────────────
-for (const [key, file] of Object.entries(CORNERS)) {
-  const c = await cropped(await load(file));
-  await preview(`flora-${key}`, c.buf);
-  const lg = await save(`flora-${key}.webp`, sharp(c.buf).resize({ width: Math.round(c.width * SCALE.lg) }));
-  const sm = await save(`flora-${key}-sm.webp`, sharp(c.buf).resize({ width: Math.round(c.width * SCALE.sm) }));
-  // `src` = lățimea decupajului în pixeli-sursă: din ea se calculează mărimea afișată în CSS
-  out[`flora-${key}`] = { ...lg, sm: sm.w, src: c.width };
-}
-
-// ── 2. Ghirlanda laterală: cele două șiruri verticale din planșă, unul sub altul ──────────
-{
-  const strands = [];
-  for (const [x0, x1] of [[1300, 1404], [1418, 1530]]) {
-    const s = await cropped(await load(SHEET, { left: x0, top: 0, width: x1 - x0, height: 1024 }));
-    strands.push(s);
-  }
-  // aceeași lățime de tile; fiecare șir centrat pe axa vrejului
-  const TW = 112, GAP = 6;
-  const TH = strands.reduce((a, s) => a + s.height + GAP, 0);
-  const tile = await sharp({ create: { width: TW, height: TH, channels: 4, background: { r: 0, g: 0, b: 0, alpha: 0 } } })
-    .composite(
-      strands.map((s, i) => ({
-        input: s.buf,
-        left: Math.round((TW - s.width) / 2),
-        top: i ? strands[0].height + GAP : 0,
-      })),
-    )
-    .png()
-    .toBuffer();
-  await preview('garland', tile);
-  // pe pagină tile-ul are 2.5rem (40 px) → 88 px = 2.2×
-  out.garland = await save('garland.webp', sharp(tile).resize({ width: 88 }));
-}
-
-// ── 3. Ramurile de pe marginile paginii: ghirlandele orizontale din planșă, rotite vertical ──
-{
-  const swags = {
-    // [zona din planșă, un punct de pe ghirlandă, rotație]
-    'edge-l': [{ left: 20, top: 700, width: 548, height: 316 }, [270, 880 - 700], 90],
-    'edge-r': [{ left: 520, top: 700, width: 770, height: 316 }, [800, 880 - 700], -90],
-  };
-  for (const [name, [area, [sx, sy], rot]] of Object.entries(swags)) {
-    const img = isolate(await load(SHEET, area), sx - area.left, sy);
-    const c = await cropped(img);
-    const rotated = await sharp(c.buf).rotate(rot).png().toBuffer();
-    await preview(name, rotated);
-    out[name] = await save(`${name}.webp`, sharp(rotated));
+/**
+ * Crenguțele și perlele rare dinspre interior se estompează (FADE: fracțiuni din lățime, măsurate
+ * de la marginea cu flori) → pe telefon nu se mai văd pete de perle în spatele textului.
+ * Florile dese ocupă cam primele 55–60 % din lățime și rămân neatinse.
+ */
+const FADE = [0.58, 0.96];
+function fadeInner(data, w, h, side) {
+  for (let x = 0; x < w; x++) {
+    const t = (side === 'l' ? x : w - 1 - x) / (w - 1);
+    const u = Math.min(1, Math.max(0, (t - FADE[0]) / (FADE[1] - FADE[0])));
+    const f = 1 - u * u * (3 - 2 * u); // smoothstep
+    if (f === 1) continue;
+    for (let y = 0; y < h; y++) {
+      const i = (y * w + x) * 4 + 3;
+      data[i] = Math.round(data[i] * f);
+    }
   }
 }
 
-// ── 4. Sigiliul de ceară (plicul din hero) ──────────────────────────────
+// ── 1. Benzile florale (stânga / dreapta) ───────────────────────────────
+// Ambele au aceeași lățime de decupaj (cea mai lată dintre ele), lipită de marginea cu flori,
+// și toată înălțimea (sus/jos florile sunt tăiate de marginea imaginii → se pot repeta vertical).
+{
+  const imgs = {};
+  for (const [k, file] of Object.entries(BORDERS)) imgs[k] = despill(await load(file));
+  const boxes = Object.fromEntries(Object.entries(imgs).map(([k, img]) => [k, bbox(img)]));
+  const cw = Math.max(boxes.l.left + boxes.l.width, imgs.r.w - boxes.r.left);
+  for (const [k, img] of Object.entries(imgs)) {
+    const area = { left: k === 'l' ? 0 : img.w - cw, top: 0, width: cw, height: img.h };
+    const strip = await toSharp(img).extract(area).raw().toBuffer();
+    fadeInner(strip, cw, img.h, k);
+    const buf = await toSharp({ data: strip, w: cw, h: img.h }).png().toBuffer();
+    await preview(`border-${k}`, buf);
+    const lg = await save(`border-${k}.webp`, sharp(buf).resize({ width: BORDER_W.lg }));
+    const sm = await save(`border-${k}-sm.webp`, sharp(buf).resize({ width: BORDER_W.sm }));
+    out[`border-${k}`] = { ...lg, sm: sm.w, smh: sm.h };
+  }
+}
+
+// ── 2. Sigiliul de ceară (plicul din hero) ──────────────────────────────
 {
   const c = await cropped(await load(SEAL), 24);
   await preview('seal', c.buf);

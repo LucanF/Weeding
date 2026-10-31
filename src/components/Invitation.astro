@@ -6,22 +6,10 @@ import VenueIcon from './ui/VenueIcon.astro';
 import { couple, date, events, invitation } from '../data/wedding';
 import decor from '../data/decor.json';
 
-/* Colțurile (scripts/build-florals.mjs): florile au aceeași mărime în toate patru, deci fiecare
-   colț e lat cât decupajul lui din sursă × --cu (px CSS la 1000 px sursă; vezi .card-inv).
-   `sizes` urmează aceeași formulă: 44vw pe telefon, plafonat la 15.5rem (248 px). */
-const corners = (['tl', 'tr', 'bl', 'br'] as const).map((k) => {
-  const d = decor[`flora-${k}`];
-  const f = d.src / 1000;
-  return {
-    k,
-    f,
-    src: `/decor/flora-${k}.webp`,
-    srcset: `/decor/flora-${k}-sm.webp ${d.sm}w, /decor/flora-${k}.webp ${d.w}w`,
-    sizes: `(min-width: 564px) ${Math.round(248 * f)}px, ${Math.round(44 * f)}vw`,
-    w: d.w,
-    h: d.h,
-  };
-});
+/* Benzile florale (scripts/build-florals.mjs → public/decor/border-{l,r}[-sm].webp) sunt fundaluri
+   CSS repetate vertical; raportul lor (înălțime / lățime) dă pasul de repetare și mărimea
+   ramurilor de pe marginile paginii. */
+const borderRatio = decor['border-l'].h / decor['border-l'].w;
 
 /* „A” din fontul script (Great Vibes) se citește greu: îl scriem cu fontul textului de invitație (--hand). */
 const withHandA = (n: string) => n.split(/(A)/);
@@ -34,32 +22,14 @@ const venues = events.items.map((e) => ({
 }));
 ---
 
-<section class="inv on-ivory" id="invitatie" data-invite aria-labelledby="inv-title">
+<section class="inv on-ivory" id="invitatie" data-invite aria-labelledby="inv-title" style={`--br:${borderRatio.toFixed(4)}`}>
   <div class="inv__inner">
     <ThreadLine height="clamp(6rem, 18vh, 11rem)" variant="straight" knot />
 
-    <!-- Invitația „tipărită": chenar auriu dublu și o margine florală ca pe invitația de hârtie:
-         patru buchete fotorealiste, câte unul pentru fiecare colț (trandafiri crem / piersică /
-         roz / vișinii, bujori, orhidee, frunze aurii, perle), legate pe laterale de o ghirlandă
-         cu perle, trandafiri și orhidee (::before / ::after). Totul static: fără animații sau filtre. -->
+    <!-- Invitația „tipărită": chenar auriu dublu și câte o bandă florală fotorealistă pe fiecare
+         latură (trandafiri, orhidee, crini, bujori, perle, crenguțe aurii), de sus până jos
+         (::before / ::after). Totul static: fără animații sau filtre. -->
     <article class="card-inv">
-      {
-        corners.map((c) => (
-          <img
-            class={`card-inv__corner card-inv__corner--${c.k}`}
-            style={`--f:${c.f}`}
-            src={c.src}
-            srcset={c.srcset}
-            sizes={c.sizes}
-            alt=""
-            width={c.w}
-            height={c.h}
-            loading="lazy"
-            decoding="async"
-          />
-        ))
-      }
-
       <div class="card-inv__body">
         <div class="card-inv__rings" data-reveal="scale"><Rings /></div>
         <h2 class="sr-only" id="inv-title">{invitation.kicker}</h2>
@@ -129,43 +99,44 @@ const venues = events.items.map((e) => ({
     padding-bottom: 0;
   }
 
-  /* Pe ecrane late, catifeaua din jurul cartonașului primește câte o ramură (trandafiri, bujori,
-     orhidee, perle) lângă marginile ecranului: două ghirlande diferite, rotite vertical. Doar fundal
-     CSS în media query → pe telefon nu se descarcă deloc; static, fără filtre. */
-  @media (min-width: 1024px) {
+  /* Pe ecrane late, catifeaua din jurul cartonașului primește aceleași benzi florale lângă
+     marginile ecranului: stânga sus, dreapta jos, în proporțiile lor. Doar fundal CSS în media
+     query → pe telefon nu se descarcă deloc; static, fără filtre. */
+  @media (min-width: 1200px) {
     .inv::before,
     .inv::after {
       content: '';
       position: absolute;
       z-index: -1;
-      top: 24%;
-      left: max(0.5rem, (100vw - 48rem) / 4 - 6.5rem);
-      width: min(13rem, (100vw - 48rem) / 2 - 1rem);
-      aspect-ratio: 273 / 522;
-      background: url('/decor/edge-l.webp') 0 0 / 100% 100% no-repeat;
+      top: 8%;
+      left: 0;
+      width: min(15rem, (100vw - 52rem) / 2 - 3rem);
+      aspect-ratio: 1 / var(--br);
+      background: url('/decor/border-l.webp') 0 0 / 100% 100% no-repeat;
+      /* sus și jos florile sunt tăiate de marginea imaginii → se estompează în catifea */
+      -webkit-mask-image: linear-gradient(transparent, #000 14%, #000 86%, transparent);
+      mask-image: linear-gradient(transparent, #000 14%, #000 86%, transparent);
       pointer-events: none;
     }
     .inv::after {
       top: auto;
       left: auto;
-      right: max(0.5rem, (100vw - 48rem) / 4 - 6.5rem);
-      bottom: 14%;
-      aspect-ratio: 275 / 737;
-      background-image: url('/decor/edge-r.webp');
+      right: 0;
+      bottom: 6%;
+      background-image: url('/decor/border-r.webp');
     }
   }
 
   /* ── Cartonașul invitației ─────────────────────────────────────────── */
   .card-inv {
     position: relative;
-    width: min(100% - 2 * clamp(0.75rem, 3vw, 2rem), 46rem);
+    width: min(100% - 2 * clamp(0.75rem, 3vw, 2rem), 52rem);
     margin: clamp(0.5rem, 2vw, 1.5rem) auto;
-    /* --cu: lățimea în px CSS a 1000 px din sursa buchetelor (aceeași scară pentru toate colțurile);
-       buchetele au ≈ 1.0 × --cu înălțime. Sus/jos: loc pentru buchete, ca să nu acopere textul.
-       Lateral: loc pentru ghirlanda de pe margini (--gw) + puțin aer. */
-    --cu: clamp(8.25rem, 44vw, 15.5rem);
-    --gw: clamp(1.5rem, 6.5vw, 2.5rem);
-    padding: calc(var(--cu) * 0.55) max(calc(var(--gw) + 0.5rem), clamp(1.25rem, 6vw, 4.5rem)) calc(var(--cu) * 0.95);
+    /* --sw: lățimea benzilor florale de pe laturi. Florile dese ocupă cam jumătatea dinspre
+       margine; restul sunt crenguțe și perle care se estompează spre interior. Lateral: textul începe
+       după florile dese; pe ecrane late, și după crenguțe. */
+    --sw: clamp(4.5rem, 20vw, 11.5rem);
+    padding: clamp(2.25rem, 7vw, 4rem) calc(var(--sw) * 0.6) clamp(2.75rem, 8vw, 4.5rem);
     border: 1px solid rgb(201 165 90 / 0.75);
     border-radius: 2px;
     background:
@@ -185,57 +156,39 @@ const venues = events.items.map((e) => ({
     font-weight: 400;
     line-height: 1.55;
   }
-  /* Ghirlanda de pe margini: vrej auriu cu perle, frunze aurii și verzi, trandafiri roz și
-     orhidee (cele două șiruri verticale din planșă, unul sub altul, repetate). Începe sub brațul
-     vertical al buchetelor și se estompează spre ele. */
+  /* Benzile florale de pe laturi, de sus până jos: lățime --sw, repetate vertical (sus și jos
+     florile sunt tăiate de marginea imaginii, deci repetiția se leagă). Pe telefon varianta -sm.
+     Dreapta e decalată, ca florile mari să nu fie la aceeași înălțime pe ambele laturi. */
   .card-inv::before,
   .card-inv::after {
     content: '';
     position: absolute;
     z-index: -1;
-    top: calc(var(--cu) * 0.8);
-    bottom: calc(var(--cu) * 0.75);
-    left: 2px;
-    width: var(--gw);
-    background: url('/decor/garland.webp') 50% 0 / 100% auto repeat-y;
-    -webkit-mask-image: linear-gradient(transparent, #000 4rem, #000 calc(100% - 4rem), transparent);
-    mask-image: linear-gradient(transparent, #000 4rem, #000 calc(100% - 4rem), transparent);
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: var(--sw);
+    background: url('/decor/border-l-sm.webp') 0 0 / 100% auto repeat-y;
     pointer-events: none;
   }
-  /* dreapta: oglindită și decalată, ca cele două laterale să nu fie identice */
   .card-inv::after {
     left: auto;
-    right: 2px;
-    top: calc(var(--cu) * 0.85);
-    bottom: calc(var(--cu) * 0.7);
-    background-position: 50% calc(var(--gw) * -8.8);
-    transform: scaleX(-1);
-  }
-  /* Buchetele din colțuri (scripts/build-florals.mjs): lățime = decupaj-sursă × --cu,
-     aspect-ratio din atributele width/height → fără layout shift. */
-  .card-inv__corner {
-    position: absolute;
-    z-index: 0;
-    pointer-events: none;
-    width: calc(var(--f) * var(--cu));
-    max-width: none;
-    height: auto;
-  }
-  .card-inv__corner--tl {
-    top: 0;
-    left: 0;
-  }
-  .card-inv__corner--tr {
-    top: 0;
     right: 0;
+    background-image: url('/decor/border-r-sm.webp');
+    background-position: 0 calc(var(--sw) * var(--br) * -0.45);
   }
-  .card-inv__corner--bl {
-    bottom: 0;
-    left: 0;
+  @media (min-width: 640px) {
+    .card-inv {
+      padding-inline: calc(var(--sw) * 0.68);
+    }
   }
-  .card-inv__corner--br {
-    bottom: 0;
-    right: 0;
+  @media (min-width: 480px) {
+    .card-inv::before {
+      background-image: url('/decor/border-l.webp');
+    }
+    .card-inv::after {
+      background-image: url('/decor/border-r.webp');
+    }
   }
   .card-inv__body {
     position: relative;
