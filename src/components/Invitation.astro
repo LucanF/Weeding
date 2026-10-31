@@ -23,6 +23,9 @@ const corners = (['tl', 'tr', 'bl', 'br'] as const).map((k) => {
   };
 });
 
+/* „A” din fontul script (Great Vibes) se citește greu: îl scriem cu fontul textului de invitație (--hand). */
+const withHandA = (n: string) => n.split(/(A)/);
+
 const stripQuotes = (s: string) => s.replace(/[„”"]/g, '');
 const venues = events.items.map((e) => ({
   ...e,
@@ -75,7 +78,7 @@ const venues = events.items.map((e) => ({
             invitation.parents.map((p, i) => (
               <div class="inv__fam" data-reveal style={`--d:${i * 120}`}>
                 <p class="inv__label">{p.label}</p>
-                <p class="inv__names">{p.names.map((n) => <span>{n}</span>)}</p>
+                <p class="inv__names">{p.names.map((n) => <span>{withHandA(n).map((t) => (t === "A" ? <span class="hand-a">A</span> : t))}</span>)}</p>
               </div>
             ))
           }
@@ -85,7 +88,7 @@ const venues = events.items.map((e) => ({
 
         <div class="inv__fam inv__fam--god" data-reveal>
           <p class="inv__label">{invitation.godparents.label}</p>
-          <p class="inv__names">{invitation.godparents.names.map((n) => <span>{n}</span>)}</p>
+          <p class="inv__names">{invitation.godparents.names.map((n) => <span>{withHandA(n).map((t) => (t === "A" ? <span class="hand-a">A</span> : t))}</span>)}</p>
         </div>
 
         <Ornament class="card-inv__orn" />
@@ -285,13 +288,10 @@ const venues = events.items.map((e) => ({
     line-height: 1.2;
     color: var(--ivory);
   }
-  /* Nașii: font de citit (Cormorant) în loc de script, ca „Alexandra & Alexandru Neagoe” să fie lizibil. */
-  .inv__fam--god .inv__names {
-    font-family: var(--text);
-    font-weight: 600;
-    font-size: clamp(1.5rem, 4.6vw, 2rem);
-    letter-spacing: 0.02em;
-    line-height: 1.25;
+  .inv__names :global(.hand-a) {
+    display: inline;
+    font-family: var(--hand);
+    font-size: 0.85em;
   }
   /* Fiecare nume pe rândul lui (ex. mama; tata cu soția). */
   .inv__names span {
