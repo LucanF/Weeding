@@ -285,6 +285,14 @@ const venues = events.items.map((e) => ({
     line-height: 1.2;
     color: var(--ivory);
   }
+  /* Nașii: font de citit (Cormorant) în loc de script, ca „Alexandra & Alexandru Neagoe” să fie lizibil. */
+  .inv__fam--god .inv__names {
+    font-family: var(--text);
+    font-weight: 600;
+    font-size: clamp(1.5rem, 4.6vw, 2rem);
+    letter-spacing: 0.02em;
+    line-height: 1.25;
+  }
   /* Fiecare nume pe rândul lui (ex. mama; tata cu soția). */
   .inv__names span {
     display: block;
