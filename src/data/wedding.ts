@@ -248,7 +248,7 @@ export const info = {
 
 // ── 11. Final ────────────────────────────────────────────────────────────────
 export const finale = {
-  title: 'Vă așteptăm cu drag',
+  title: 'Vă așteptăm acolo',
   text: 'Pentru că cele mai frumoase povești se scriu împreună.',
   signature: 'Diana & Dragoș',
 };
