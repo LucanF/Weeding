@@ -1,4 +1,5 @@
 import { setRoll } from './roller';
+import { buildRsvpUrl, type RsvpWaConfig } from './rsvp-message';
 
 const $ = <T extends Element = HTMLElement>(s: string, r: ParentNode = document) => r.querySelector<T>(s);
 const $$ = <T extends Element = HTMLElement>(s: string, r: ParentNode = document) => [...r.querySelectorAll<T>(s)];
@@ -163,6 +164,38 @@ export function initSchedule() {
     { rootMargin: '-40% 0px -55% 0px' },
   );
   items.forEach((i) => io.observe(i));
+}
+
+/* ── Formular RSVP: opțional, doar compune mesajul WhatsApp ─────────────── */
+export function initRsvp() {
+  const form = $<HTMLFormElement>('[data-rsvp-form]');
+  const link = $<HTMLAnchorElement>('[data-rsvp-wa]');
+  if (!form || !link) return;
+  let cfg: RsvpWaConfig;
+  try {
+    cfg = JSON.parse(form.dataset.wa ?? '');
+  } catch {
+    return;
+  }
+  const more = $('[data-if-yes]', form);
+  const val = (n: string) => (form.elements.namedItem(n) as HTMLInputElement | RadioNodeList | null)?.value ?? '';
+  const update = () => {
+    const att = val('prezenta');
+    if (more) more.hidden = att === 'nu';
+    link.href = buildRsvpUrl(cfg, {
+      name: val('nume'),
+      attending: att,
+      guests: val('persoane'),
+      menu: val('meniu'),
+      allergies: val('alergii'),
+      message: val('mesaj'),
+    });
+  };
+  form.addEventListener('input', update);
+  form.addEventListener('change', update);
+  form.addEventListener('submit', (e) => e.preventDefault());
+  link.addEventListener('click', update); // înainte de navigare, la fiecare click
+  update();
 }
 
 /* ── Galerie: puncte carusel (mobil) + lightbox <dialog> ─────────────────── */

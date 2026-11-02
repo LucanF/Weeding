@@ -1,10 +1,10 @@
 /**
- * Punct de intrare. Partea „ușoară" (reveal, header, countdown, galerie)
+ * Punct de intrare. Partea „ușoară" (reveal, header, countdown, formular, galerie)
  * rulează imediat; GSAP + Lenis se încarcă dinamic, doar dacă utilizatorul
  * nu preferă mișcare redusă.
  */
 import { initCountdown } from './countdown';
-import { initGallery, initHeader, initPreload, initReveal, initSchedule } from './ui';
+import { initGallery, initHeader, initPreload, initReveal, initRsvp, initSchedule } from './ui';
 
 declare global {
   interface Window {
@@ -17,6 +17,7 @@ initHeader();
 initReveal();
 initCountdown();
 initSchedule();
+initRsvp();
 initGallery();
 initPreload();
 
