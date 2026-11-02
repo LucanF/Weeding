@@ -18,6 +18,7 @@ import { info } from '../data/wedding';
             </summary>
             <div class="acc__body">
               {([] as string[]).concat(it.a).map((t) => <p>{t}</p>)}
+              {'contacts' in it && it.contacts.map((c) => <p>{c.name}: <a href={`tel:${c.phone}`}>{c.label}</a></p>)}
             </div>
           </details>
         ))

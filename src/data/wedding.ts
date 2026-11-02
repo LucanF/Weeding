@@ -185,7 +185,6 @@ export const gallery = {
 };
 
 // ── 9. RSVP ──────────────────────────────────────────────────────────────────
-// TODO: număr WhatsApp real, în format internațional fără „+" sau spații.
 export const rsvp = {
   kicker: 'Confirmare',
   title: 'Ne confirmați prezența?',
@@ -218,7 +217,7 @@ export const rsvp = {
     message: 'Mesaj',
   },
   whatsapp: 'Confirmă pe WhatsApp',
-  whatsappNumber: '40700000000', // TODO
+  whatsappNumber: '40762884944', // Diana
   whatsappMessage: `Bună, Diana și Dragoș! Confirm prezența la nunta voastră din ${date.day} ${date.month} ${date.year}. Nume: … Număr persoane: …`,
 };
 
@@ -248,7 +247,11 @@ export const info = {
     },
     {
       q: 'Contact',
-      a: 'Pentru orice întrebare: Diana – 0700 000 000, Dragoș – 0700 000 001, sau organizatoarea noastră, Ioana – 0700 000 002.',
+      a: 'Pentru orice întrebare ne puteți suna:',
+      contacts: [
+        { name: 'Diana', phone: '+40762884944', label: '+40 762 884 944' },
+        { name: 'Dragoș', phone: '+40758635436', label: '+40 758 635 436' },
+      ],
     },
   ],
 };
