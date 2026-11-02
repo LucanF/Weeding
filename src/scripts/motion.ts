@@ -370,10 +370,9 @@ function heroScroll(desktop: boolean) {
     .fromTo(left, { xPercent: 0 }, { xPercent: -104, duration: 0.36, ease: 'power2.inOut', ...g }, 0.3)
     .fromTo(right, { xPercent: 0 }, { xPercent: 104, duration: 0.36, ease: 'power2.inOut', ...g }, 0.3)
     .fromTo(bottom, { yPercent: 0 }, { yPercent: 104, duration: 0.38, ease: 'power2.inOut', ...g }, 0.33)
-    // cartonul de titlu (ca genericul unui film): numele urcă și se clarifică, apoi data
+    // cartonul de titlu (ca genericul unui film): numele urcă și se clarifică, apoi „din 14.11.2017”
     .fromTo('.hero__names', { opacity: 0, y: 28, scale: 0.96 }, { opacity: 1, y: 0, scale: 1, duration: 0.2, ease: 'power2.out', ...g }, 0.56)
-    .fromTo('.hero__date', { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.16, ease: 'power2.out', ...g }, 0.66)
-    .fromTo('.hero__together', { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.12, ease: 'power2.out', ...g }, 0.7)
+    .fromTo('.hero__together', { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.16, ease: 'power2.out', ...g }, 0.66)
     .to({}, { duration: 0.16 });
   if (shine) {
     tl.fromTo(shine, { opacity: 0 }, { opacity: 1, duration: 0.1, ease: 'sine.inOut' }, 0.09).to(

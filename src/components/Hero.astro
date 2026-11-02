@@ -101,9 +101,6 @@ const clip = (pts: string) =>
           <span class="hero__n">{couple.bride}</span>
           <span class="hero__n"><span class="hero__amp">&amp;</span> {couple.groom}</span>
         </span>
-        <span class="hero__date" aria-hidden="true">
-          <time datetime={date.start.slice(0, 10)}>{date.short}</time>
-        </span>
         <span class="hero__together">{hero.together}</span>
       </h1>
     </div>
@@ -501,7 +498,6 @@ const clip = (pts: string) =>
     pointer-events: none;
   }
   :global(.motion-ok) .hero__names,
-  :global(.motion-ok) .hero__date,
   :global(.motion-ok) .hero__together {
     opacity: 0;
   }
@@ -525,35 +521,27 @@ const clip = (pts: string) =>
   .hero__amp {
     font-size: 0.8em;
   }
-  .hero__date {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.9rem;
-    font-family: var(--font-text);
-    font-size: clamp(0.9rem, 1.6vw, 1.05rem);
-    font-weight: 600;
-    letter-spacing: 0.32em;
-    text-indent: 0.32em;
-    color: var(--ivory);
-    text-shadow: 0 2px 14px rgb(6 20 13 / 0.6);
-  }
   .hero__together {
     font-family: var(--font-text);
     font-style: italic;
-    font-size: clamp(1rem, 1.9vw, 1.2rem);
+    font-size: clamp(1.15rem, 2.4vw, 1.45rem);
     font-weight: 500;
     letter-spacing: 0.12em;
+    text-indent: 0.12em;
     color: var(--amber);
     text-shadow: 0 2px 14px rgb(6 20 13 / 0.7);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.9rem;
   }
-  .hero__date::before,
-  .hero__date::after {
+  .hero__together::before,
+  .hero__together::after {
     content: '';
     width: clamp(1.5rem, 6vw, 3.5rem);
     height: 1px;
     background: linear-gradient(to var(--dir, left), var(--amber), transparent);
   }
-  .hero__date::after {
+  .hero__together::after {
     --dir: right;
   }
   /* Desktop: cuplul stă în centrul pozei, deci cartonul de titlu trece în colțul din stânga-jos
@@ -585,10 +573,10 @@ const clip = (pts: string) =>
     .hero__n + .hero__n {
       padding-left: 0.55em;
     }
-    .hero__date {
+    .hero__together {
       text-indent: 0;
     }
-    .hero__date::before {
+    .hero__together::before {
       display: none;
     }
   }

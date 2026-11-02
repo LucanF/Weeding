@@ -55,7 +55,7 @@ export const nav = [
 export const hero = {
   title: 'Diana și Dragoș',
   tagline: 'Noi doi, de la întâlnire la totdeauna.',
-  /** Rândul mic de sub dată, apare odată cu cartonul de titlu. */
+  /** Rândul de sub nume, apare odată cu cartonul de titlu. */
   together: 'din 14.11.2017',
   eyebrow: 'Ne căsătorim',
   scrollHint: 'Derulează',
