@@ -85,18 +85,9 @@ const waCfg = JSON.stringify({
             </div>
           </div>
           <div class="field">
-            <label class="field__label" for="f-menu">{f.menu}</label>
-            <div class="field__select">
-              <select class="field__input" id="f-menu" name="meniu">
-                <option value="">{f.choose}</option>
-                {f.menuOptions.map((m) => <option value={m}>{m}</option>)}
-              </select>
-            </div>
+            <label class="field__label" for="f-allergies">{f.allergies}</label>
+            <input class="field__input" id="f-allergies" name="alergii" type="text" maxlength="200" placeholder={f.allergiesPh} />
           </div>
-        </div>
-        <div class="field">
-          <label class="field__label" for="f-allergies">{f.allergies}</label>
-          <input class="field__input" id="f-allergies" name="alergii" type="text" maxlength="200" placeholder={f.allergiesPh} />
         </div>
       </div>
 

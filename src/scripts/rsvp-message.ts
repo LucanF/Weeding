@@ -4,13 +4,12 @@ export interface RsvpWaConfig {
   defaultMessage: string;
   introYes: string;
   introNo: string;
-  labels: Record<'name' | 'attending' | 'yes' | 'no' | 'guests' | 'menu' | 'allergies' | 'message', string>;
+  labels: Record<'name' | 'attending' | 'yes' | 'no' | 'guests' | 'allergies' | 'message', string>;
 }
 export interface RsvpValues {
   name?: string;
   attending?: string; // 'da' | 'nu' | ''
   guests?: string;
-  menu?: string;
   allergies?: string;
   message?: string;
 }
@@ -21,9 +20,8 @@ export function buildRsvpMessage(c: RsvpWaConfig, v: RsvpValues): string {
   const lines: [string, string][] = [
     [c.labels.name, t(v.name)],
     [c.labels.attending, v.attending === 'da' ? c.labels.yes : no ? c.labels.no : ''],
-    // Numărul de persoane, meniul și alergiile nu au sens dacă nu participă.
+    // Numărul de persoane și alergiile nu au sens dacă nu participă.
     [c.labels.guests, no ? '' : t(v.guests)],
-    [c.labels.menu, no ? '' : t(v.menu)],
     [c.labels.allergies, no ? '' : t(v.allergies)],
     [c.labels.message, t(v.message)],
   ];
