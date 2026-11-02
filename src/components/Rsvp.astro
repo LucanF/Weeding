@@ -74,19 +74,13 @@ const waCfg = JSON.stringify({
       </fieldset>
 
       <div class="form__more" data-if-yes>
-        <div class="form__row">
-          <div class="field">
-            <label class="field__label" for="f-guests">{f.guests}</label>
-            <div class="field__select">
-              <select class="field__input" id="f-guests" name="persoane">
-                <option value="">{f.choose}</option>
-                {[1, 2, 3, 4, 5, 6].map((n) => <option value={n}>{n}</option>)}
-              </select>
-            </div>
-          </div>
-          <div class="field">
-            <label class="field__label" for="f-allergies">{f.allergies}</label>
-            <input class="field__input" id="f-allergies" name="alergii" type="text" maxlength="200" placeholder={f.allergiesPh} />
+        <div class="field">
+          <label class="field__label" for="f-guests">{f.guests}</label>
+          <div class="field__select">
+            <select class="field__input" id="f-guests" name="persoane">
+              <option value="">{f.choose}</option>
+              {[1, 2, 3, 4, 5, 6].map((n) => <option value={n}>{n}</option>)}
+            </select>
           </div>
         </div>
       </div>
@@ -276,15 +270,6 @@ const waCfg = JSON.stringify({
   .field__select select {
     padding-right: 2rem;
     cursor: pointer;
-  }
-  .form__row {
-    display: grid;
-    gap: 1.75rem;
-  }
-  @media (min-width: 600px) {
-    .form__row {
-      grid-template-columns: 1fr 1fr;
-    }
   }
   .form__more {
     display: grid;

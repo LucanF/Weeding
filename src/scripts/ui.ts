@@ -186,7 +186,6 @@ export function initRsvp() {
       name: val('nume'),
       attending: att,
       guests: val('persoane'),
-      allergies: val('alergii'),
       message: val('mesaj'),
     });
   };

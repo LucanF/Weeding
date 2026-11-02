@@ -30,7 +30,7 @@ export const date = {
   month: 'mai',
   year: '2027',
   weekday: 'sâmbătă',
-  rsvpDeadline: '1 mai 2027', // TODO: de confirmat cu mirii
+  rsvpDeadline: '31 martie 2027', // TODO: de confirmat cu mirii
 };
 
 // ── Metadate (titlu tab, preview WhatsApp/Facebook) ─────────────────────────
@@ -56,7 +56,7 @@ export const hero = {
   title: 'Diana și Dragoș',
   tagline: 'Noi doi, de la întâlnire la totdeauna.',
   /** Rândul mic de sub dată, apare odată cu cartonul de titlu. */
-  together: 'Împreună din 14.11.2017',
+  together: 'din 14.11.2017',
   eyebrow: 'Ne căsătorim',
   scrollHint: 'Derulează',
   /** Butonul invizibil de peste sigiliu (atingere / tastatură): deschide plicul. */
@@ -199,8 +199,6 @@ export const rsvp = {
     no: 'Din păcate, nu',
     guests: 'Număr de persoane',
     choose: '—',
-    allergies: 'Alergii sau restricții alimentare',
-    allergiesPh: 'ex. fără gluten',
     message: 'Un gând pentru noi (opțional)',
     messagePh: 'Abia așteptăm!',
   },
@@ -212,7 +210,6 @@ export const rsvp = {
     yes: 'Da',
     no: 'Nu',
     guests: 'Număr persoane',
-    allergies: 'Alergii / restricții',
     message: 'Mesaj',
   },
   whatsapp: 'Confirmă pe WhatsApp',
