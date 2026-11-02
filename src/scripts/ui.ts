@@ -178,12 +178,53 @@ export function initRsvp() {
     return;
   }
   const more = $('[data-if-yes]', form);
+  const host = $('[data-rsvp-names]', form);
+  const tpl = $<HTMLTemplateElement>('[data-rsvp-name-tpl]', form);
   const val = (n: string) => (form.elements.namedItem(n) as HTMLInputElement | RadioNodeList | null)?.value ?? '';
+  const motion = document.documentElement.classList.contains('motion-ok');
+  const saved: string[] = []; // valorile rândurilor scoase, ca să revină la Nu → Da
+  const rows: HTMLElement[] = []; // rândurile active (cele care ies nu mai sunt în listă)
+
+  const makeRow = (i: number) => {
+    const row = (tpl!.content.firstElementChild as HTMLElement).cloneNode(true) as HTMLElement;
+    if (motion) row.classList.add('is-in');
+    const input = row.querySelector('input')!;
+    input.id = `f-name-${i + 1}`;
+    input.name = `nume-${i + 1}`;
+    input.value = saved[i] ?? '';
+    row.querySelector('label')!.htmlFor = input.id;
+    host!.append(row);
+    return row;
+  };
+  const syncNames = (count: number) => {
+    if (!host || !tpl) return;
+    while (rows.length < count) rows.push(makeRow(rows.length));
+    while (rows.length > count) {
+      const row = rows.pop()!;
+      saved[rows.length] = row.querySelector('input')!.value;
+      if (motion) {
+        row.classList.remove('is-in');
+        row.classList.add('is-out');
+        row.querySelectorAll('input').forEach((i) => ((i.disabled = true), (i.name = '')));
+        setTimeout(() => row.remove(), 320);
+      } else row.remove();
+    }
+    rows.forEach((row, i) => {
+      const input = row.querySelector('input')!;
+      row.querySelector('label')!.textContent = count > 1 ? cfg.nameLabelN.replace('{n}', String(i + 1)) : cfg.nameLabel;
+      input.autocomplete = i === 0 ? 'name' : 'off';
+      input.placeholder = i === 0 ? cfg.namePh : '';
+    });
+  };
   const update = () => {
     const att = val('prezenta');
-    if (more) more.hidden = att === 'nu';
+    const no = att === 'nu';
+    if (more) more.hidden = no;
+    // Da / nehotărât: câte un câmp per persoană; Nu: un singur nume (numărul rămâne memorat).
+    const n = no ? 1 : Math.max(0, parseInt(val('persoane'), 10) || 0);
+    syncNames(n);
     link.href = buildRsvpUrl(cfg, {
-      name: val('nume'),
+      names: rows.map((r) => r.querySelector('input')!.value),
       attending: att,
       guests: val('persoane'),
       message: val('mesaj'),

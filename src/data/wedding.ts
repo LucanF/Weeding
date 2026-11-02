@@ -192,8 +192,11 @@ export const rsvp = {
   title: 'Ne confirmați prezența?',
   intro: `Vă rugăm să ne răspundeți până pe ${date.rsvpDeadline}. Ne ajută enorm la organizare.`,
   fields: {
+    /** Un singur oaspete (sau răspuns negativ). */
     name: 'Nume și prenume',
     namePh: 'ex. Ana Popescu',
+    /** Mai mulți oaspeți; {n} = numărul persoanei. */
+    nameN: 'Persoana {n} – Nume și prenume',
     attending: 'Veți fi alături de noi?',
     yes: 'Da, cu drag!',
     no: 'Din păcate, nu',
@@ -206,6 +209,7 @@ export const rsvp = {
   whatsappIntroNo: `Bună, Diana și Dragoș! Din păcate nu pot ajunge la nunta voastră din ${date.day} ${date.month} ${date.year}.`,
   whatsappLabels: {
     name: 'Nume',
+    names: 'Persoane',
     attending: 'Particip',
     yes: 'Da',
     no: 'Nu',

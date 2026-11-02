@@ -11,6 +11,9 @@ const waCfg = JSON.stringify({
   introYes: rsvp.whatsappIntroYes,
   introNo: rsvp.whatsappIntroNo,
   labels: rsvp.whatsappLabels,
+  nameLabel: f.name,
+  nameLabelN: f.nameN,
+  namePh: f.namePh,
 });
 ---
 
@@ -40,18 +43,27 @@ const waCfg = JSON.stringify({
   <div class="rsvp__panel on-ivory" data-rsvp-panel>
     <p class="rsvp__please" aria-hidden="true">Răspundeți, vă rog</p>
     <form class="form" aria-label="Confirmare prezență" data-rsvp-form data-wa={waCfg} novalidate>
-      <div class="field">
-        <label class="field__label" for="f-name">{f.name}</label>
-        <input
-          class="field__input"
-          id="f-name"
-          name="nume"
-          type="text"
-          autocomplete="name"
-          maxlength="120"
-          placeholder={f.namePh}
-        />
+      <div class="form__more" data-if-yes>
+        <div class="field">
+          <label class="field__label" for="f-guests">{f.guests}</label>
+          <div class="field__select">
+            <select class="field__input" id="f-guests" name="persoane">
+              <option value="">{f.choose}</option>
+              {Array.from({ length: 10 }, (_, i) => i + 1).map((n) => <option value={n}>{n}</option>)}
+            </select>
+          </div>
+        </div>
       </div>
+
+      <div class="names" data-rsvp-names></div>
+      <template data-rsvp-name-tpl>
+        <div class="name-row">
+          <div class="field">
+            <label class="field__label"></label>
+            <input class="field__input" type="text" maxlength="120" />
+          </div>
+        </div>
+      </template>
 
       <fieldset class="field choice">
         <legend class="field__label">{f.attending}</legend>
@@ -72,18 +84,6 @@ const waCfg = JSON.stringify({
           </label>
         </div>
       </fieldset>
-
-      <div class="form__more" data-if-yes>
-        <div class="field">
-          <label class="field__label" for="f-guests">{f.guests}</label>
-          <div class="field__select">
-            <select class="field__input" id="f-guests" name="persoane">
-              <option value="">{f.choose}</option>
-              {[1, 2, 3, 4, 5, 6].map((n) => <option value={n}>{n}</option>)}
-            </select>
-          </div>
-        </div>
-      </div>
 
       <div class="field">
         <label class="field__label" for="f-msg">{f.message}</label>
@@ -274,6 +274,35 @@ const waCfg = JSON.stringify({
   .form__more {
     display: grid;
     gap: 1.75rem;
+  }
+  .names {
+    display: grid;
+    margin-block: -0.875rem; /* compensă gap-ul când e gol */
+  }
+  .names :global(.name-row) {
+    display: grid;
+    grid-template-rows: 1fr;
+    padding-block: 0.875rem;
+    opacity: 1;
+  }
+  .names :global(.name-row > .field) {
+    min-height: 0;
+    overflow: hidden;
+    padding: 0.2rem 0.2rem 0; /* loc pentru linia de focus */
+    margin: -0.2rem -0.2rem 0;
+  }
+  :global(.motion-ok) .names :global(.name-row.is-in) {
+    animation: name-in 0.45s var(--ease-out) both;
+  }
+  :global(.motion-ok) .names :global(.name-row.is-out) {
+    animation: name-out 0.3s ease-in both;
+    pointer-events: none;
+  }
+  @keyframes name-in {
+    from { grid-template-rows: 0fr; padding-block: 0; opacity: 0; }
+  }
+  @keyframes name-out {
+    to { grid-template-rows: 0fr; padding-block: 0; opacity: 0; }
   }
   .form__more[hidden] {
     display: none;
