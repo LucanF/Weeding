@@ -229,7 +229,10 @@ export const info = {
   items: [
     {
       q: 'Cazare',
-      a: 'Am rezervat un număr limitat de camere la Pensiunea Teiul (5 min de locație), cu tarif preferențial. Menționați „Nunta D&D" la rezervare: 0269 000 000.',
+      a: [
+        'Ca să vă bucurați de eveniment fără grija drumului de întoarcere, am pregătit mai jos o listă cu câteva locații în apropiere de eveniment.',
+        'Rezervarea și alte detalii le discutați personal cu locația aleasă.',
+      ],
     },
     {
       q: 'Transport',
@@ -237,7 +240,10 @@ export const info = {
     },
     {
       q: 'Copii',
-      a: 'Cei mici sunt bineveniți! Vom avea un colț de joacă și un meniu dedicat. Vă rugăm să-i includeți în numărul de persoane la confirmare.',
+      a: [
+        'Cei mici sunt bineveniți și așteptați cu mare drag în povestea noastră!',
+        'Vă rugăm doar ca în timpul dansului mirilor să îi țineți aproape de dumneavoastră și departe de ring, pentru siguranța lor și pentru un moment frumos!',
+      ],
     },
     {
       q: 'Contact',
