@@ -373,6 +373,7 @@ function heroScroll(desktop: boolean) {
     // cartonul de titlu (ca genericul unui film): numele urcă și se clarifică, apoi data
     .fromTo('.hero__names', { opacity: 0, y: 28, scale: 0.96 }, { opacity: 1, y: 0, scale: 1, duration: 0.2, ease: 'power2.out', ...g }, 0.56)
     .fromTo('.hero__date', { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.16, ease: 'power2.out', ...g }, 0.66)
+    .fromTo('.hero__together', { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.12, ease: 'power2.out', ...g }, 0.7)
     .to({}, { duration: 0.16 });
   if (shine) {
     tl.fromTo(shine, { opacity: 0 }, { opacity: 1, duration: 0.1, ease: 'sine.inOut' }, 0.09).to(

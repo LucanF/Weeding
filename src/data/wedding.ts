@@ -55,6 +55,8 @@ export const nav = [
 export const hero = {
   title: 'Diana și Dragoș',
   tagline: 'Noi doi, de la întâlnire la totdeauna.',
+  /** Rândul mic de sub dată, apare odată cu cartonul de titlu. */
+  together: 'Împreună din 14.11.2017',
   eyebrow: 'Ne căsătorim',
   scrollHint: 'Derulează',
   /** Butonul invizibil de peste sigiliu (atingere / tastatură): deschide plicul. */
@@ -77,7 +79,7 @@ export const invitation = {
 
 // ── 4. Countdown ─────────────────────────────────────────────────────────────
 export const countdown = {
-  kicker: 'Până la marele „DA"',
+  kicker: 'Până la marele eveniment',
   title: 'Numărăm clipele',
   units: { days: 'zile', hours: 'ore', minutes: 'minute', seconds: 'secunde' },
   done: 'Ne-am căsătorit!',
@@ -148,7 +150,7 @@ export const events = {
       id: 'petrecere',
       type: 'Petrecerea',
       time: '18:00',
-      place: 'Restaurant Diamant',
+      place: 'Restaurant Diamant Events',
       address: 'Strada Făgărașului 44, Ghimbav, jud. Brașov',
       lat: 45.66575,
       lng: 25.51344,
