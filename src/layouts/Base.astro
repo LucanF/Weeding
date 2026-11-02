@@ -42,8 +42,9 @@ const ogImage = new URL('/og-image.jpg', site).href;
     <meta name="twitter:image" content={ogImage} />
     <meta name="event-date" content={date.start} />
 
+    <!-- Cele trei fonturi (vezi --font-* în global.css): numele din hero, logo/titluri, textul. -->
     <link rel="preload" href="/fonts/great-vibes.woff2" as="font" type="font/woff2" crossorigin />
-    <!-- Cormorant = textul de citit + cifrele (data din hero); Alex Brush apare doar pe cartonaș, mai jos. -->
+    <link rel="preload" href="/fonts/dancing-script.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="preload" href="/fonts/cormorant.woff2" as="font" type="font/woff2" crossorigin />
 
     <script is:inline>

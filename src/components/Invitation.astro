@@ -11,9 +11,6 @@ import decor from '../data/decor.json';
    ramurilor de pe marginile paginii. */
 const borderRatio = decor['border-l'].h / decor['border-l'].w;
 
-/* „A” din fontul script (Great Vibes) se citește greu: îl scriem cu fontul textului de invitație (--hand). */
-const withHandA = (n: string) => n.split(/(A)/);
-
 const stripQuotes = (s: string) => s.replace(/[„”"]/g, '');
 const venues = events.items.map((e) => ({
   ...e,
@@ -48,7 +45,7 @@ const venues = events.items.map((e) => ({
             invitation.parents.map((p, i) => (
               <div class="inv__fam" data-reveal style={`--d:${i * 120}`}>
                 <p class="inv__label">{p.label}</p>
-                <p class="inv__names">{p.names.map((n) => <span>{withHandA(n).map((t) => (t === "A" ? <span class="hand-a">A</span> : t))}</span>)}</p>
+                <p class="inv__names">{p.names.map((n) => <span>{n}</span>)}</p>
               </div>
             ))
           }
@@ -58,7 +55,7 @@ const venues = events.items.map((e) => ({
 
         <div class="inv__fam inv__fam--god" data-reveal>
           <p class="inv__label">{invitation.godparents.label}</p>
-          <p class="inv__names">{invitation.godparents.names.map((n) => <span>{withHandA(n).map((t) => (t === "A" ? <span class="hand-a">A</span> : t))}</span>)}</p>
+          <p class="inv__names">{invitation.godparents.names.map((n) => <span>{n}</span>)}</p>
         </div>
 
         <Ornament class="card-inv__orn" />
@@ -151,9 +148,6 @@ const venues = events.items.map((e) => ({
     text-align: center;
     overflow: clip;
     isolation: isolate;
-    /* Cartonașul reproduce invitația tipărită: aici textul rămâne scris de mână. */
-    font-family: var(--hand);
-    font-weight: 400;
     line-height: 1.55;
   }
   /* Benzile florale de pe laturi, de sus până jos: lățime --sw, repetate vertical (sus și jos
@@ -201,7 +195,7 @@ const venues = events.items.map((e) => ({
   }
   .card-inv__couple {
     margin-top: 0.75rem;
-    font-family: var(--serif);
+    font-family: var(--font-display);
     font-size: clamp(2.9rem, 11vw, 5.25rem);
     line-height: 1.15;
     padding: 0.05em 0.15em 0.15em;
@@ -212,8 +206,8 @@ const venues = events.items.map((e) => ({
   .inv__text {
     margin-top: clamp(1rem, 3vw, 1.75rem);
     max-width: 24em;
-    /* Același font lizibil ca la nași (Cormorant 600), nu scriptul de mână. */
-    font-family: var(--text);
+    /* Paragraf: font de citit (Cormorant 600), nu scrisul de mână. */
+    font-family: var(--font-text);
     font-weight: 600;
     font-size: clamp(1.3rem, 4.2vw, 1.75rem);
     letter-spacing: 0.02em;
@@ -232,22 +226,20 @@ const venues = events.items.map((e) => ({
     gap: 1.5rem;
     width: 100%;
   }
+  /* Etichete scurte și nume: scrisul de mână lizibil (Dancing Script), ca pe invitația tipărită. */
   .inv__label {
-    font-size: 1.1rem;
+    font-family: var(--font-hand);
+    font-size: 1.2rem;
     font-weight: 600;
     color: var(--amber);
   }
   .inv__names {
     margin-top: 0.4rem;
-    font-family: var(--serif);
-    font-size: clamp(1.7rem, 5vw, 2.2rem);
-    line-height: 1.2;
+    font-family: var(--font-hand);
+    font-size: clamp(1.6rem, 4.8vw, 2rem);
+    font-weight: 500;
+    line-height: 1.25;
     color: var(--ivory);
-  }
-  .inv__names :global(.hand-a) {
-    display: inline;
-    font-family: var(--hand);
-    font-size: 0.85em;
   }
   /* Fiecare nume pe rândul lui (ex. mama; tata cu soția). */
   .inv__names > span {
@@ -271,7 +263,7 @@ const venues = events.items.map((e) => ({
     color: var(--amber-soft);
   }
   .card-inv__day {
-    font-family: var(--num);
+    font-family: var(--font-text);
     font-weight: 600;
     font-size: clamp(3.75rem, 14vw, 5rem);
     line-height: 1;
@@ -286,7 +278,7 @@ const venues = events.items.map((e) => ({
     text-transform: uppercase;
     letter-spacing: 0.06em;
     text-align: left;
-    font-family: var(--num);
+    font-family: var(--font-text);
     font-weight: 600;
     font-size: clamp(1.5rem, 5vw, 1.9rem);
     line-height: 1.05;
@@ -315,7 +307,7 @@ const venues = events.items.map((e) => ({
     gap: 0.15rem;
   }
   .venue__time {
-    font-family: var(--num);
+    font-family: var(--font-text);
     font-weight: 600;
     font-size: 1.35rem;
     color: var(--amber-soft);

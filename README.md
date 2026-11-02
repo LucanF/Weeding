@@ -41,8 +41,14 @@ La build, Astro generează automat AVIF, WebP și JPEG în mai multe dimensiuni.
 
 ## Fonturile
 
-Sunt self-hosted în `public/fonts/` (Cormorant Garamond, Manrope, Pinyon Script), reduse la latin + diacriticele românești.
-Le regenerezi din pachetele `@fontsource` cu `npm run fonts`.
+Sunt self-hosted în `public/fonts/`, reduse la latin + diacriticele românești. Trei fonturi, fiecare cu un rol
+(tokenii `--font-*` din `src/styles/global.css`):
+
+- **Great Vibes** (`--font-display`): doar numele mirilor, foarte mari (hero, cartonaș, monograma din final).
+- **Dancing Script** (`--font-hand`): scrisul de mână lizibil: titluri, nume pe cartonaș, etichete scurte, logo.
+- **Cormorant Garamond** (`--font-text`): tot ce se citește: paragrafe, etichete, butoane, formular, cifre.
+
+Le regenerezi cu `npm run fonts` (Python: `pip install fonttools brotli`; opțional doar unul: `npm run fonts -- dancing-script.woff2`).
 
 ## Animațiile (intensitate)
 

@@ -1,15 +1,17 @@
 #!/usr/bin/env python3
 """
 Fonturile „scris de mână" (Google Fonts, licență OFL) → woff2 self-hosted în public/fonts/.
-  - Great Vibes: nume și titluri (ca pe invitația tipărită)
-  - Alex Brush: textul de mână
-  - Cormorant Garamond (variabil): cifre, ore și data (serif, ca pe invitație)
+  - Great Vibes: doar numele mirilor, foarte mari (hero, cartonaș, monograma din final)
+  - Dancing Script (variabil): scrisul de mână lizibil: titluri, nume pe cartonaș, etichete scurte
+  - Cormorant Garamond (variabil): textul de citit, etichete, butoane, cifre
 Dacă un font nu are ș/ț, le compunem din s/t + virgulă (add_romanian_comma_letters).
 Fiecare e redus la latin + diacriticele românești (ă â î ș ț, inclusiv variantele cu sedilă).
-Rulează:  pip install fonttools brotli  &&  python scripts/build-fonts.py
+Rulează:  pip install fonttools brotli  &&  python scripts/build-fonts.py [fisier.woff2 ...]
+(fără argumente le reconstruiește pe toate)
 """
 import io
 import pathlib
+import sys
 import urllib.request
 from fontTools import subset
 from fontTools.ttLib import TTFont
@@ -20,7 +22,7 @@ OUT = ROOT / 'public' / 'fonts'
 BASE = 'https://raw.githubusercontent.com/google/fonts/main/ofl/'
 FONTS = {
     'great-vibes.woff2': 'greatvibes/GreatVibes-Regular.ttf',
-    'alex-brush.woff2': 'alexbrush/AlexBrush-Regular.ttf',
+    'dancing-script.woff2': 'dancingscript/DancingScript%5Bwght%5D.ttf',
     'cormorant.woff2': 'cormorantgaramond/CormorantGaramond%5Bwght%5D.ttf',
 }
 TEXT = ''.join(chr(c) for c in range(0x20, 0x7F)) + ''.join(chr(c) for c in range(0xA0, 0x100))
@@ -68,7 +70,10 @@ def add_romanian_comma_letters(t: TTFont) -> None:
 
 
 OUT.mkdir(parents=True, exist_ok=True)
+only = set(sys.argv[1:])
 for name, src in FONTS.items():
+    if only and name not in only:
+        continue
     data = urllib.request.urlopen(BASE + src).read()
     font = TTFont(io.BytesIO(data))
     add_romanian_comma_letters(font)
