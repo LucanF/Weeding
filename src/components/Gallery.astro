@@ -424,4 +424,42 @@ const speeds = [-8, 10, -4];
       right: 2rem;
     }
   }
+  /* Telefon în landscape (sau fereastră foarte joasă): bara de sus și săgețile trec pe laterale,
+     peste poză, ca fotografia să ocupe aproape toată înălțimea. */
+  @media (orientation: landscape) and (max-height: 31.25em) {
+    .lb[open] {
+      grid-template-rows: minmax(0, 1fr);
+    }
+    .lb__bar {
+      position: absolute;
+      z-index: 1;
+      inset: 0 0 auto;
+      padding: calc(0.5rem + env(safe-area-inset-top)) max(0.75rem, env(safe-area-inset-right)) 0 max(0.75rem, env(safe-area-inset-left));
+      align-items: flex-start;
+      pointer-events: none;
+    }
+    .lb__bar > * {
+      pointer-events: auto;
+    }
+    .lb__count {
+      /* sub săgeata din stânga nu e loc; numărul stă în colțul de sus, deasupra ei */
+      padding-top: 0.75rem;
+    }
+    .lb__fig {
+      padding: calc(0.5rem + env(safe-area-inset-top)) calc(48px + 1.5rem + env(safe-area-inset-right))
+        calc(0.5rem + env(safe-area-inset-bottom)) calc(48px + 1.5rem + env(safe-area-inset-left));
+    }
+    .lb__nav {
+      bottom: auto;
+      top: 50%;
+      translate: 0 -50%;
+    }
+    .lb__prev {
+      left: max(0.75rem, env(safe-area-inset-left));
+    }
+    .lb__next {
+      left: auto;
+      right: max(0.75rem, env(safe-area-inset-right));
+    }
+  }
 </style>
