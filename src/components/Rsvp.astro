@@ -109,10 +109,18 @@ const waCfg = JSON.stringify({
     background: var(--night);
     color: var(--ivory);
     padding-bottom: clamp(4rem, 10vw, 8rem);
+    /* Poza și titlul stau în aceeași celulă: dacă titlul + textul sunt mai înalte decât poza
+       (landscape, text mărit), banda crește odată cu ele și panoul nu le mai acoperă. */
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    /* cât urcă panoul peste poză */
+    --rsvp-overlap: clamp(9rem, 30svh, 14rem);
   }
   .rsvp__bg {
     position: relative;
-    height: clamp(30rem, 92svh, 56rem);
+    grid-area: 1 / 1;
+    /* pe ecrane foarte late (zoom 50%) banda nu devine o fâșie îngustă */
+    min-height: clamp(30rem, 92svh, max(56rem, 40vw));
     overflow: hidden;
     background: #2a1a12;
   }
@@ -139,11 +147,12 @@ const waCfg = JSON.stringify({
       rgb(11 36 24 / 0.25);
   }
   .rsvp__head {
-    position: absolute;
-    top: clamp(5rem, 12vw, 9rem);
-    left: 0;
-    right: 0;
+    position: relative;
+    grid-area: 1 / 1;
+    align-self: start;
     z-index: 2;
+    padding-top: clamp(5rem, 12vw, 9rem);
+    padding-bottom: calc(var(--rsvp-overlap) + 2rem);
   }
   .rsvp__title {
     max-width: 9em;
@@ -158,7 +167,7 @@ const waCfg = JSON.stringify({
     position: relative;
     z-index: 2;
     width: min(100% - 2 * clamp(0.75rem, 3vw, 2rem), 44rem);
-    margin: clamp(-14rem, -30svh, -9rem) auto 0;
+    margin: calc(-1 * var(--rsvp-overlap)) auto 0;
     padding: 6.75rem clamp(1.25rem, 6vw, 4rem) clamp(2rem, 6vw, 3.5rem);
     border-radius: 50% 50% 1.5rem 1.5rem / 10rem 10rem 1.5rem 1.5rem;
     border: 1px solid rgb(201 165 90 / 0.7);
