@@ -236,7 +236,7 @@ export const info = {
     },
     {
       q: 'Transport',
-      a: 'Locația are parcare gratuită. Pentru cei care nu conduc, un microbuz va face curse spre Sibiu la 01:00 și 03:00.',
+      a: 'Locația are parcare gratuită.',
     },
     {
       q: 'Copii',
