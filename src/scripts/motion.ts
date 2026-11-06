@@ -27,12 +27,12 @@ const $$ = <T extends Element = HTMLElement>(s: string, r: ParentNode = document
 const html = document.documentElement;
 
 const Q = {
-  desktop: '(min-width: 1024px) and (prefers-reduced-motion: no-preference)',
-  mobile: '(max-width: 1023px) and (prefers-reduced-motion: no-preference)',
+  desktop: '(min-width: 64em) and (prefers-reduced-motion: no-preference)',
+  mobile: '(max-width: 63.9375em) and (prefers-reduced-motion: no-preference)',
   reduced: '(prefers-reduced-motion: reduce)',
   // Telefon/tabletă în landscape: fereastra arcuită ar fi prea lată și prea joasă (poza nu încape),
   // deci hero-ul și finalul rămân full-bleed. Cheia separată face ca rotirea să reconstruiască animațiile.
-  landscape: '(max-width: 1023px) and (orientation: landscape) and (prefers-reduced-motion: no-preference)',
+  landscape: '(max-width: 63.9375em) and (orientation: landscape) and (prefers-reduced-motion: no-preference)',
 };
 
 /**
@@ -922,7 +922,7 @@ function finale(desktop: boolean, landscape = false) {
 /** Lenis: doar desktop cu mouse; pe touch rămâne scroll-ul nativ. */
 let lenis: Lenis | null = null;
 async function smoothScroll() {
-  if (!matchMedia('(min-width: 1024px) and (pointer: fine) and (prefers-reduced-motion: no-preference)').matches) return;
+  if (!matchMedia('(min-width: 64em) and (pointer: fine) and (prefers-reduced-motion: no-preference)').matches) return;
   const { default: L } = await import('lenis');
   // autoRaf: false → Lenis e condus de ticker-ul GSAP (un singur rAF pentru tot).
   const ln = (lenis = new L({ lerp: 0.1, wheelMultiplier: 0.95, syncTouch: false, autoRaf: false, anchors: { offset: -72 } }));

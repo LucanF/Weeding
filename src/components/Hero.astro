@@ -124,7 +124,7 @@ const clip = (pts: string) =>
     height: 200vh;
     height: 200svh;
   }
-  @media (min-width: 1024px) {
+  @media (min-width: 64em) {
     :global(.motion-ok) .hero {
       height: 230svh;
     }
@@ -165,7 +165,7 @@ const clip = (pts: string) =>
     object-position: 50% 30%;
     background-color: var(--night);
   }
-  @media (min-width: 768px) {
+  @media (min-width: 48em) {
     .hero__media :global(.hero__img) {
       object-position: 30% 50%;
     }
@@ -206,7 +206,7 @@ const clip = (pts: string) =>
     --seal: clamp(5rem, 22vw, 6.75rem);
     --seal-y: 58%;
   }
-  @media (min-width: 1024px) {
+  @media (min-width: 64em) {
     .hero__sticky {
       --seal: 7.5rem;
     }
@@ -546,7 +546,7 @@ const clip = (pts: string) =>
   }
   /* Desktop: cuplul stă în centrul pozei, deci cartonul de titlu trece în colțul din stânga-jos
      (pe două rânduri), peste un scrim lateral; textul și subiectul nu se suprapun. */
-  @media (min-width: 1024px) {
+  @media (min-width: 64em) {
     .hero__shade {
       background:
         linear-gradient(to right, rgb(6 20 13 / 0.78) 0%, rgb(6 20 13 / 0.45) 24%, transparent 42%),

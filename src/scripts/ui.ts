@@ -143,7 +143,7 @@ export function initHeader() {
       toggle.focus();
     }
   });
-  matchMedia('(min-width: 960px)').addEventListener('change', (e) => e.matches && !menu.hidden && setOpen(false));
+  matchMedia('(min-width: 60em)').addEventListener('change', (e) => e.matches && !menu.hidden && setOpen(false));
 }
 
 /* ── Program: elementul activ + ceasul sticky (desktop) ─────────────────── */

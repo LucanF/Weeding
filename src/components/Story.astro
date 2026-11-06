@@ -41,7 +41,7 @@ import { photos } from '../data/photos';
                         src={p.src}
                         alt={p.alt}
                         widths={[480, 720, 960]}
-                        sizes="(min-width: 1024px) 28vw, (min-width: 768px) 45vw, 80vw"
+                        sizes="(min-width: 64em) 28vw, (min-width: 48em) 45vw, 80vw"
                         lqip={p.lqip}
                         class="moment__pic"
                         imgClass="moment__img"
@@ -228,7 +228,7 @@ import { photos } from '../data/photos';
     max-width: 30rem;
     color: var(--on-dark-soft);
   }
-  @media (min-width: 768px) {
+  @media (min-width: 48em) {
     .moment {
       grid-template-columns: minmax(0, 0.9fr) minmax(0, 1fr);
       align-items: end;
@@ -240,7 +240,7 @@ import { photos } from '../data/photos';
   }
 
   /* ── Orizontal (desktop + animații) ─────────────────────────────── */
-  @media (min-width: 1024px) {
+  @media (min-width: 64em) {
     :global(.motion-ok) .story {
       padding-top: 0;
     }
@@ -392,7 +392,7 @@ import { photos } from '../data/photos';
     max-width: 30rem;
     color: var(--on-dark-soft);
   }
-  @media (min-width: 768px) {
+  @media (min-width: 48em) {
     .pano__clip {
       aspect-ratio: 2048 / 857;
     }
