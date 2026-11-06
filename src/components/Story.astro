@@ -49,7 +49,7 @@ import { photos } from '../data/photos';
                     </div>
                   </figure>
                   <div class="moment__body" data-reveal>
-                    <p class="moment__year">{m.year}</p>
+                    <p class:list={['moment__year', m.year.length > 4 && 'moment__year--date']}>{m.year}</p>
                     <h3 class="moment__title">{m.title}</h3>
                     <p class="moment__text">{m.text}</p>
                   </div>
@@ -240,7 +240,9 @@ import { photos } from '../data/photos';
   }
 
   /* ── Orizontal (desktop + animații) ─────────────────────────────── */
-  @media (min-width: 64em) {
+  /* Doar pe ecrane și late, și destul de înalte (aceeași condiție ca storyH în motion.ts);
+     altfel (landscape jos, zoom mare) rămâne povestea verticală. */
+  @media (min-width: 64em) and (min-height: 37.5em) {
     :global(.motion-ok) .story {
       padding-top: 0;
     }
@@ -252,6 +254,8 @@ import { photos } from '../data/photos';
       top: 0;
       height: 100svh;
       overflow: hidden;
+      /* momentele se centrează în spațiul de sub bara de sus */
+      padding-top: var(--header-h);
     }
     :global(.motion-ok) .story__track {
       display: flex;
@@ -326,6 +330,10 @@ import { photos } from '../data/photos';
       width: 22vw;
       max-width: 22rem;
       padding-bottom: 2rem;
+    }
+    /* datele lungi („15 Decembrie 2024", „06.09.2025") în coloana îngustă: cel mult două rânduri */
+    :global(.motion-ok) .moment__year--date {
+      font-size: min(clamp(2.25rem, 4vw, 3.25rem), 3.6vw);
     }
     :global(.motion-ok) .moment__dot {
       display: none;

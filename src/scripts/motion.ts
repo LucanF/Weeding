@@ -28,6 +28,8 @@ const html = document.documentElement;
 
 const Q = {
   desktop: '(min-width: 64em) and (prefers-reduced-motion: no-preference)',
+  // Povestea orizontală cere și înălțime (aceeași condiție ca în Story.astro); altfel e verticală.
+  storyH: '(min-width: 64em) and (min-height: 37.5em) and (prefers-reduced-motion: no-preference)',
   mobile: '(max-width: 63.9375em) and (prefers-reduced-motion: no-preference)',
   reduced: '(prefers-reduced-motion: reduce)',
   // Telefon/tabletă în landscape: fereastra arcuită ar fi prea lată și prea joasă (poza nu încape),
@@ -635,12 +637,12 @@ function threads() {
   }
 }
 
-/** Povestea: desktop = timeline orizontal (sticky + translateX); mobil = vertical. */
-function story(desktop: boolean) {
+/** Povestea: desktop destul de înalt = timeline orizontal (sticky + translateX); altfel vertical. */
+function story(horizontal: boolean) {
   const sec = $('[data-story]');
   if (!sec) return;
 
-  if (desktop) {
+  if (horizontal) {
     const pin = $('[data-story-pin]');
     const track = $('[data-story-track]');
     const hpath = $<SVGPathElement>('[data-hthread]');
@@ -937,7 +939,7 @@ export function initMotion() {
 
   const mm = gsap.matchMedia();
   mm.add(Q, (ctx) => {
-    const { desktop, reduced, landscape } = ctx.conditions as Record<keyof typeof Q, boolean>;
+    const { desktop, reduced, landscape, storyH } = ctx.conditions as Record<keyof typeof Q, boolean>;
     if (reduced) {
       // Fără pin/scrub/parallax: layout static + fade-uri CSS scurte.
       html.classList.remove('motion-ok');
@@ -951,7 +953,7 @@ export function initMotion() {
     sealGlint();
     invitation();
     threads();
-    const cleanupStory = story(desktop);
+    const cleanupStory = story(storyH);
     pano();
     parallax(desktop);
     gallery();
