@@ -115,7 +115,8 @@ const clip = (pts: string) =>
   .hero {
     position: relative;
     height: 100svh;
-    min-height: 34rem;
+    /* Nu mai înalt decât ecranul: în landscape / la zoom mare sigiliul și indiciul ar ieși din ecran. */
+    min-height: min(34rem, 100svh);
     background: var(--night);
     color: var(--ivory);
   }
@@ -134,7 +135,7 @@ const clip = (pts: string) =>
     top: 0;
     height: 100vh;
     height: 100svh;
-    min-height: 34rem;
+    min-height: min(34rem, 100svh);
     overflow: hidden;
     display: grid;
   }
@@ -203,12 +204,14 @@ const clip = (pts: string) =>
   }
   .hero__sticky {
     /* sigiliul: dimensiune comună pentru ceară, butonul de deschidere și bloom */
-    --seal: clamp(5rem, 22vw, 6.75rem);
+    /* Vârful clapei de sus e la 58% din înălțime; pe ecrane joase (landscape, zoom) sigiliul se
+       micșorează după înălțime, ca el și indiciul de scroll de dedesubt să încapă mereu. */
+    --seal: min(clamp(5rem, 22vw, 6.75rem), 22svh);
     --seal-y: 58%;
   }
   @media (min-width: 64em) {
     .hero__sticky {
-      --seal: 7.5rem;
+      --seal: min(7.5rem, 22svh);
     }
   }
   :global(.motion-ok) .env {
@@ -509,14 +512,17 @@ const clip = (pts: string) =>
   }
   .hero__names {
     font-family: var(--font-display);
-    font-size: clamp(2.6rem, 12vw, 7.5rem);
+    /* plafonat la 12vw (și cu text mărit): numele nu mai ies din ecran; dacă tot nu încap, trec pe două rânduri */
+    font-size: clamp(min(2.6rem, 12vw), 12vw, 7.5rem);
     line-height: 1.15;
-    white-space: nowrap;
     /* background-clip: text pictează doar în caseta elementului; floriturile scriptului
        (D, &, ș) ies din caseta de avans și rămâneau tăiate. Padding generos + margin negativ
        (poziția rămâne aceeași). */
     padding: 0.2em 0.45em 0.4em;
     margin: -0.2em -0.45em -0.4em;
+  }
+  .hero__n {
+    white-space: nowrap;
   }
   .hero__amp {
     font-size: 0.8em;
@@ -544,9 +550,10 @@ const clip = (pts: string) =>
   .hero__together::after {
     --dir: right;
   }
-  /* Desktop: cuplul stă în centrul pozei, deci cartonul de titlu trece în colțul din stânga-jos
-     (pe două rânduri), peste un scrim lateral; textul și subiectul nu se suprapun. */
-  @media (min-width: 64em) {
+  /* Desktop și orice ecran lat (tabletă / telefon în landscape): cuplul stă în centrul pozei, deci
+     cartonul de titlu trece în colțul din stânga-jos (pe două rânduri), peste un scrim lateral;
+     textul și subiectul nu se suprapun. */
+  @media (min-width: 64em), (min-width: 30em) and (min-aspect-ratio: 4/3) {
     .hero__shade {
       background:
         linear-gradient(to right, rgb(6 20 13 / 0.78) 0%, rgb(6 20 13 / 0.45) 24%, transparent 42%),
@@ -567,7 +574,8 @@ const clip = (pts: string) =>
     }
     .hero__names {
       display: grid;
-      font-size: clamp(4rem, 5.2vw, 6rem);
+      /* pe ecrane joase (landscape, zoom) se micșorează după înălțime, ca să nu urce sub bara de sus */
+      font-size: min(clamp(4rem, 5.2vw, 6rem), 13svh);
       line-height: 1.05;
     }
     .hero__n + .hero__n {
@@ -585,7 +593,7 @@ const clip = (pts: string) =>
     position: absolute;
     z-index: 4;
     left: 50%;
-    bottom: calc(1.25rem + env(safe-area-inset-bottom));
+    bottom: calc(min(1.25rem, 3svh) + env(safe-area-inset-bottom));
     translate: -50% 0;
     display: grid;
     justify-items: center;
@@ -599,7 +607,7 @@ const clip = (pts: string) =>
   .hero__scroll i {
     position: relative;
     width: 1px;
-    height: 2.75rem;
+    height: min(2.75rem, 7svh);
     background: rgb(244 237 225 / 0.2);
     overflow: hidden;
   }

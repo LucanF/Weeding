@@ -33,7 +33,8 @@ const {
   mobile,
   mobileWidths = [480, 720, 960],
   mobileSizes = '100vw',
-  mobileMedia = '(max-width: 47.9375em)',
+  // Crop-ul portret doar pe telefon ținut vertical; în landscape (și pe tabletă) poza lată.
+  mobileMedia = '(max-width: 47.9375em) and (orientation: portrait)',
   priority = false,
   hq = false,
   lqip,
