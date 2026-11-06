@@ -134,7 +134,8 @@ const units = ['days', 'hours', 'minutes', 'seconds'] as const;
     display: inline-flex;
     font-family: var(--font-text);
     font-weight: 500;
-    font-size: clamp(2.35rem, 10.5vw, 6.5rem);
+    /* plafonat la 10.5vw și cu text mărit: „00" încape mereu în celulă */
+    font-size: clamp(min(2.35rem, 10.5vw), 10.5vw, 6.5rem);
     line-height: 0.9;
     font-variant-numeric: lining-nums tabular-nums;
     font-feature-settings: 'lnum' 1, 'tnum' 1;
@@ -187,10 +188,13 @@ const units = ['days', 'hours', 'minutes', 'seconds'] as const;
       animation-duration: 1ms;
     }
   }
+  /* „SECUNDE" e cea mai lată etichetă: pe telefoane înguste (sau cu text mărit) literele se strâng
+     după lățimea ecranului, ca eticheta să rămână în celula ei. */
   .cd__label {
-    font-size: 0.72rem;
+    max-width: 100%;
+    font-size: min(0.72rem, 3.3vw);
     font-weight: 700;
-    letter-spacing: 0.18em;
+    letter-spacing: min(0.18em, 0.55vw);
     text-transform: uppercase;
     color: var(--amber);
   }
