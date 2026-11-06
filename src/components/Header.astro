@@ -27,7 +27,7 @@ import { couple, nav } from '../data/wedding';
     </div>
   </div>
 
-  <div class="mnav" id="meniu" data-menu hidden>
+  <div class="mnav" id="meniu" data-menu data-lenis-prevent hidden>
     <nav aria-label="Meniu">
       <ul role="list">
         {
@@ -61,9 +61,12 @@ import { couple, nav } from '../data/wedding';
     justify-content: space-between;
     gap: 1rem;
     height: var(--header-h);
-    padding-inline: var(--gutter);
+    /* Pe ecrane foarte late (zoom 50%) bara nu se mai întinde până în colțuri. */
+    padding-inline: max(var(--gutter), (100% - 120rem) / 2);
     color: var(--ivory);
     position: relative;
+    /* „Confirmă" se ascunde după lățimea barei în rem (vezi @container mai jos). */
+    container: hdr / inline-size;
   }
   .hdr__bar::before {
     content: '';
@@ -98,6 +101,10 @@ import { couple, nav } from '../data/wedding';
     min-height: 44px;
     align-items: center;
     justify-self: start;
+    /* Text mare / zoom: logo-ul cedează primul, butonul de meniu rămâne mereu pe ecran. */
+    flex: 0 1 auto;
+    min-width: 0;
+    overflow: hidden;
   }
   .hdr__logo .amp {
     font-size: 1.3em;
@@ -190,9 +197,20 @@ import { couple, nav } from '../data/wedding';
     }
   }
   .hdr__actions {
+    flex: none;
     display: flex;
     align-items: center;
     gap: 0.5rem;
+  }
+  .hdr__cta {
+    white-space: nowrap;
+  }
+  /* Bară îngustă raportat la mărimea reală a textului (rem: zoom, text mărit din sistem sau din
+     pagină): „Confirmă" rămâne doar în meniu și în pagină, ca să nu împingă meniul afară. */
+  @container hdr (max-width: 19rem) {
+    .hdr__cta {
+      display: none;
+    }
   }
   .hdr__menu {
     display: grid;
@@ -228,15 +246,22 @@ import { couple, nav } from '../data/wedding';
     position: fixed;
     inset: 0;
     z-index: -1;
-    display: grid;
-    align-content: center;
-    padding: calc(var(--header-h) + env(safe-area-inset-top)) var(--gutter) 2rem;
+    /* Coloană flex + margin auto = centrat „sigur": când lista e mai înaltă decât ecranul
+       (landscape, text mare) începe sub bară și se derulează, fără să fie tăiată sus. */
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: calc(var(--header-h) + env(safe-area-inset-top)) var(--gutter) calc(2rem + env(safe-area-inset-bottom));
     background:
       radial-gradient(80% 60% at 50% 100%, rgb(201 165 90 / 0.12), transparent 70%),
       var(--night);
   }
   .mnav[hidden] {
     display: none;
+  }
+  .mnav nav {
+    margin-block: auto;
   }
   .mnav ul {
     display: grid;
@@ -247,7 +272,8 @@ import { couple, nav } from '../data/wedding';
     display: block;
     padding-block: 0.4rem;
     font-family: var(--font-hand);
-    font-size: clamp(2.25rem, 10vw, 3.25rem);
+    /* și după înălțime: în landscape lista rămâne compactă */
+    font-size: clamp(1.6rem, min(10vw, 8svh), 3.25rem);
     line-height: 1.1;
     text-decoration: none;
     color: var(--ivory);
@@ -283,6 +309,19 @@ import { couple, nav } from '../data/wedding';
     }
     .hdr__actions {
       justify-content: flex-end;
+    }
+  }
+  /* Ecran lat, dar text mărit (rem mare): legăturile nu mai încap între logo și „Confirmă",
+     deci revine butonul de meniu. La mărimea normală a textului nu se întâmplă (≥ 60em = 54rem). */
+  @container hdr (max-width: 46rem) {
+    .hdr__nav {
+      display: none;
+    }
+    .hdr__menu {
+      display: grid;
+    }
+    .hdr__actions {
+      grid-column: 3;
     }
   }
 </style>
