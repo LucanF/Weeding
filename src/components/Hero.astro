@@ -66,8 +66,9 @@ const clip = (pts: string) =>
       <div class="hero__glow" data-hero-glow aria-hidden="true"></div>
     </div>
 
-    <!-- Plicul (doar cu animații): patru clape de catifea cu muchii aurii; sigiliul se rupe la primul
-         scroll (sau la atingere), clapele se deschid și descoperă poza. -->
+    <!-- Plicul (doar cu animații): patru clape de hârtie cu muchii aurite; sigiliul se rupe la primul
+         scroll, clapele se deschid și descoperă poza. Atingerea / clicul / Enter pe sigiliu deschide
+         plicul singur (derulare lentă automată, openEnvelope în motion.ts). -->
     <div class="env" data-env aria-hidden="true">
       <svg class="env__defs" width="0" height="0" focusable="false">
         <radialGradient id="env-foil" gradientUnits="userSpaceOnUse" cx="50" cy="54" r="62">

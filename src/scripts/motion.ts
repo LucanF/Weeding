@@ -525,32 +525,67 @@ function breakFx(desktop: boolean) {
 }
 
 /**
- * Atingerea sigiliului / Enter: derulează animat până la poza deschisă (animația e legată de scroll,
- * deci se vede toată). Lenis (desktop) are propriul scrollTo; altfel un tween pe window.scrollY.
- * Orice gest al utilizatorului (rotiță, atingere, tastă) oprește derularea automată.
+ * Atingerea sigiliului / Enter / Space: plicul se deschide singur, încet. Nu există o a doua animație:
+ * derulăm pagina (lent, power2.inOut) până la capătul intro-ului, iar timeline-ul legat de scroll
+ * (heroScroll) se joacă exact ca la scroll manual → starea finală, poziția de scroll și Lenis rămân
+ * sincronizate, nimic nu sare și nu se repetă. Înainte, o apăsare scurtă pe ceară (feedback).
+ * Lenis (desktop) are propriul scrollTo; altfel un tween pe window.scrollY.
+ * Dacă utilizatorul derulează / atinge / apasă o tastă în timpul derulării automate, îi dăm controlul
+ * înapoi pe loc (derularea automată se oprește acolo unde e; animația urmează scroll-ul ca de obicei).
+ * Nu blocăm scroll-ul: un blocaj pe touch cere preventDefault pe touchmove / overflow pe <html>, fragile
+ * în iOS Safari, iar un utilizator „prins" 3 s e mai rău decât o animație oprită la jumătate.
  */
+let autoOpen: (() => void) | null = null;
 function openEnvelope(hero: HTMLElement) {
+  if (autoOpen) return;
+  // progresul 0.9 din pin = toate clapele au ieșit și cartonul de titlu e complet (vezi heroScroll)
   const target = hero.offsetTop + (hero.offsetHeight - innerHeight) * 0.9;
-  const duration = 2.6;
-  if (lenis) {
-    lenis.scrollTo(target, { duration, easing: (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2) });
-    return;
+  if (target - scrollY < 4) return;
+  const duration = 3.4;
+  const delay = 0.22;
+  const seal = $('[data-env-seal]');
+  // apăsarea pe ceară: scurtă, revine singură (sigiliul se rupe imediat după, la primul pas de scroll)
+  if (seal) {
+    gsap.fromTo(seal, { scale: 1 }, { scale: 0.93, duration: 0.12, ease: 'power2.out', yoyo: true, repeat: 1, force3D: true });
   }
-  const s = { y: scrollY };
+
+  const evs = ['wheel', 'touchstart', 'keydown', 'mousedown'] as const;
+  let tw: gsap.core.Tween | null = null;
   const stop = () => {
-    tw.kill();
-    off();
+    tw?.kill();
+    lenis?.stop();
+    lenis?.start();
+    done();
   };
-  const evs = ['wheel', 'touchstart', 'keydown'] as const;
-  const off = () => evs.forEach((e) => removeEventListener(e, stop));
-  const tw = gsap.to(s, {
-    y: target,
-    duration,
-    ease: 'power3.inOut',
-    onUpdate: () => scrollTo({ top: s.y, behavior: 'instant' }),
-    onComplete: off,
-  });
-  evs.forEach((e) => addEventListener(e, stop, { passive: true }));
+  const done = () => {
+    evs.forEach((e) => removeEventListener(e, stop));
+    autoOpen = null;
+  };
+  autoOpen = stop;
+  // ascultătorii pornesc după ce gestul curent (clic / Enter) s-a terminat
+  gsap.delayedCall(0.05, () => autoOpen === stop && evs.forEach((e) => addEventListener(e, stop, { passive: true })));
+
+  const start = () => {
+    if (autoOpen !== stop) return;
+    if (lenis) {
+      // Lenis întrerupe singur scrollTo la rotiță; stop()/start() de mai sus îl oprește și la touch/tastă
+      lenis.scrollTo(target, {
+        duration,
+        easing: (t: number) => (t < 0.5 ? 2 * t * t : 1 - (-2 * t + 2) ** 2 / 2),
+        onComplete: done,
+      });
+      return;
+    }
+    const s = { y: scrollY };
+    tw = gsap.to(s, {
+      y: target,
+      duration,
+      ease: 'power2.inOut',
+      onUpdate: () => scrollTo({ top: s.y, behavior: 'instant' }),
+      onComplete: done,
+    });
+  };
+  gsap.delayedCall(delay, start);
 }
 
 /** Sclipire scurtă peste sigiliul de ceară, repetată rar cât plicul e închis. */
