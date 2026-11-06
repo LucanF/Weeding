@@ -82,12 +82,15 @@ const clip = (pts: string) =>
           <div class:list={['env__flap', `env__flap--${f.k}`]} style={clip(f.pts)} {...{ [`data-env-${f.k}`]: '' }}>
             <div class="env__paper">
               <div class="env__face"></div>
-              <!-- Muchia hârtiei (decupată pe clapă, deci se vede doar spre interior): marginea care
-                   prinde lumina, un șănțuleț mai închis, apoi tăietura aurită. -->
+              <!-- Muchia hârtiei: marginea care prinde lumina și un șănțuleț mai închis (decupate pe
+                   clapă, deci se văd doar spre interior), peste ele tăietura aurită. -->
               <svg viewBox="0 0 100 100" preserveAspectRatio="none" focusable="false">
-                <polyline class="env__rim env__rim--soft" points={f.pts}></polyline>
-                <polyline class="env__rim" points={f.pts}></polyline>
-                <polyline class="env__groove" points={f.pts}></polyline>
+                <clipPath id={`env-clip-${f.k}`}><polygon points={f.pts}></polygon></clipPath>
+                <g clip-path={`url(#env-clip-${f.k})`}>
+                  <polyline class="env__rim env__rim--soft" points={f.pts}></polyline>
+                  <polyline class="env__rim" points={f.pts}></polyline>
+                  <polyline class="env__groove" points={f.pts}></polyline>
+                </g>
                 <polyline class="env__gilt" points={f.pts}></polyline>
               </svg>
             </div>
@@ -300,8 +303,6 @@ const clip = (pts: string) =>
     width: 100%;
     height: 100%;
     overflow: visible;
-    /* decupată pe forma clapei: din fiecare linie se vede doar jumătatea dinspre clapă */
-    clip-path: var(--clip);
   }
   .env__flap polyline {
     fill: none;
@@ -321,12 +322,12 @@ const clip = (pts: string) =>
   }
   .env__groove {
     stroke: rgb(1 8 4 / 0.38);
-    stroke-width: 4;
+    stroke-width: 3.6;
   }
-  /* Tăietura aurită (folio): mai luminoasă spre sigiliu. */
+  /* Tăietura aurită (folio), pe muchie (nedecupată, deci netedă și la 1x): mai luminoasă spre sigiliu. */
   .env__gilt {
     stroke: url(#env-foil);
-    stroke-width: 2.2;
+    stroke-width: 1.6;
   }
   /* Laterale: buzunarul cel mai adânc, verde puțin mai rece. */
   .env__flap--l {
