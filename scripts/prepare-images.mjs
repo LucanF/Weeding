@@ -68,10 +68,13 @@ const lqipFiles = {
   primulAcasa: 'primul-acasa',
   intrebarea: 'intrebarea',
   galerieAlee: 'galerie-alee',
-  galerieImbratisare: 'galerie-imbratisare',
-  galerieArcadaUmbra: 'galerie-arcada-umbra',
-  galeriePortretSezut: 'galerie-portret-sezut',
   galeriePrivire: 'galerie-privire',
+  galerieCivilaIedera: 'galerie-civila-iedera',
+  galerieGradinaAlbastru: 'galerie-gradina-albastru',
+  galerieMunteSelfie: 'galerie-munte-selfie',
+  galerieBradCraciun: 'galerie-brad-craciun',
+  galerieEvenimentSelfie: 'galerie-eveniment-selfie',
+  galerieSelfieAlb: 'galerie-selfie-alb',
 };
 for (const [name, file] of Object.entries(lqipFiles)) {
   const buf = await sharp(path.join(photos, `${file}.jpg`))

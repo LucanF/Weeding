@@ -17,10 +17,13 @@ import hero from '../assets/photos/hero.jpg';
 import intrebarea from '../assets/photos/intrebarea.jpg';
 import primulAcasa from '../assets/photos/primul-acasa.jpg';
 import galerieAlee from '../assets/photos/galerie-alee.jpg';
-import galerieImbratisare from '../assets/photos/galerie-imbratisare.jpg';
-import galerieArcadaUmbra from '../assets/photos/galerie-arcada-umbra.jpg';
-import galeriePortretSezut from '../assets/photos/galerie-portret-sezut.jpg';
 import galeriePrivire from '../assets/photos/galerie-privire.jpg';
+import galerieCivilaIedera from '../assets/photos/galerie-civila-iedera.jpg';
+import galerieGradinaAlbastru from '../assets/photos/galerie-gradina-albastru.jpg';
+import galerieMunteSelfie from '../assets/photos/galerie-munte-selfie.jpg';
+import galerieBradCraciun from '../assets/photos/galerie-brad-craciun.jpg';
+import galerieEvenimentSelfie from '../assets/photos/galerie-eveniment-selfie.jpg';
+import galerieSelfieAlb from '../assets/photos/galerie-selfie-alb.jpg';
 import heroMobile from '../assets/photos/crops/hero-mobile.jpg';
 import rsvpMobile from '../assets/photos/crops/rsvp-mobile.jpg';
 import finalMobile from '../assets/photos/crops/final-mobile.jpg';
@@ -33,10 +36,13 @@ export type PhotoKey = 'civila' | 'arcada' | 'inel' | 'intim' | 'apus' | 'portre
   | 'primulAcasa'
   | 'intrebarea'
   | 'galerieAlee'
-  | 'galerieImbratisare'
-  | 'galerieArcadaUmbra'
-  | 'galeriePortretSezut'
-  | 'galeriePrivire';
+  | 'galeriePrivire'
+  | 'galerieCivilaIedera'
+  | 'galerieGradinaAlbastru'
+  | 'galerieMunteSelfie'
+  | 'galerieBradCraciun'
+  | 'galerieEvenimentSelfie'
+  | 'galerieSelfieAlb';
 
 export interface Photo {
   src: ImageMetadata;
@@ -56,10 +62,13 @@ export const photos: Record<PhotoKey, Photo> = {
   intrebarea: { src: intrebarea, alt: 'Două mâini împreunate, cu inelul de logodnă, în fața unui brad de Crăciun plin de luminițe colorate', lqip: lqip.intrebarea },
   primulAcasa: { src: primulAcasa, alt: 'Dragoș și Diana, zâmbind într-un selfie, într-un parc cu iarbă verde și flori albe', lqip: lqip.primulAcasa },
   galerieAlee: { src: galerieAlee, alt: 'Diana și Dragoș plimbându-se de mână pe o alee umbrită, privindu-se zâmbind, în lumina aurie a serii', lqip: lqip.galerieAlee },
-  galerieImbratisare: { src: galerieImbratisare, alt: 'Îmbrățișare văzută din spate; mâinile Dianei, cu inelul de logodnă, în jurul gâtului lui Dragoș', lqip: lqip.galerieImbratisare },
-  galerieArcadaUmbra: { src: galerieArcadaUmbra, alt: 'Diana și Dragoș sărutându-se, sprijiniți de o arcadă de piatră, într-o pădure învăluită în umbră', lqip: lqip.galerieArcadaUmbra },
-  galeriePortretSezut: { src: galeriePortretSezut, alt: 'Portret cu Diana zâmbind, sprijinită de umărul lui Dragoș, pe fundal de verdeață', lqip: lqip.galeriePortretSezut },
   galeriePrivire: { src: galeriePrivire, alt: 'Prim-plan cu Diana privindu-l pe Dragoș, într-o lumină caldă și intimă', lqip: lqip.galeriePrivire },
+  galerieCivilaIedera: { src: galerieCivilaIedera, alt: 'Dragoș și Diana, în ținute de cununie civilă, îmbrățișați în fața unei tufe de iederă, zâmbind spre cameră', lqip: lqip.galerieCivilaIedera },
+  galerieGradinaAlbastru: { src: galerieGradinaAlbastru, alt: 'Dragoș și Diana, îmbrățișați într-o grădină, ea în rochie albastră cu părul lung, el în cămașă în carouri', lqip: lqip.galerieGradinaAlbastru },
+  galerieMunteSelfie: { src: galerieMunteSelfie, alt: 'Selfie cu Dragoș și Diana pe o terasă, cu munții în fundal într-o zi senină', lqip: lqip.galerieMunteSelfie },
+  galerieBradCraciun: { src: galerieBradCraciun, alt: 'Dragoș și Diana, îmbrățișați seara în fața unui brad de Crăciun luminat', lqip: lqip.galerieBradCraciun },
+  galerieEvenimentSelfie: { src: galerieEvenimentSelfie, alt: 'Selfie cu Dragoș, în costum, și Diana, în rochie verde, la un eveniment, sub lumini colorate', lqip: lqip.galerieEvenimentSelfie },
+  galerieSelfieAlb: { src: galerieSelfieAlb, alt: 'Selfie cu Diana și Dragoș, îmbrăcați în alb, cu capetele apropiate, zâmbind', lqip: lqip.galerieSelfieAlb },
 };
 
 /** Poza care apare când se deschide plicul (hero). */
@@ -78,5 +87,6 @@ export const finalPhoto = {
 export const crops = { heroMobile, rsvpMobile, finalMobile };
 
 /** Ordinea din galerie. */
-export const galleryOrder: PhotoKey[] = ['portret', 'civila', 'apus', 'arcada', 'intim', 'inel',
-  'galerieAlee', 'galerieImbratisare', 'galerieArcadaUmbra', 'galeriePortretSezut', 'galeriePrivire'];
+export const galleryOrder: PhotoKey[] = ['portret', 'galerieCivilaIedera', 'apus', 'galerieMunteSelfie', 'arcada',
+  'galerieGradinaAlbastru', 'galerieAlee', 'galerieBradCraciun', 'inel', 'civila', 'galerieEvenimentSelfie',
+  'galeriePrivire', 'galerieSelfieAlb'];
