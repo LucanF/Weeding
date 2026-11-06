@@ -55,10 +55,13 @@ import { finalPhoto } from '../data/photos';
     position: relative;
     height: 100vh;
     height: 100svh;
-    min-height: 36rem;
+    /* nu mai înalt decât ecranul (landscape, zoom): monograma ar urca sub bara de sus */
+    min-height: min(36rem, 100svh);
     overflow: hidden;
     display: grid;
     place-items: center;
+    /* conținutul se centrează în spațiul de sub bara de sus (care e vizibilă aici) */
+    padding-top: calc(var(--header-h) + env(safe-area-inset-top));
   }
   :global(.motion-ok) .fin__sticky {
     position: sticky;
@@ -106,11 +109,12 @@ import { finalPhoto } from '../data/photos';
   }
   .fin__mono {
     position: relative;
-    width: clamp(9rem, 22vw, 12rem);
+    /* și după înălțime: pe ecrane joase monograma, titlul și data încap toate */
+    width: min(clamp(9rem, 22vw, 12rem), 22svh);
     aspect-ratio: 200 / 240;
     display: grid;
     place-items: center;
-    margin-bottom: 1.5rem;
+    margin-bottom: min(1.5rem, 3svh);
   }
   .fin__ring {
     position: absolute;
@@ -127,7 +131,7 @@ import { finalPhoto } from '../data/photos';
     align-items: baseline;
     padding-top: 18%;
     font-family: var(--font-display);
-    font-size: clamp(3.25rem, 8vw, 4.5rem);
+    font-size: min(clamp(3.25rem, 8vw, 4.5rem), 8.5svh);
     line-height: 1;
     color: var(--ivory);
   }
@@ -137,7 +141,7 @@ import { finalPhoto } from '../data/photos';
     font-size: 0.8em;
   }
   .fin__title {
-    font-size: var(--fs-display);
+    font-size: min(var(--fs-display), 11svh, 14vw);
     font-style: italic;
     line-height: 0.95;
     color: var(--amber-soft);
@@ -145,14 +149,14 @@ import { finalPhoto } from '../data/photos';
   }
   .fin__text {
     /* titlul are line-height strâns: loc pentru descendente (ș, g) */
-    margin-top: clamp(1.4rem, 2.6vw, 2.25rem);
+    margin-top: min(clamp(1.4rem, 2.6vw, 2.25rem), 4svh);
     max-width: 26rem;
-    font-size: var(--fs-lead);
+    font-size: min(var(--fs-lead), 7vw);
     color: var(--on-dark-soft);
   }
   /* Data, ca pe cartonul de titlu din hero: finalul „închide" genericul. */
   .fin__date {
-    margin-top: 1.75rem;
+    margin-top: min(1.75rem, 4svh);
     font-family: var(--font-text);
     font-size: 1rem;
     font-weight: 600;
